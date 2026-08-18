@@ -13,3 +13,6 @@ modules/10_charting_sandbox/charts/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+archive/
+other_content/
+presentation/
