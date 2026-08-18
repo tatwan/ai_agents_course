@@ -1,2 +1,0 @@
-# Sidekick Proj Package
-

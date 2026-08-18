@@ -1,2 +1,0 @@
-export type Product = { id: number; name: string; sku: string; description?: string; unit?: string; priceCost: number; priceSelling: number; supplierId?: number; };
-export type InventoryItem = { id: number; productId: number; warehouseId: number; quantity: number; minThreshold?: number; maxThreshold?: number; };

@@ -1,5 +1,0 @@
-.env
-applications.json
-__pycache__/
-*.pyc
-.venv/

@@ -1,1 +1,0 @@
-"""Courtroom MCP tool implementations."""
