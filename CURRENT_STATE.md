@@ -2,15 +2,15 @@
 
 Author and agent status. Students should start at [README.md](README.md). After a module or a wave, update **this file** and the "Where we stopped" section in `BUILD_PLAN.md`.
 
-**2026-08-19, corpus + module 10 done.** Modules 00–10 are written. 11–17 are not.
+**2026-08-19, module 11 done.** Modules 00–11 are written. 12–17 are not.
 
 | | |
 |---|---|
-| **Next action** | Module 11 (retrieval) in [BUILD_PLAN.md](BUILD_PLAN.md). One module, then stop. |
-| **Why** | `data/corpus/` is on disk. 11, 12 and 14 can start. |
-| **Then** | 12–17, one at a time. |
+| **Next action** | Module 12 (agentic RAG) in [BUILD_PLAN.md](BUILD_PLAN.md). One module, then stop. |
+| **Why** | Single-shot retrieve-then-generate is in 11. 12 adds the loop. |
+| **Then** | 13–17, one at a time. |
 | **Deck** | Present from `presentation/ai_agents_in_practice_v3 - Repaired.pptx` (111 slides, aligned to 00-17). Older decks are in `archive/decks/`. |
-| **Do not** | Build module 12 yet. Trust the Status column below without running the module. |
+| **Do not** | Build module 13 yet. Trust the Status column below without running the module. |
 
 Where things live:
 
@@ -37,7 +37,7 @@ Weight is relative effort, not minutes. **Cut first** is what to drop if the roo
 | 08 | OpenAI Agents SDK | L | **Built** | Cut handoffs; keep the two graphs |
 | 09 | LangGraph | L | **Built** | Cut the gate / interrupt; keep the loop graph |
 | 10 | Charting agent and the sandbox | M | **Built** | Cut Docker if the daemon is down; keep the jail probe |
-| 11 | Retrieval | M | Not started | Keep one retrieval path |
+| 11 | Retrieval | M | **Built** | Keep one retrieval path |
 | 12 | Agentic RAG | M | Not started | Collapse into 11 if behind |
 | 13 | Delegation | L | Not started | Cut A2A to a slide |
 | 14 | Security | L | Not started | Do not cut the attack |

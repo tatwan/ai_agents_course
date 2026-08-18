@@ -4,7 +4,7 @@ Working rules for any agent session in this repo. Read this, then `BUILD_PLAN.md
 
 ## What this repo is
 
-A two-day enterprise workshop, **AI Agents in Practice**. Modules 00–10 are written, 11–17 are not. Roughly 20 technical people — developers, data scientists, technical managers — on Linux VMs with VS Code and Jupyter. They know Python. They do not necessarily know agents. Half the room has to justify this work to a risk or compliance function.
+A two-day enterprise workshop, **AI Agents in Practice**. Modules 00–11 are written, 12–17 are not. Roughly 20 technical people — developers, data scientists, technical managers — on Linux VMs with VS Code and Jupyter. They know Python. They do not necessarily know agents. Half the room has to justify this work to a risk or compliance function.
 
 Deliverables per module: `notebook.ipynb`, `instructor.md`, `solution.ipynb`.
 

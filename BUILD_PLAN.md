@@ -6,7 +6,19 @@
 
 ## Where we stopped
 
-**2026-08-19, Wave 5 started: corpus + module 10 done.** Do not build module 11 next. Stop for review.
+**2026-08-19, module 11 done.** Do not build module 12 next. Stop for review.
+
+**Module 11** (`modules/11_retrieval/`): Chroma in-memory, OpenAI embeddings, one file = one chunk. Live-run this session:
+
+- 36 files stored. Embedding dim 1536.
+- Return-window retrieve: `policy_returns.md` first (distance 0.772), then warranty, damaged media. Generate: 30 days.
+- Unanswerable (CEO mobile): `I do not know.` Top files were escalations / support reps / privacy.
+- Observe table: gift cards -> `policy_gift_cards.md`; 2014 revenue still returns a nearest file (`ticket_04`) at distance 1.498.
+- Challenge: `policy_student_discount.md` first, **10 percent** off physical. Assert passed.
+
+`chromadb` added to `pyproject.toml` (dry-run: no `openai` / `mcp` / `langgraph` downgrade). `EMBEDDING_MODEL=text-embedding-3-small` in `.env.example`.
+
+**Next:** module 12 (agentic RAG), one module, then stop.
 
 **Corpus:** `data/corpus/` — 36 short markdown files (20 policies, 16 tickets) for the Chinook shop. Two unanswerable questions and the planted payload are listed in the Chinook/corpus section below. Injection against `gpt-5.4-nano` is **0/3** on four phrasings; 14 must be re-tuned before delivery.
 
@@ -157,7 +169,7 @@ Other locks:
 | 08 | `modules/08_openai_agents_sdk/` | L | **Built (P0 applied)** | OpenAI Agents SDK — Chinook, three orchestrations, `draw_graph`. `check_same_thread=False` is in cell 3. Full live re-run is Wave 3. |
 | 09 | `modules/09_langgraph/` | L | **Built (P0 applied)** | LangGraph — same Chinook desk, you draw the arrows, pause/resume. Same P0 line applied. Full live re-run is Wave 3. |
 | 10 | `modules/10_charting_sandbox/` | M | **Built** | Charting agent and the sandbox — Chinook bar charts, jailed `run_python`, optional Docker. Live-run 2026-08-19. |
-| 11 | | M | Not started | Retrieval |
+| 11 | `modules/11_retrieval/` | M | **Built** | Retrieval — Chroma, one file one chunk, two unanswerable questions. Live-run 2026-08-19. |
 | 12 | | M | Not started | Agentic RAG |
 | 13 | | L | Not started | Delegation (CrewAI gets ten minutes here, not a module) |
 | 14 | | L | Not started | Security |
@@ -372,6 +384,26 @@ Cut first: Docker. Keep the jail probe.
 
 `MODEL_STRONG` when set (this is code generation). matplotlib is in `pyproject.toml`.
 
+## What module 11 contains now
+
+`modules/11_retrieval/{notebook.ipynb, instructor.md, solution.ipynb}`
+
+Lesson: unstructured text is not a table. Embed, nearest files, generate. One retrieve, one generate. Two questions have no answer.
+
+1. Learn: RAG vs SQL vs a CSV tool. One file is one chunk. Chroma stores; OpenAI embeds.
+2. Read `policy_returns.md` with no model. 30 days unopened.
+3. Embed one sentence. Print dimension and the first eight floats.
+4. Load 36 files into an in-memory collection with our vectors.
+5. Retrieve the return window. `policy_returns.md` first.
+6. Generate from those three files.
+7. Unanswerable: CEO mobile. "I do not know" is a valid outcome.
+8. Observe: five questions, top file only. Nearest is not the same as relevant.
+9. Challenge: student discount on physical items. **10 percent.**
+
+Cut first: the five-question table. Keep one retrieve, one answerable generate, one unanswerable generate.
+
+`EMBEDDING_MODEL` from `.env`. `chromadb` in `pyproject.toml`. Do not install LlamaIndex or Pinecone.
+
 ## Frameworks from here
 
 | # | Framework | Role |
@@ -440,7 +472,7 @@ pyproject.toml
 
 `pyproject.toml` currently has `ipykernel`, `jupyterlab`, `openai`, `openai-agents[viz]`, `python-dotenv`, `requests`, `langgraph`, `langchain-openai`, `langchain-core`. Notebooks never `pip install`.
 
-`pyproject.toml` now also has `matplotlib` and a pinned `mcp>=2.0.0`. Still to add when 11 is built: `chromadb`. **Do not add `crewai`** — it downgrades `openai` 3.2.0 → 2.54.0 and `mcp` 2.0.0 → 1.28.1 and pulls 91 packages into the venv that 00–08 run on. **Do not add `llama-index`** — dry-run also downgrades `openai` 3.2.0 → 2.54.0.
+`pyproject.toml` now also has `matplotlib`, `chromadb`, and a pinned `mcp>=2.0.0`. **Do not add `crewai`** — it downgrades `openai` 3.2.0 → 2.54.0 and `mcp` 2.0.0 → 1.28.1 and pulls 91 packages into the venv that 00–08 run on. **Do not add `llama-index`** — dry-run also downgrades `openai` 3.2.0 → 2.54.0.
 
 `graphviz` the Python package is installed; the **`dot` system binary** is a separate install. Confirm it is on the student VM image, or `draw_graph` degrades to a printed exception in 02, 03, 06 and 08.
 
