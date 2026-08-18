@@ -77,7 +77,6 @@ CrewAI and LlamaIndex are not installed and are not modules. They appear as name
 ```
 modules/NN_name/
   notebook.ipynb    # driven at the front, then run by you
-  instructor.md     # pauses, the cell that matters, what to cut
   solution.ipynb    # debrief only; run it in the same kernel
 ```
 
@@ -111,7 +110,4 @@ README.md                 # you are here
 pyproject.toml
 data/                     # CSVs, Chinook, corpus
 modules/                  # 00–11 (12–17 not started)
-presentation/             # live slide deck
 ```
-
-`AGENTS.md`, `BUILD_PLAN.md`, `AUDIT.md`, and `CURRENT_STATE.md` are working notes for people writing the course, not the student path. `archive/` and `other_content/` are reference material from earlier drafts and other courses.

@@ -16,3 +16,10 @@ modules/10_charting_sandbox/charts/
 archive/
 other_content/
 presentation/
+
+# Author / instructor working notes. On disk, not in the student repo.
+AGENTS.md
+AUDIT.md
+BUILD_PLAN.md
+CURRENT_STATE.md
+modules/**/instructor.md
