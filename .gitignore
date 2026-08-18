@@ -1,0 +1,15 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.jupyter/
+.python-version
+.DS_Store
+.chroma/
+**/chroma_db/
+modules/**/outputs/
+modules/10_charting_sandbox/charts/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
