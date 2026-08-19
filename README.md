@@ -66,7 +66,7 @@ Model names come from `.env` (`MODEL_DEFAULT`, `MODEL_STRONG`). Cells do not har
 | 13 | Delegation | One agent with three tools vs overlapping specialists. CrewAI is a page, not an install. |
 | 14 | Security | Indirect injection through a retrieved ticket. A Python scan before generate. |
 | 15 | Evals, traces, cost | A ledger per turn, the message list as a trace, a checker against named facts. |
-| 16 | Azure Foundry | The six layers, where lock-in lives, a captured managed agent. No student Azure credential. |
+| 16 | The platform landscape | Six layers, Foundry as the worked example, where lock-in lives. No student Azure credential. |
 | 17 | Process re-engineering | Five questions, then score a process. The workshop is the last hour. |
 
 Modules 00–17 are in `modules/`.
