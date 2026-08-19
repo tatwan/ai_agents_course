@@ -20,6 +20,7 @@ presentation/
 # Author / instructor working notes. On disk, not in the student repo.
 AGENTS.md
 AUDIT.md
+final_audit.md
 BUILD_PLAN.md
 CURRENT_STATE.md
 modules/**/instructor.md
