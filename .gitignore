@@ -1,0 +1,27 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.jupyter/
+.python-version
+.DS_Store
+.chroma/
+**/chroma_db/
+modules/**/outputs/
+modules/10_charting_sandbox/charts/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+archive/
+other_content/
+presentation/
+
+# Author / instructor working notes. On disk, not in the student repo.
+AGENTS.md
+AUDIT.md
+final_audit.md
+BUILD_PLAN.md
+CURRENT_STATE.md
+modules/**/instructor.md
+modules/**/solution.ipynb
