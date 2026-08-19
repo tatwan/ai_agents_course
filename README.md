@@ -61,14 +61,14 @@ Model names come from `.env` (`MODEL_DEFAULT`, `MODEL_STRONG`). Cells do not har
 | 09 | LangGraph | The same desk. You draw the arrows. Pause and resume. |
 | 10 | Charting and the sandbox | The model writes matplotlib. A timeout is not a sandbox. Get a PNG. |
 | 11 | Retrieval | Local Chroma over a policy corpus. One retrieve, one generate. Two questions have no answer. |
-| 12 | Agentic RAG | Retrieve, assess, retrieve again. *(Not in the repo yet.)* |
+| 12 | Agentic RAG | Retrieve is a tool. The loop may search twice. |
 | 13 | Delegation | When one agent with more tools is enough. *(Not in the repo yet.)* |
 | 14 | Security | Indirect injection through retrieved text. *(Not in the repo yet.)* |
 | 15 | Evals, traces, cost | What a loop actually costs. *(Not in the repo yet.)* |
 | 16 | Azure Foundry | The managed path, instructor-provisioned. *(Not in the repo yet.)* |
 | 17 | Process re-engineering | When this should not be an agent. *(Not in the repo yet.)* |
 
-Modules 00–11 are in `modules/`. 12–17 are being written.
+Modules 00–12 are in `modules/`. 13–17 are being written.
 
 CrewAI and LlamaIndex are not installed and are not modules. They appear as names on the framework ladder, and as a short concept discussion in 13. The comparison the course actually runs is: no framework, then the OpenAI Agents SDK, then LangGraph, on the same Chinook desk.
 
@@ -109,5 +109,5 @@ README.md                 # you are here
 .env.example
 pyproject.toml
 data/                     # CSVs, Chinook, corpus
-modules/                  # 00–11 (12–17 not started)
+modules/                  # 00–12 (13–17 not started)
 ```
