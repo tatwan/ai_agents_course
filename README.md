@@ -8,7 +8,7 @@ You leave able to explain what an agent is, when it should not be one, how the l
 
 Technical people who already write Python: developers, data scientists, technical managers. You do not need prior agent experience. About half the room will have to justify this work to a risk or compliance function, so the notebooks treat cost, permissions, and failure modes as part of the lesson, not an appendix.
 
-The designed room is about twenty people on Linux VMs with VS Code and Jupyter. The same repo works on a laptop.
+The designed room is about twenty people on Linux VMs with VS Code. The same repo works on a laptop.
 
 ## How a module works
 
@@ -32,10 +32,11 @@ cp .env.example .env
 
 uv venv
 uv sync
-uv run jupyter lab
 ```
 
-Start Jupyter from this directory. Notebooks look upward for `.env` if you opened the module folder.
+Open this folder in VS Code and pick the course `.venv` as the notebook kernel. Notebooks look upward for `.env` if you opened the module folder.
+
+`uv run jupyter lab` works if you prefer a browser. The room default is VS Code. The notebooks use mermaid for diagrams; if a fence renders as a grey code block, install the **Markdown Preview Mermaid Support** extension.
 
 Do not install packages from inside a notebook. Do not print `.env`.
 
@@ -65,10 +66,10 @@ Model names come from `.env` (`MODEL_DEFAULT`, `MODEL_STRONG`). Cells do not har
 | 13 | Delegation | One agent with three tools vs overlapping specialists. CrewAI is a page, not an install. |
 | 14 | Security | Indirect injection through a retrieved ticket. A Python scan before generate. |
 | 15 | Evals, traces, cost | A ledger per turn, the message list as a trace, a checker against named facts. |
-| 16 | Azure Foundry | The managed path, instructor-provisioned. *(Not in the repo yet.)* |
-| 17 | Process re-engineering | When this should not be an agent. *(Not in the repo yet.)* |
+| 16 | Azure Foundry | The six layers, where lock-in lives, a captured managed agent. No student Azure credential. |
+| 17 | Process re-engineering | Five questions, then score a process. The workshop is the last hour. |
 
-Modules 00–15 are in `modules/`. 16–17 are being written.
+Modules 00–17 are in `modules/`.
 
 CrewAI and LlamaIndex are not installed and are not modules. They appear as names on the framework ladder, and as a short concept discussion in 13. The comparison the course actually runs is: no framework, then the OpenAI Agents SDK, then LangGraph, on the same Chinook desk.
 
@@ -98,7 +99,8 @@ Instructor-supplied. Do not regenerate these files. See [data/README.md](data/RE
 |---|---|
 | LLM | OpenAI. Shared class key in the room. |
 | Vector store (later) | Chroma, local. No per-student signup. |
-| Cloud | Azure only, and only in module 16 plus optional instructor demos. No Azure credential is required for 00–10. |
+| Cloud | Azure only, and only in module 16 plus optional instructor demos. No Azure credential is required for 00–17. |
+| Optional | The VS Code extension **Markdown Preview Mermaid Support**, so the mermaid diagrams render in the notebook editor. Without it, those fences show as code and the notebook still runs. |
 | Optional | The `dot` binary (graphviz) so `draw_graph` renders in 02, 03, 06, and 08. Without it, those cells print an exception and continue. |
 | Optional | Docker, with `python:3.12-slim` pre-pulled, for the container cell in module 10. The rest of that module runs without it. |
 
@@ -109,5 +111,5 @@ README.md                 # you are here
 .env.example
 pyproject.toml
 data/                     # CSVs, Chinook, corpus
-modules/                  # 00–15 (16–17 not started)
+modules/                  # 00–17
 ```
