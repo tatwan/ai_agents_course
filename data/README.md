@@ -17,7 +17,7 @@ Tables are lowercase and plural (`customers`, `invoices`, `invoice_items`, `trac
 | invoice_items | 2,240 |
 | genres | 25 |
 
-Used from modules **08** (Agents SDK) and **09** (LangGraph), and later module 10 (charting). Tools stay read-only.
+Used from modules **08** (Agents SDK), **09** (LangGraph), **10** (charting), **13** (delegation), and **15** (evals). Tools stay read-only.
 
 Verified answers for the recurring customers: **Helena Holy** (CustomerId 6) 7 invoices, $49.62, support rep Steve Johnson. **Puja Srivastava** (CustomerId 59) 6 invoices, $36.64, support rep Jane Peacock. Both names are unique in the table.
 

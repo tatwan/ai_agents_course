@@ -64,11 +64,11 @@ Model names come from `.env` (`MODEL_DEFAULT`, `MODEL_STRONG`). Cells do not har
 | 12 | Agentic RAG | Retrieve is a tool. The loop may search twice. |
 | 13 | Delegation | One agent with three tools vs overlapping specialists. CrewAI is a page, not an install. |
 | 14 | Security | Indirect injection through a retrieved ticket. A Python scan before generate. |
-| 15 | Evals, traces, cost | What a loop actually costs. *(Not in the repo yet.)* |
+| 15 | Evals, traces, cost | A ledger per turn, the message list as a trace, a checker against named facts. |
 | 16 | Azure Foundry | The managed path, instructor-provisioned. *(Not in the repo yet.)* |
 | 17 | Process re-engineering | When this should not be an agent. *(Not in the repo yet.)* |
 
-Modules 00–14 are in `modules/`. 15–17 are being written.
+Modules 00–15 are in `modules/`. 16–17 are being written.
 
 CrewAI and LlamaIndex are not installed and are not modules. They appear as names on the framework ladder, and as a short concept discussion in 13. The comparison the course actually runs is: no framework, then the OpenAI Agents SDK, then LangGraph, on the same Chinook desk.
 
@@ -89,7 +89,7 @@ Instructor-supplied. Do not regenerate these files. See [data/README.md](data/RE
 | File | Used in |
 |---|---|
 | `data/fun_facts.csv`, `data/flight_data.csv` | 02, 03, 05, 06, 07 |
-| `data/chinook.db` | 08, 09, 10 |
+| `data/chinook.db` | 08, 09, 10, 13, 15 |
 | `data/corpus/` | 11, 12, 14 |
 
 ## Requirements
@@ -109,5 +109,5 @@ README.md                 # you are here
 .env.example
 pyproject.toml
 data/                     # CSVs, Chinook, corpus
-modules/                  # 00–14 (15–17 not started)
+modules/                  # 00–15 (16–17 not started)
 ```
