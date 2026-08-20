@@ -1,0 +1,14 @@
+[project]
+name = "ai-agents-bonus-autogen"
+version = "0.1.0"
+description = "Isolated environment for the AutoGen message-driven teams bonus lab"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "autogen-agentchat==0.7.5",
+    "autogen-ext[openai]==0.7.5",
+    "ipykernel==7.1.0",
+    "python-dotenv==1.2.2",
+]
+
+[tool.uv]
+package = false
