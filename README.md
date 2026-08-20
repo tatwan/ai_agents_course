@@ -1,5 +1,7 @@
 # AI Agents in Practice
 
+![github_cover](images/github_cover.png)
+
 A two-day workshop on building, running, and judging AI agents: **Foundations, Frameworks, Protocols & Production**.
 
 You leave able to explain what an agent is, when it should not be one, how the loop actually works, and what each later layer is for — tools, context, MCP, async, a modern SDK, a graph, a sandbox, retrieval, security, and cost.
@@ -26,6 +28,37 @@ Each notebook is a short chapter: **Learn**, **Do**, **Observe**, **Challenge**.
 
 You need Python 3.11+, [uv](https://docs.astral.sh/uv/), and an OpenAI API key (issued for the class, or your own for self-study).
 
+### In the room (Ubuntu VM)
+
+```bash
+cd ~/Desktop
+git clone https://github.com/tatwan/ai_agents_course.git
+cd ai_agents_course
+```
+
+Install `uv`:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Install Graphviz, so `draw_graph` renders pictures instead of an exception in modules 02, 03, 06, and 08:
+
+```bash
+sudo apt update
+sudo apt install graphviz
+```
+
+Open the cloned folder in VS Code. From the Extensions panel, install **Python**, **Jupyter**, and **Markdown Preview Mermaid Support** (so the mermaid diagrams in the notebooks render instead of showing as a grey code block).
+
+Self-study on a laptop: same repo, same steps, minus `apt` — install [uv](https://docs.astral.sh/uv/) and [Graphviz](https://graphviz.org/download/) the way your OS prefers.
+
+### Or: GitHub Codespaces
+
+No VM, no local install. On the repo's GitHub page, click **Code**, open the **Codespaces** tab, then **Create codespace on main**. That opens a VS Code (in the browser, or your desktop VS Code if you attach it) with the repo already cloned into the container — skip the `cd ~/Desktop` and `git clone` above and start from `curl -LsSf https://astral.sh/uv/install.sh | sh`. The container is Ubuntu underneath, so the rest of the room steps — Graphviz, the extensions, `uv sync`, picking the `ai-agents-in-practice` kernel — are identical.
+
+### Everyone
+
 ```bash
 cp .env.example .env
 # put OPENAI_API_KEY in .env
@@ -34,9 +67,11 @@ uv venv
 uv sync
 ```
 
-Open this folder in VS Code and pick the course `.venv` as the notebook kernel. Notebooks look upward for `.env` if you opened the module folder.
+Run these from the VS Code terminal, inside the cloned folder.
 
-`uv run jupyter lab` works if you prefer a browser. The room default is VS Code. The notebooks use mermaid for diagrams; if a fence renders as a grey code block, install the **Markdown Preview Mermaid Support** extension.
+Open any `notebook.ipynb` and select **ai-agents-in-practice** as the notebook kernel — `uv sync` is what makes that kernel appear in the picker; the name itself comes from `pyproject.toml`. Notebooks look upward for `.env` if you opened a module folder instead of the repo root.
+
+`uv run jupyter lab` works if you prefer a browser. The room default is VS Code.
 
 Do not install packages from inside a notebook. Do not print `.env`.
 
