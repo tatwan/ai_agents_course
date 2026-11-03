@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 400}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 14: a coding agent is the agent loop plus four file tools. Every path goes through the path check, so the
+%% file tools stay inside workspace/. run_tests starts Python on whatever the files now hold, and that code can reach
+%% everything our user can: the dashed edge leaves the workspace. Our code lime, the model ink.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab14_coding_agent.mmd -o lab14_coding_agent.png -b white -s 2
+flowchart TB
+    model["model<br/>reads the task: the tests fail,<br/>make them pass; decides<br/>the next tool call"]
+    loop["our loop<br/>runs each call, appends the result,<br/>stops on text or after 10 turns"]
+    check["path check (Part B)<br/>refuses a path that<br/>leaves the workspace"]
+    files["list_files<br/>read_file<br/>write_file"]
+    tests["run_tests<br/>python -m unittest -v<br/>in the workspace"]
+    subgraph WS["workspace/ (a fresh copy of workspace_start/)"]
+        disk[("pricing.py<br/>test_pricing.py")]
+    end
+    outside[("the rest of your machine<br/>../../.env, your environment,<br/>the network")]
+    model -->|tool calls| loop
+    loop -->|results| model
+    loop --> check --> files --> disk
+    loop --> tests -->|imports the code<br/>the model wrote| disk
+    tests -.->|"that code runs with<br/>your permissions (Part F)"| outside
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class loop,check,tests code
