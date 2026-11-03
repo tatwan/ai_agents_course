@@ -1,0 +1,32 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 06: two hosts reach the same MCP server. Each host holds an MCP client; the client starts its own
+%% chinook_server.py process and speaks to it over stdio, one JSON-RPC line per message. Our code lime, the model ink.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab06_mcp_host_client_server.mmd -o lab06_mcp_host_client_server.png -b white -s 2
+flowchart LR
+    model[model<br/>OpenAI API]
+    subgraph H1["host 1: our agent loop"]
+        direction TB
+        loop[loop in<br/>the notebook] --> c1[client:<br/>mcp.Client]
+    end
+    subgraph H2["host 2: the Agents SDK"]
+        direction TB
+        sdk[Runner] --> c2[client:<br/>MCPServerStdio]
+    end
+    subgraph SERVER["server: its own process"]
+        direction TB
+        srv[chinook_server.py<br/>MCPServer]
+        t1[find_customer]
+        t2[get_invoices]
+        t3[get_support_rep]
+        db[(chinook.db<br/>read-only)]
+        srv --> t1 & t2 & t3
+        t1 & t2 & t3 --> db
+    end
+    model <-->|tool calls| loop
+    model <-->|tool calls| sdk
+    c1 <-->|stdio: one JSON line<br/>per message| srv
+    c2 <-->|stdio| srv
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class loop,srv,t1,t2,t3 code
