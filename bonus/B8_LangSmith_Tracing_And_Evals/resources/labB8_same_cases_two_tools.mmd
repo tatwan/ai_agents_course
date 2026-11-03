@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 36}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% B8: the same fixed questions and code checks, with local MLflow or cloud LangSmith storage.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB8_same_cases_two_tools.mmd -o labB8_same_cases_two_tools.png -b white -s 2
+flowchart LR
+    q[Question only] --> d[Desk parent task]
+    d --> m[Model decides]
+    m --> c[Our code runs tools]
+    c -->|actual result| m
+    m --> a[Answer and local ledger]
+    a --> s[Code evaluator]
+    r[Reference facts<br/>kept outside prompt] --> s
+    d -. trace .-> l[LangSmith local environment<br/>model and tool child runs]
+    s -. feedback .-> e[LangSmith experiment<br/>dataset example and score]
+    x[Bundled MLflow snapshot<br/>same cases and checks] --> f[Compare tokens, cost,<br/>checks and fields]
+    e --> f
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class m model
+    class c,s,f code

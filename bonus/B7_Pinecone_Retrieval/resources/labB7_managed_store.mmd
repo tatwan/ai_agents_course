@@ -1,0 +1,18 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 36}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% B7: compare the same externally computed vectors in a managed index and local Chroma.
+%% Ink is the embedding model. Lime is our code; white is stored data or a database service.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB7_managed_store.mmd -o labB7_managed_store.png -b white -s 2
+flowchart TB
+    files[36 files and 10 questions] --> embed[Embed with OpenAI]
+    embed --> vectors[Reuse the returned vectors]
+    vectors --> pc[Pinecone index<br/>all-files / policies-only]
+    vectors --> local[Local Chroma<br/>cosine collection]
+    pc --> compare[Compare IDs with labels<br/>hit at 1 / hit at 3]
+    local --> compare
+    pc --> select[Choose namespace<br/>and metadata filter]
+    compare --> cleanup[Delete the owned index]
+    select --> cleanup
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class embed model
+    class vectors,compare,select,cleanup code

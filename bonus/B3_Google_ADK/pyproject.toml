@@ -1,13 +1,15 @@
 [project]
-name = "ai-agents-bonus-litellm-google-adk"
+name = "ai-agents-lab-b3"
 version = "0.1.0"
-description = "Isolated environment for the LiteLLM and Google ADK bonus lab"
+description = "Isolated environment for B3_Google_ADK"
 requires-python = ">=3.11,<3.15"
 dependencies = [
-    "google-adk==2.7.1",
-    "ipykernel==7.1.0",
-    "litellm==1.97.0",
-    "python-dotenv==1.2.2",
+    "google-adk==2.13.0",
+    "litellm==1.106.6",
+    "mcp==2.3.0",
+    "openai==2.54.0",
+    "ipykernel==7.4.0",
+    "python-dotenv==1.2.4",
 ]
 
 [tool.uv]

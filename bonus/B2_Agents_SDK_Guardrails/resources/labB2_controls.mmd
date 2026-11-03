@@ -1,0 +1,29 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 36}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab B2: three control boundaries. Each panel reads left to right; panels run top to bottom.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB2_controls.mmd -o labB2_controls.png -b white -s 2
+flowchart TB
+    subgraph B["1. before model work"]
+        direction LR
+        request[Rep request] --> input{Input guardrail<br/>runs first}
+        input -->|clear| model[Model decides<br/>tool or reply]
+        input -->|card-like number| stop[Stop<br/>zero model calls]
+    end
+    subgraph T["2. before the write tool executes"]
+        direction LR
+        proposal[Model proposes<br/>refund tool] --> pause[Pause<br/>save RunState]
+        pause --> review{Restore state<br/>approve or reject}
+        review -->|approve| validate[Tool validates amount<br/>append requested row]
+        review -->|reject| refused[No write<br/>return rejection]
+    end
+    subgraph O["3. after generation, before release"]
+        direction LR
+        generated[Model finishes<br/>typed reply] --> output{Output guardrail<br/>payment_sent?}
+        output -->|true| hold[Withhold reply<br/>calls already spent]
+        output -->|false| release[Return reply]
+    end
+    B ~~~ T
+    T ~~~ O
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model,proposal,generated model
+    class input,review,validate,output,stop,hold code

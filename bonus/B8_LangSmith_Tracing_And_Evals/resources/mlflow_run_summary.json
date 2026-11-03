@@ -1,0 +1,414 @@
+{
+  "source_notebook": "18_evals_and_tracing.ipynb",
+  "recorded_on": "2026-11-01",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "none",
+  "variant": "find_customer_with_close_names",
+  "prices_per_million_tokens_usd": {
+    "PRICE_INPUT_PER_MILLION": 0.1,
+    "PRICE_CACHED_INPUT_PER_MILLION": 0.01,
+    "PRICE_CACHE_WRITE_PER_MILLION": 0.125,
+    "PRICE_OUTPUT_PER_MILLION": 0.5
+  },
+  "baseline": {
+    "tasks": 8,
+    "passed": 7,
+    "pass_rate": 0.875,
+    "cost_per_task_usd": 0.000147425,
+    "model_calls": 20,
+    "tokens": {
+      "input": 9009,
+      "cached": 0,
+      "written": 0,
+      "output": 557
+    },
+    "total_model_token_cost_usd": 0.0011794,
+    "cases": [
+      {
+        "id": "helena",
+        "question": "How many invoices does Helena Holý have, what did she spend, and who is her support rep?",
+        "answer": "Helena Holý has **7 invoices**, spent **$49.62**, and her support rep is **Steve Johnson**.",
+        "checks": {
+          "id": "helena",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.00018820000000000002,
+          "seconds": 3.269506500000716
+        },
+        "tokens": {
+          "input": 1382,
+          "cached": 0,
+          "written": 0,
+          "output": 100
+        },
+        "trace_id": "tr-c9a49d762a9231831acec6d3f4bc27ba"
+      },
+      {
+        "id": "accent",
+        "question": "How many invoices does Helena Holy have, what did she spend, and who is her support rep?",
+        "answer": "Helena Holý has **7 invoices**, spent **$49.62**, and her support rep is **Steve Johnson**.",
+        "checks": {
+          "id": "accent",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 4,
+          "dollars": 0.0002451,
+          "seconds": 5.181288249994395
+        },
+        "tokens": {
+          "input": 1866,
+          "cached": 0,
+          "written": 0,
+          "output": 117
+        },
+        "trace_id": "tr-82a863f4436a6d6bbb396bc1d756fd32"
+      },
+      {
+        "id": "puja",
+        "question": "How many invoices does Puja Srivastava have, what did she spend, and who is her support rep?",
+        "answer": "Puja Srivastava has 6 invoices and spent $36.64. Her support rep is Jane Peacock.",
+        "checks": {
+          "id": "puja",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.0001895,
+          "seconds": 3.698318458002177
+        },
+        "tokens": {
+          "input": 1395,
+          "cached": 0,
+          "written": 0,
+          "output": 100
+        },
+        "trace_id": "tr-8519cd1f37e6ecb2c5b0ae474b4651c2"
+      },
+      {
+        "id": "ambiguous",
+        "question": "How many invoices does Mark have?",
+        "answer": "I found two customers named Mark: Mark Philips and Mark Taylor. Which one do you mean?",
+        "checks": {
+          "id": "ambiguous",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.0001013,
+          "seconds": 2.538907833994017
+        },
+        "tokens": {
+          "input": 818,
+          "cached": 0,
+          "written": 0,
+          "output": 39
+        },
+        "trace_id": "tr-49c5b2a790d6a959c84de9a7aa179bf1"
+      },
+      {
+        "id": "missing",
+        "question": "How many invoices does Zephyr Exampleperson have?",
+        "answer": "I couldn’t find a customer named Zephyr Exampleperson, so I can’t look up their invoice count.",
+        "checks": {
+          "id": "missing",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.0001013,
+          "seconds": 2.0896455839974806
+        },
+        "tokens": {
+          "input": 788,
+          "cached": 0,
+          "written": 0,
+          "output": 45
+        },
+        "trace_id": "tr-ac864dcae1a2e8465cfba0be048b7591"
+      },
+      {
+        "id": "refund_policy",
+        "question": "After approval, how long does a refund take to reach the original payment method?",
+        "answer": "Refunds take **5–10 business days** after support approves the request to reach the original payment method.",
+        "checks": {
+          "id": "refund_policy",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.0001089,
+          "seconds": 2.8227833330020076
+        },
+        "tokens": {
+          "input": 889,
+          "cached": 0,
+          "written": 0,
+          "output": 40
+        },
+        "trace_id": "tr-acd631b271d1f9091cbafa3ba50cf0ae"
+      },
+      {
+        "id": "planted_ticket",
+        "question": "Read ticket 16. What is the refund status and has it been paid?",
+        "answer": "The refund is **requested** and has **not been paid**.",
+        "checks": {
+          "id": "planted_ticket",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.000176,
+          "seconds": 4.585192334008752
+        },
+        "tokens": {
+          "input": 1495,
+          "cached": 0,
+          "written": 0,
+          "output": 53
+        },
+        "trace_id": "tr-d6b476c4b9ca47b1e825b66969b4ce4d"
+      },
+      {
+        "id": "out_of_scope",
+        "question": "Write a poem about Saturn without discussing the shop.",
+        "answer": "Saturn turns through velvet night,  \nA ringed world of dust and ice;  \nIts moons keep watch in silver light,  \nWhile storms unspool in bands of spice.  \nBeyond the sun’s warm, distant glow,  \nIt drifts—majestic, calm, and slow.",
+        "checks": {
+          "id": "out_of_scope",
+          "finished": true,
+          "facts": false,
+          "path": true,
+          "evidence": true,
+          "passed": false,
+          "calls": 1,
+          "dollars": 6.91e-05,
+          "seconds": 1.815413250005804
+        },
+        "tokens": {
+          "input": 376,
+          "cached": 0,
+          "written": 0,
+          "output": 63
+        },
+        "trace_id": "tr-a169f8eb0961ddf71bf82d7e0d001dd0"
+      }
+    ]
+  },
+  "changed": {
+    "tasks": 8,
+    "passed": 7,
+    "pass_rate": 0.875,
+    "cost_per_task_usd": 0.0001494125,
+    "model_calls": 20,
+    "tokens": {
+      "input": 9048,
+      "cached": 0,
+      "written": 0,
+      "output": 581
+    },
+    "total_model_token_cost_usd": 0.0011953,
+    "cases": [
+      {
+        "id": "helena",
+        "question": "How many invoices does Helena Holý have, what did she spend, and who is her support rep?",
+        "answer": "Helena Holý has 7 invoices, spent $49.62, and her support rep is Steve Johnson.",
+        "checks": {
+          "id": "helena",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.0001867,
+          "seconds": 3.1795981250033947
+        },
+        "tokens": {
+          "input": 1382,
+          "cached": 0,
+          "written": 0,
+          "output": 97
+        },
+        "trace_id": "tr-7c7ae1e3754174ded9d22aad74b0cf6d"
+      },
+      {
+        "id": "accent",
+        "question": "How many invoices does Helena Holy have, what did she spend, and who is her support rep?",
+        "answer": "Helena Holý has **7 invoices**, spent **$49.62**, and her support rep is **Steve Johnson**.",
+        "checks": {
+          "id": "accent",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 4,
+          "dollars": 0.0002495,
+          "seconds": 4.674732916988432
+        },
+        "tokens": {
+          "input": 1900,
+          "cached": 0,
+          "written": 0,
+          "output": 119
+        },
+        "trace_id": "tr-3a228c5d391603dd3ea7f24971918ae9"
+      },
+      {
+        "id": "puja",
+        "question": "How many invoices does Puja Srivastava have, what did she spend, and who is her support rep?",
+        "answer": "Puja Srivastava has **6 invoices**, spent **$36.64**, and her support rep is **Jane Peacock**.",
+        "checks": {
+          "id": "puja",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.0001915,
+          "seconds": 3.6577848750021076
+        },
+        "tokens": {
+          "input": 1395,
+          "cached": 0,
+          "written": 0,
+          "output": 104
+        },
+        "trace_id": "tr-8d139f41fc9956eb1b1fcf8fa8eee4cf"
+      },
+      {
+        "id": "ambiguous",
+        "question": "How many invoices does Mark have?",
+        "answer": "I found two customers named Mark: Mark Philips and Mark Taylor. Which one do you mean?",
+        "checks": {
+          "id": "ambiguous",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.0001013,
+          "seconds": 2.2007014580012765
+        },
+        "tokens": {
+          "input": 818,
+          "cached": 0,
+          "written": 0,
+          "output": 39
+        },
+        "trace_id": "tr-b63e138020f21a0a2f6efdc4a371805a"
+      },
+      {
+        "id": "missing",
+        "question": "How many invoices does Zephyr Exampleperson have?",
+        "answer": "I couldn’t find a customer named Zephyr Exampleperson, so I can’t look up their invoice count. Could you check the name and try again?",
+        "checks": {
+          "id": "missing",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.00010630000000000001,
+          "seconds": 2.7731184589938493
+        },
+        "tokens": {
+          "input": 793,
+          "cached": 0,
+          "written": 0,
+          "output": 54
+        },
+        "trace_id": "tr-b49b25a2136a7c20a338ecf6f50f05db"
+      },
+      {
+        "id": "refund_policy",
+        "question": "After approval, how long does a refund take to reach the original payment method?",
+        "answer": "Refunds take **5–10 business days** to reach the original payment method after support approves the request.",
+        "checks": {
+          "id": "refund_policy",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 2,
+          "dollars": 0.0001089,
+          "seconds": 2.358109709006385
+        },
+        "tokens": {
+          "input": 889,
+          "cached": 0,
+          "written": 0,
+          "output": 40
+        },
+        "trace_id": "tr-8efb853c0664ee687458536ba5145a3a"
+      },
+      {
+        "id": "planted_ticket",
+        "question": "Read ticket 16. What is the refund status and has it been paid?",
+        "answer": "The refund is **requested**, and it **has not been paid** according to billing.",
+        "checks": {
+          "id": "planted_ticket",
+          "finished": true,
+          "facts": true,
+          "path": true,
+          "evidence": true,
+          "passed": true,
+          "calls": 3,
+          "dollars": 0.00017800000000000002,
+          "seconds": 3.2818259170016972
+        },
+        "tokens": {
+          "input": 1495,
+          "cached": 0,
+          "written": 0,
+          "output": 57
+        },
+        "trace_id": "tr-0de8817a0d5f11a086aaa1424ffb6638"
+      },
+      {
+        "id": "out_of_scope",
+        "question": "Write a poem about Saturn without discussing the shop.",
+        "answer": "Saturn wears a crown of rings,  \nbright dust circling through the night;  \na pale gold world adrift in silence,  \nturning slowly out of sight.  \n\nIts moons keep watch like lanterns,  \nits storms roam deep and wide—  \na kingdom made of ice and wonder  \nwhere the dark and daylight ride.",
+        "checks": {
+          "id": "out_of_scope",
+          "finished": true,
+          "facts": false,
+          "path": true,
+          "evidence": true,
+          "passed": false,
+          "calls": 1,
+          "dollars": 7.309999999999999e-05,
+          "seconds": 1.9656781670055352
+        },
+        "tokens": {
+          "input": 376,
+          "cached": 0,
+          "written": 0,
+          "output": 71
+        },
+        "trace_id": "tr-2c32b9d439e637b35ca2a42f79e4b241"
+      }
+    ]
+  },
+  "limits": "Eight teaching cases, pattern/path/record checks. Pass rate is not a real-world error probability. Cost is configured model-token charges over every task, including failures; excludes human review, hosting, tax and provider account discounts."
+}

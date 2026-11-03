@@ -1,12 +1,14 @@
 [project]
-name = "ai-agents-bonus-crewai"
+name = "ai-agents-lab-b5"
 version = "0.1.0"
-description = "Isolated environment for the CrewAI role-based teams bonus lab"
+description = "Isolated environment for B5_CrewAI_Crew"
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "crewai==1.15.17",
-    "ipykernel==7.1.0",
-    "python-dotenv==1.2.2",
+    "crewai==1.15.34",
+    "openai==2.54.0",
+    "mcp==1.30.0",
+    "ipykernel==7.4.0",
+    "python-dotenv==1.2.4",
 ]
 
 [tool.uv]

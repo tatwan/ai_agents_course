@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 36}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% B3: LiteLLM translates model requests; ADK owns the loop and session events.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB3_adapter_and_runtime.mmd -o labB3_adapter_and_runtime.png -b white -s 2
+flowchart LR
+    U[User message] --> R[ADK Runner]
+    S[Session service<br/>events and state] <--> R
+    R --> A[ADK Agent<br/>instructions and tools]
+    A --> L[LiteLlm adapter<br/>LiteLLM SDK]
+    L --> O[OpenAI model<br/>chooses calls or text]
+    O --> L
+    L --> A
+    A --> T[Python tools<br/>read-only Chinook]
+    T --> A
+    A --> R
+    R --> E[Events and final reply]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class O model
+    class R,T code
