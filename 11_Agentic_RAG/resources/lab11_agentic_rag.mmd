@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 11: agentic RAG. The model requests a search and writes the query; our code runs retrieve and feeds the files
+%% back; the model decides whether all facts are found. A missing fact sends it round again with a new query, while
+%% our turn cap allows. Exits: an answer, "not in the files", or the cap.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab11_agentic_rag.mmd -o lab11_agentic_rag.png -b white -s 2
+flowchart LR
+    q[question<br/>from the rep] --> ask[model requests search<br/>writes the query]
+    ask --> run[retrieve runs<br/>embed the query<br/>2 nearest files]
+    run --> fed[files fed back<br/>name and text<br/>one tool message]
+    fed --> facts{model:<br/>all facts found?}
+    facts -->|missing a fact| left{turns<br/>left?}
+    left -->|yes: a new query<br/>from what it read| ask
+    left -->|no| cap[stopped by the cap<br/>no answer]
+    facts -->|yes| answer[final answer<br/>from the files]
+    facts -->|not in the files| none[say<br/>I do not know]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class ask,facts model
+    class run,fed,left code
