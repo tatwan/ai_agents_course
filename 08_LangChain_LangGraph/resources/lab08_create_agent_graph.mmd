@@ -1,0 +1,18 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "linear", "nodeSpacing": 40, "rankSpacing": 50}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383"}}}%%
+%% Lab 08: the graph create_agent returns, drawn from agent.get_graph().draw_mermaid() as printed in Part B. Nodes and
+%% edges are unchanged; only the colours are the lab's (model node ink, tools node lime). A solid arrow always runs;
+%% a dotted arrow is chosen by a function after the node finishes.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab08_create_agent_graph.mmd -o lab08_create_agent_graph.png -b white -s 2
+graph TD;
+	__start__([<p>__start__</p>])
+	model(model)
+	tools(tools)
+	__end__([<p>__end__</p>])
+	__start__ --> model;
+	model -.-> __end__;
+	model -.-> tools;
+	tools -.-> model;
+	classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+	classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+	class model model
+	class tools code
