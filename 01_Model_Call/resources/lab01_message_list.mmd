@@ -1,0 +1,16 @@
+%%{init: {"theme": "base", "sequence": {"mirrorActors": false, "messageFontSize": 15, "actorFontSize": 15, "noteFontSize": 15, "wrap": false, "actorMargin": 160, "width": 260, "messageMargin": 42}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "actorBkg": "#0B1220", "actorTextColor": "#FFFFFF", "actorBorder": "#0B1220", "noteBkgColor": "#C9F24D", "noteBorderColor": "#0B1220", "noteTextColor": "#0B1220", "signalColor": "#0B1220", "signalTextColor": "#0B1220"}}}%%
+%% Lab 01: two calls to Chat Completions. Our code (lime notes) builds and sends the whole message list each time;
+%% the model (ink) answers from that list only and keeps nothing between the calls.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab01_message_list.mmd -o lab01_message_list.png -b white -s 2
+sequenceDiagram
+    participant Code as Our code<br>(holds the list)
+    participant Model as Chat Completions API<br>(the model)
+
+    Note over Code: messages = [system,<br>user: order number 46]
+    Code->>Model: create(messages): 2 messages
+    Model-->>Code: assistant reply
+    Note over Model: keeps nothing<br>after the reply
+    Note over Code: history = [system,<br>user: order number 46,<br>assistant: the reply,<br>user: what is my<br>order number?]
+    Code->>Model: create(history): 4 messages
+    Model-->>Code: "Your order number is 46."
+    Note over Code,Model: the model knew 46 only because<br>our code sent it again
