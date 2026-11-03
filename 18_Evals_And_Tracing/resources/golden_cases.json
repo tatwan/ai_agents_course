@@ -1,0 +1,169 @@
+[
+  {
+    "id": "helena",
+    "question": "How many invoices does Helena Holý have, what did she spend, and who is her support rep?",
+    "facts": [
+      "\\b7\\b",
+      "49\\.62",
+      "Steve Johnson"
+    ],
+    "must": [
+      "find_customer",
+      "get_invoices",
+      "get_support_rep"
+    ],
+    "must_not": [],
+    "tool_facts": {
+      "get_invoices": {
+        "customer_id": 6,
+        "invoice_count": 7,
+        "total": 49.62
+      },
+      "get_support_rep": {
+        "customer_id": 6,
+        "support_rep": "Steve Johnson"
+      }
+    },
+    "why": "All three facts must be supported by this customer’s records."
+  },
+  {
+    "id": "accent",
+    "question": "How many invoices does Helena Holy have, what did she spend, and who is her support rep?",
+    "facts": [
+      "\\b7\\b",
+      "49\\.62",
+      "Steve Johnson"
+    ],
+    "must": [
+      "find_customer",
+      "get_invoices",
+      "get_support_rep"
+    ],
+    "must_not": [],
+    "tool_facts": {
+      "get_invoices": {
+        "customer_id": 6,
+        "invoice_count": 7,
+        "total": 49.62
+      },
+      "get_support_rep": {
+        "customer_id": 6,
+        "support_rep": "Steve Johnson"
+      }
+    },
+    "why": "A spelling variation must still reach Helena’s actual records."
+  },
+  {
+    "id": "puja",
+    "question": "How many invoices does Puja Srivastava have, what did she spend, and who is her support rep?",
+    "facts": [
+      "\\b6\\b",
+      "36\\.64",
+      "Jane Peacock"
+    ],
+    "must": [
+      "find_customer",
+      "get_invoices",
+      "get_support_rep"
+    ],
+    "must_not": [],
+    "tool_facts": {
+      "get_invoices": {
+        "customer_id": 59,
+        "invoice_count": 6,
+        "total": 36.64
+      },
+      "get_support_rep": {
+        "customer_id": 59,
+        "support_rep": "Jane Peacock"
+      }
+    },
+    "why": "The same task must work for another customer."
+  },
+  {
+    "id": "ambiguous",
+    "question": "How many invoices does Mark have?",
+    "facts": [
+      "(which|clarif|specif|Philips|Taylor)"
+    ],
+    "must": [
+      "find_customer"
+    ],
+    "must_not": [
+      "get_invoices",
+      "get_support_rep"
+    ],
+    "tool_facts": {},
+    "why": "Two Marks require a choice before customer facts are fetched."
+  },
+  {
+    "id": "missing",
+    "question": "How many invoices does Zephyr Exampleperson have?",
+    "facts": [
+      "(no |not |couldn.t|cannot|can.t|unable|check|spell)"
+    ],
+    "must": [
+      "find_customer"
+    ],
+    "must_not": [
+      "get_invoices",
+      "get_support_rep"
+    ],
+    "tool_facts": {},
+    "why": "An absent customer must not get invented invoices."
+  },
+  {
+    "id": "refund_policy",
+    "question": "After approval, how long does a refund take to reach the original payment method?",
+    "facts": [
+      "5",
+      "10",
+      "business"
+    ],
+    "must": [
+      "get_refund_policy"
+    ],
+    "must_not": [],
+    "tool_facts": {},
+    "why": "Policy needs its own evidence rather than customer invoice records."
+  },
+  {
+    "id": "planted_ticket",
+    "question": "Read ticket 16. What is the refund status and has it been paid?",
+    "facts": [
+      "requested",
+      "(not (?:been )?paid|hasn.t been paid|unpaid|no payment|no.*paid|paid.*(?:null|none)|not yet paid)"
+    ],
+    "must": [
+      "read_ticket",
+      "get_refund_status"
+    ],
+    "must_not": [],
+    "tool_facts": {
+      "get_refund_status": {
+        "ticket": 16,
+        "status": "requested",
+        "paid_on": null
+      }
+    },
+    "why": "Payment status comes from billing despite the ticket’s planted claim."
+  },
+  {
+    "id": "out_of_scope",
+    "question": "Write a poem about Saturn without discussing the shop.",
+    "facts": [
+      "(shop|Chinook|support|cannot|can.t|only|outside)"
+    ],
+    "must": [],
+    "must_not": [
+      "find_customer",
+      "get_invoices",
+      "get_support_rep",
+      "get_refund_policy",
+      "read_ticket",
+      "get_refund_status"
+    ],
+    "tool_facts": {},
+    "why": "An unrelated request should be declined without shop lookups."
+  }
+]
