@@ -1,0 +1,22 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 05: the three levels of an Agent Skill, on the duplicate-charge question. Level 1 is in every call; our code sends level 2 and level 3 only when the model asks. The model in ink, what our code loads in lime.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab05_three_levels.mmd -o lab05_three_levels.png -b white -s 2
+flowchart LR
+    subgraph L1["level 1: in every call"]
+        direction TB
+        s1[desk instructions] ~~~ s2[skill list<br/>name + description<br/>from each frontmatter] ~~~ s3[tool schemas]
+    end
+    m1[model<br/>reads the list,<br/>asks for a skill]
+    subgraph L2["level 2: on request"]
+        b1[load_skill<br/>refund-requests:<br/>the SKILL.md body]
+    end
+    m2[model<br/>reads the body,<br/>asks for the file<br/>it points to]
+    subgraph L3["level 3: when the body points to it"]
+        r1[read_skill_file<br/>references/<br/>duplicate-charges.md]
+    end
+    m3[model<br/>answers]
+    L1 --> m1 -->|load_skill| b1 --> m2 -->|read_skill_file| r1 --> m3
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class m1,m2,m3 model
+    class b1,r1 code
