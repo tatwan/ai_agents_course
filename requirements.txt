@@ -1,0 +1,944 @@
+aiohappyeyeballs==2.7.1
+    # via aiohttp
+aiohttp==3.14.3
+    # via
+    #   kubernetes
+    #   mlflow
+aiosignal==1.4.0
+    # via aiohttp
+aiosqlite==0.22.1
+    # via langgraph-checkpoint-sqlite
+alembic==1.20.1
+    # via mlflow
+annotated-doc==0.0.5
+    # via
+    #   fastapi
+    #   typer
+annotated-types==0.8.0
+    # via pydantic
+anyio==4.14.2
+    # via
+    #   gradio
+    #   httpx
+    #   httpx2
+    #   jupyter-server
+    #   langsmith
+    #   mcp
+    #   mlflow-skinny
+    #   openai
+    #   pinecone
+    #   pydantic-ai-slim
+    #   pydantic-graph
+    #   sse-starlette
+    #   starlette
+    #   watchfiles
+appnope==0.1.4 ; sys_platform == 'darwin'
+    # via ipykernel
+argon2-cffi==25.1.0
+    # via jupyter-server
+argon2-cffi-bindings==25.1.0
+    # via argon2-cffi
+arrow==1.4.0
+    # via isoduration
+asttokens==3.0.2
+    # via stack-data
+async-lru==2.3.0
+    # via jupyterlab
+attrs==26.1.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+audioop-lts==0.2.2 ; python_full_version >= '3.13'
+    # via gradio
+babel==2.18.0
+    # via jupyterlab-server
+bcrypt==5.0.0
+    # via chromadb
+beautifulsoup4==4.15.0
+    # via nbconvert
+bleach==6.4.0
+    # via nbconvert
+blinker==1.9.0
+    # via flask
+brotli==1.2.1
+    # via gradio
+build==1.5.0
+    # via chromadb
+cachetools==7.2.7
+    # via
+    #   mlflow-skinny
+    #   mlflow-tracing
+certifi==2026.10.23
+    # via
+    #   databricks-sdk
+    #   httpcore
+    #   httpx
+    #   kubernetes
+    #   langchain-core
+    #   langchain-openai
+    #   requests
+cffi==2.1.1
+    # via
+    #   argon2-cffi-bindings
+    #   cryptography
+    #   pyzmq
+charset-normalizer==3.5.1
+    # via requests
+chromadb==1.5.9
+    # via ai-agents-in-practice
+click==8.4.2
+    # via
+    #   flask
+    #   huggingface-hub
+    #   mlflow-skinny
+    #   uvicorn
+cloudpickle==3.1.2
+    # via
+    #   joblib
+    #   mlflow-skinny
+colorama==0.4.6 ; os_name == 'nt' or sys_platform == 'win32'
+    # via
+    #   build
+    #   click
+    #   ipython
+    #   tqdm
+    #   typer
+comm==0.2.3
+    # via ipykernel
+contourpy==1.3.3
+    # via matplotlib
+cryptography==50.0.0
+    # via
+    #   google-auth
+    #   mlflow
+    #   pyjwt
+cycler==0.12.1
+    # via matplotlib
+databricks-sdk==0.158.0
+    # via
+    #   mlflow-skinny
+    #   mlflow-tracing
+debugpy==1.8.21
+    # via ipykernel
+defusedxml==0.7.1
+    # via nbconvert
+distro==1.9.0
+    # via langsmith
+docker==7.2.0
+    # via mlflow
+durationpy==0.10
+    # via kubernetes
+executing==2.2.1
+    # via stack-data
+fastapi==0.162.0
+    # via
+    #   gradio
+    #   mlflow-skinny
+fastjsonschema==2.22.2
+    # via nbformat
+filelock==3.32.3
+    # via huggingface-hub
+flask==3.1.3
+    # via
+    #   flask-cors
+    #   mlflow
+flask-cors==6.0.5
+    # via mlflow
+flatbuffers==25.12.19
+    # via onnxruntime
+fonttools==4.63.0
+    # via matplotlib
+fqdn==1.5.1
+    # via jsonschema
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+fsspec==2026.7.0
+    # via
+    #   gradio-client
+    #   huggingface-hub
+genai-prices==0.2.0
+    # via pydantic-ai-slim
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.2.1
+    # via mlflow-skinny
+google-auth==2.62.0
+    # via databricks-sdk
+googleapis-common-protos==1.75.1
+    # via opentelemetry-exporter-otlp-proto-grpc
+gradio==6.31.0
+    # via ai-agents-in-practice
+gradio-client==2.7.2
+    # via
+    #   gradio
+    #   hf-gradio
+graphene==3.4.3
+    # via mlflow
+graphql-core==3.2.13
+    # via
+    #   graphene
+    #   graphql-relay
+graphql-relay==3.2.0
+    # via graphene
+graphviz==0.21
+    # via openai-agents
+griffelib==2.2.0
+    # via
+    #   openai-agents
+    #   pydantic-ai-slim
+groovy==0.1.2
+    # via gradio
+grpcio==1.83.0
+    # via
+    #   chromadb
+    #   opentelemetry-exporter-otlp-proto-grpc
+gunicorn==26.2.0 ; sys_platform != 'win32'
+    # via mlflow
+h11==0.16.0
+    # via
+    #   httpcore
+    #   httpcore2
+    #   uvicorn
+h2==4.4.1
+    # via httpx
+hf-gradio==0.4.1
+    # via gradio
+hf-xet==1.6.0 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
+    # via huggingface-hub
+hpack==4.2.0
+    # via h2
+httpcore==1.0.9
+    # via httpx
+httpcore2==2.16.0 ; sys_platform != 'emscripten'
+    # via httpx2
+httptools==0.8.0
+    # via uvicorn
+httpx==0.28.1
+    # via
+    #   chromadb
+    #   gradio
+    #   gradio-client
+    #   huggingface-hub
+    #   jupyterlab
+    #   langchain-core
+    #   langgraph-sdk
+    #   pinecone
+    #   safehttpx
+httpx2==2.16.0
+    # via
+    #   genai-prices
+    #   langsmith
+    #   mcp
+    #   openai
+    #   openai-agents
+    #   pydantic-ai-slim
+httpx2-jsfetch==1.0 ; python_full_version >= '3.12' and sys_platform == 'emscripten'
+    # via httpx2
+huey==3.5.3
+    # via mlflow
+huggingface-hub==1.28.0
+    # via
+    #   gradio
+    #   gradio-client
+    #   tokenizers
+hyperframe==6.1.0
+    # via h2
+idna==3.18
+    # via
+    #   anyio
+    #   httpx
+    #   httpx2
+    #   jsonschema
+    #   requests
+    #   yarl
+importlib-metadata==9.1.0
+    # via mlflow-skinny
+importlib-resources==7.1.0
+    # via chromadb
+ipykernel==7.4.0
+    # via
+    #   ai-agents-in-practice
+    #   jupyterlab
+ipython==9.16.1
+    # via ipykernel
+ipython-pygments-lexers==1.1.1
+    # via ipython
+isoduration==20.11.0
+    # via jsonschema
+itsdangerous==2.2.0
+    # via flask
+jedi==0.20.0
+    # via ipython
+jinja2==3.1.6
+    # via
+    #   flask
+    #   gradio
+    #   jupyter-server
+    #   jupyterlab
+    #   jupyterlab-server
+    #   nbconvert
+jiter==0.16.0
+    # via openai
+joblib==1.6.0
+    # via scikit-learn
+json5==0.15.0
+    # via jupyterlab-server
+jsonpatch==1.33
+    # via langchain-core
+jsonpointer==3.1.1
+    # via
+    #   jsonpatch
+    #   jsonschema
+jsonschema==4.26.0
+    # via
+    #   chromadb
+    #   jupyter-events
+    #   jupyterlab-server
+    #   mcp
+    #   nbformat
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+jupyter-builder==1.2.2
+    # via jupyterlab
+jupyter-client==8.9.1
+    # via
+    #   ipykernel
+    #   jupyter-server
+    #   nbclient
+jupyter-core==5.9.1
+    # via
+    #   ipykernel
+    #   jupyter-builder
+    #   jupyter-client
+    #   jupyter-server
+    #   jupyterlab
+    #   nbclient
+    #   nbconvert
+    #   nbformat
+jupyter-events==0.12.1
+    # via jupyter-server
+jupyter-lsp==2.3.1
+    # via jupyterlab
+jupyter-server==2.20.0
+    # via
+    #   jupyter-lsp
+    #   jupyterlab
+    #   jupyterlab-server
+    #   notebook-shim
+jupyter-server-terminals==0.5.4
+    # via jupyter-server
+jupyterlab==4.6.5
+    # via ai-agents-in-practice
+jupyterlab-pygments==0.3.0
+    # via nbconvert
+jupyterlab-server==2.28.0
+    # via jupyterlab
+kiwisolver==1.5.0
+    # via matplotlib
+kubernetes==36.0.3
+    # via chromadb
+langchain==1.4.7
+    # via ai-agents-in-practice
+langchain-core==1.7.3
+    # via
+    #   ai-agents-in-practice
+    #   langchain
+    #   langchain-openai
+    #   langgraph
+    #   langgraph-checkpoint
+    #   langgraph-prebuilt
+    #   langgraph-sdk
+langchain-openai==1.7.3
+    # via ai-agents-in-practice
+langchain-protocol==0.0.20
+    # via
+    #   langchain-core
+    #   langgraph-sdk
+langgraph==1.2.19
+    # via
+    #   ai-agents-in-practice
+    #   langchain
+langgraph-checkpoint==4.3.1
+    # via
+    #   langgraph
+    #   langgraph-checkpoint-sqlite
+    #   langgraph-prebuilt
+langgraph-checkpoint-sqlite==3.1.3
+    # via ai-agents-in-practice
+langgraph-prebuilt==1.1.0
+    # via langgraph
+langgraph-sdk==0.4.10
+    # via langgraph
+langsmith==0.14.16
+    # via
+    #   ai-agents-in-practice
+    #   langchain-core
+lark==1.3.1
+    # via rfc3987-syntax
+logfire-api==5.4.0
+    # via pydantic-graph
+mako==1.4.3
+    # via alembic
+markdown-it-py==4.2.0
+    # via rich
+markupsafe==3.0.3
+    # via
+    #   flask
+    #   gradio
+    #   jinja2
+    #   mako
+    #   nbconvert
+    #   werkzeug
+matplotlib==3.11.2
+    # via
+    #   ai-agents-in-practice
+    #   mlflow
+matplotlib-inline==0.2.2
+    # via
+    #   ipykernel
+    #   ipython
+mcp==2.3.0
+    # via
+    #   ai-agents-in-practice
+    #   openai-agents
+mcp-types==2.3.0
+    # via mcp
+mdurl==0.1.2
+    # via markdown-it-py
+mistune==3.3.4
+    # via nbconvert
+mlflow==3.17.2
+    # via ai-agents-in-practice
+mlflow-skinny==3.17.2
+    # via mlflow
+mlflow-tracing==3.17.2
+    # via mlflow
+mmh3==5.2.1
+    # via chromadb
+msgspec==0.22.0
+    # via pinecone
+multidict==6.7.1
+    # via
+    #   aiohttp
+    #   yarl
+narwhals==2.28.0
+    # via scikit-learn
+nbclient==0.11.0
+    # via nbconvert
+nbconvert==7.17.1
+    # via jupyter-server
+nbformat==5.11.1
+    # via
+    #   jupyter-server
+    #   nbclient
+    #   nbconvert
+nest-asyncio2==1.7.2
+    # via ipykernel
+notebook-shim==0.2.4
+    # via jupyterlab
+numpy==2.4.6 ; python_full_version < '3.12'
+    # via
+    #   chromadb
+    #   contourpy
+    #   gradio
+    #   matplotlib
+    #   mlflow
+    #   onnxruntime
+    #   pandas
+    #   scikit-learn
+    #   scipy
+    #   skops
+numpy==2.5.2 ; python_full_version >= '3.12'
+    # via
+    #   chromadb
+    #   contourpy
+    #   gradio
+    #   matplotlib
+    #   mlflow
+    #   onnxruntime
+    #   pandas
+    #   scikit-learn
+    #   scipy
+    #   skops
+oauthlib==3.3.1
+    # via requests-oauthlib
+onnxruntime==1.29.0
+    # via chromadb
+openai==3.42.0
+    # via
+    #   ai-agents-in-practice
+    #   langchain-openai
+    #   openai-agents
+    #   pydantic-ai-slim
+openai-agents==0.24.0
+    # via ai-agents-in-practice
+opentelemetry-api==1.44.0
+    # via
+    #   chromadb
+    #   fastapi
+    #   mcp
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+    #   pydantic-ai-slim
+opentelemetry-exporter-otlp-proto-common==1.44.0
+    # via opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-exporter-otlp-proto-grpc==1.44.0
+    # via chromadb
+opentelemetry-proto==1.44.0
+    # via
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-sdk==1.44.0
+    # via
+    #   chromadb
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-semantic-conventions==0.65b0
+    # via opentelemetry-sdk
+orjson==3.12.0
+    # via
+    #   chromadb
+    #   gradio
+    #   langgraph-sdk
+    #   langsmith
+    #   pinecone
+ormsgpack==1.12.2
+    # via langgraph-checkpoint
+overrides==7.7.0
+    # via
+    #   chromadb
+    #   jupyter-server
+packaging==26.3
+    # via
+    #   build
+    #   gradio
+    #   gradio-client
+    #   huggingface-hub
+    #   ipykernel
+    #   jupyter-events
+    #   jupyter-server
+    #   jupyterlab
+    #   jupyterlab-server
+    #   langchain-core
+    #   langsmith
+    #   matplotlib
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   nbconvert
+    #   onnxruntime
+    #   skops
+pandas==3.1.0
+    # via
+    #   gradio
+    #   mlflow
+pandocfilters==1.5.1
+    # via nbconvert
+parso==0.8.7
+    # via jedi
+pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
+    # via ipython
+pillow==12.3.0
+    # via
+    #   gradio
+    #   matplotlib
+pinecone==10.2.0
+    # via ai-agents-in-practice
+platformdirs==4.11.3
+    # via jupyter-core
+prettytable==3.18.0
+    # via skops
+prometheus-client==0.26.0
+    # via jupyter-server
+prompt-toolkit==3.0.53
+    # via ipython
+propcache==0.5.2
+    # via
+    #   aiohttp
+    #   yarl
+protobuf==7.35.1
+    # via
+    #   databricks-sdk
+    #   googleapis-common-protos
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   onnxruntime
+    #   opentelemetry-proto
+psutil==7.2.2 ; sys_platform != 'cygwin' and sys_platform != 'emscripten'
+    # via ipython
+ptyprocess==0.7.0 ; os_name != 'nt' or (sys_platform != 'emscripten' and sys_platform != 'win32')
+    # via
+    #   pexpect
+    #   terminado
+pure-eval==0.2.3
+    # via stack-data
+pyarrow==25.0.1
+    # via mlflow
+pyasn1==0.6.5
+    # via pyasn1-modules
+pyasn1-modules==0.4.2
+    # via google-auth
+pybase64==1.5.0
+    # via chromadb
+pycparser==3.0 ; implementation_name != 'PyPy'
+    # via cffi
+pydantic==2.13.4
+    # via
+    #   chromadb
+    #   fastapi
+    #   genai-prices
+    #   gradio
+    #   langchain
+    #   langchain-core
+    #   langgraph
+    #   langsmith
+    #   mcp
+    #   mcp-types
+    #   mlflow-skinny
+    #   mlflow-tracing
+    #   openai
+    #   openai-agents
+    #   pydantic-ai-slim
+    #   pydantic-graph
+    #   pydantic-settings
+pydantic-ai-slim==2.64.0
+    # via ai-agents-in-practice
+pydantic-core==2.46.4
+    # via pydantic
+pydantic-graph==2.64.0
+    # via pydantic-ai-slim
+pydantic-settings==2.15.0
+    # via chromadb
+pydub==0.25.1
+    # via gradio
+pygments==2.21.0
+    # via
+    #   ipython
+    #   ipython-pygments-lexers
+    #   nbconvert
+    #   rich
+pyjwt==2.15.1
+    # via
+    #   mcp
+    #   openai-agents
+pyparsing==3.3.2
+    # via matplotlib
+pypika==0.51.1
+    # via chromadb
+pyproject-hooks==1.2.0
+    # via build
+python-dateutil==2.9.0.post0
+    # via
+    #   arrow
+    #   graphene
+    #   jupyter-client
+    #   kubernetes
+    #   matplotlib
+    #   pandas
+python-dotenv==1.2.4
+    # via
+    #   ai-agents-in-practice
+    #   mlflow-skinny
+    #   pydantic-settings
+    #   uvicorn
+python-json-logger==4.2.0
+    # via jupyter-events
+python-multipart==0.0.32
+    # via
+    #   gradio
+    #   mcp
+    #   openai-agents
+pytz==2026.6
+    # via gradio
+pywin32==312 ; sys_platform == 'win32'
+    # via
+    #   docker
+    #   mcp
+pywinpty==3.0.5 ; os_name == 'nt'
+    # via
+    #   jupyter-server
+    #   jupyter-server-terminals
+    #   terminado
+pyyaml==6.0.3
+    # via
+    #   chromadb
+    #   gradio
+    #   huggingface-hub
+    #   jupyter-events
+    #   kubernetes
+    #   langchain-core
+    #   mlflow-skinny
+    #   uvicorn
+pyzmq==27.1.0
+    # via
+    #   ipykernel
+    #   jupyter-client
+    #   jupyter-server
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+    #   jupyter-events
+regex==2026.7.19
+    # via tiktoken
+requests==2.34.2
+    # via
+    #   ai-agents-in-practice
+    #   databricks-sdk
+    #   docker
+    #   jupyterlab-server
+    #   kubernetes
+    #   langsmith
+    #   mlflow-skinny
+    #   openai-agents
+    #   requests-oauthlib
+    #   requests-toolbelt
+    #   tiktoken
+requests-oauthlib==2.0.0
+    # via kubernetes
+requests-toolbelt==1.0.0
+    # via langsmith
+rfc3339-validator==0.1.4
+    # via
+    #   jsonschema
+    #   jupyter-events
+rfc3986-validator==0.1.1
+    # via
+    #   jsonschema
+    #   jupyter-events
+rfc3987-syntax==1.1.0
+    # via jsonschema
+rich==15.0.0
+    # via
+    #   chromadb
+    #   typer
+rpds-py==2026.6.3
+    # via
+    #   jsonschema
+    #   referencing
+safehttpx==0.1.7
+    # via gradio
+scikit-learn==1.9.1
+    # via
+    #   mlflow
+    #   skops
+scipy==1.17.1 ; python_full_version < '3.12'
+    # via
+    #   mlflow
+    #   scikit-learn
+    #   skops
+scipy==1.18.1 ; python_full_version >= '3.12'
+    # via
+    #   mlflow
+    #   scikit-learn
+    #   skops
+semantic-version==2.10.0
+    # via gradio
+send2trash==2.1.0
+    # via jupyter-server
+shellingham==1.5.4
+    # via typer
+six==1.17.0
+    # via
+    #   kubernetes
+    #   python-dateutil
+    #   rfc3339-validator
+skops==0.16.0
+    # via mlflow
+smmap==5.0.3
+    # via gitdb
+sniffio==1.3.1
+    # via
+    #   langsmith
+    #   openai
+soupsieve==2.9.2
+    # via beautifulsoup4
+sqlalchemy==2.1.6
+    # via
+    #   alembic
+    #   mlflow
+sqlite-vec==0.1.9
+    # via langgraph-checkpoint-sqlite
+sqlparse==0.6.0
+    # via mlflow-skinny
+sse-starlette==3.4.8
+    # via mcp
+stack-data==0.6.3
+    # via ipython
+starlette==1.6.0
+    # via
+    #   fastapi
+    #   gradio
+    #   mcp
+    #   mlflow-skinny
+    #   openai-agents
+    #   sse-starlette
+tenacity==9.1.4
+    # via
+    #   chromadb
+    #   langchain-core
+terminado==0.18.1
+    # via
+    #   jupyter-server
+    #   jupyter-server-terminals
+threadpoolctl==3.7.0
+    # via scikit-learn
+tiktoken==0.14.0
+    # via
+    #   langchain-openai
+    #   pydantic-ai-slim
+tinycss2==1.5.1
+    # via bleach
+tokenizers==0.23.1
+    # via chromadb
+tomlkit==0.14.0
+    # via gradio
+tornado==6.5.8
+    # via
+    #   ipykernel
+    #   jupyter-client
+    #   jupyter-server
+    #   jupyterlab
+    #   terminado
+tqdm==4.70.0
+    # via
+    #   chromadb
+    #   huggingface-hub
+traitlets==5.16.1
+    # via
+    #   ipykernel
+    #   ipython
+    #   jupyter-builder
+    #   jupyter-client
+    #   jupyter-core
+    #   jupyter-events
+    #   jupyter-server
+    #   jupyterlab
+    #   matplotlib-inline
+    #   nbclient
+    #   nbconvert
+    #   nbformat
+truststore==0.10.4 ; sys_platform != 'emscripten'
+    # via
+    #   httpcore2
+    #   httpx2
+typer==0.27.1
+    # via
+    #   chromadb
+    #   gradio
+    #   hf-gradio
+typing-extensions==4.16.0
+    # via
+    #   aiohttp
+    #   aiosignal
+    #   alembic
+    #   anyio
+    #   beautifulsoup4
+    #   chromadb
+    #   fastapi
+    #   gradio
+    #   gradio-client
+    #   graphene
+    #   grpcio
+    #   httpx2
+    #   huggingface-hub
+    #   ipython
+    #   jupyter-client
+    #   jupyterlab
+    #   langchain-core
+    #   langchain-protocol
+    #   langsmith
+    #   mcp
+    #   mcp-types
+    #   mlflow-skinny
+    #   openai
+    #   openai-agents
+    #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+    #   pydantic
+    #   pydantic-core
+    #   referencing
+    #   sqlalchemy
+    #   starlette
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   fastapi
+    #   mcp
+    #   pydantic
+    #   pydantic-ai-slim
+    #   pydantic-graph
+    #   pydantic-settings
+tzdata==2026.3
+    # via
+    #   arrow
+    #   pandas
+uri-template==1.3.0
+    # via jsonschema
+urllib3==2.8.0
+    # via
+    #   databricks-sdk
+    #   docker
+    #   kubernetes
+    #   openai-agents
+    #   requests
+uuid-utils==0.17.0
+    # via
+    #   langchain-core
+    #   langsmith
+uvicorn==0.52.3
+    # via
+    #   chromadb
+    #   gradio
+    #   mcp
+    #   mlflow-skinny
+uvloop==0.22.1 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
+    # via uvicorn
+waitress==3.0.2 ; sys_platform == 'win32'
+    # via mlflow
+watchfiles==1.2.0
+    # via uvicorn
+wcwidth==0.8.2
+    # via
+    #   prettytable
+    #   prompt-toolkit
+webcolors==25.10.0
+    # via jsonschema
+webencodings==0.6.1
+    # via
+    #   bleach
+    #   tinycss2
+websocket-client==1.9.0
+    # via
+    #   jupyter-server
+    #   kubernetes
+websockets==15.0.1
+    # via
+    #   langgraph-sdk
+    #   langsmith
+    #   openai-agents
+    #   uvicorn
+werkzeug==3.1.9
+    # via
+    #   flask
+    #   flask-cors
+xxhash==4.0.1
+    # via
+    #   langgraph
+    #   langsmith
+yarl==1.24.5
+    # via aiohttp
+zipp==4.1.2
+    # via importlib-metadata
+zstandard==0.25.0
+    # via langsmith
