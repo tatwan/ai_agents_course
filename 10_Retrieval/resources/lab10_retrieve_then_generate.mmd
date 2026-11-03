@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 10: retrieve, then generate. Once: every file is embedded and stored. For every question: embed it, search
+%% the store for the nearest k files, pack them with their names, and let the model answer only from them or say
+%% it does not know. Ink: model calls. Lime: our code.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab10_retrieve_then_generate.mmd -o lab10_retrieve_then_generate.png -b white -s 2
+flowchart TB
+    files[once:<br/>36 files in data/corpus] --> embedF[embed each file<br/>1,536 numbers]
+    embedF --> store[(vector store<br/>Chroma)]
+    question[every question:<br/>the rep's question] --> embedQ[embed the question]
+    store --> search[search<br/>the nearest k files]
+    embedQ --> search
+    search --> pack[pack<br/>file names + text]
+    pack --> generate[generate<br/>answer only from the files]
+    generate -->|the files answer| answer[answer]
+    generate -->|they do not| refuse[I don't know]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class embedF,embedQ,generate model
+    class search,pack code
