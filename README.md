@@ -1,4 +1,4 @@
-![AI Agents in Practice Banner](images/AI Agents in Practice Banner.png)
+![AI Agents in Practice Banner](images/ai_agents.png)
 
 # AI Agents in Practice
 
