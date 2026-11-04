@@ -1,6 +1,6 @@
-# AI Agents in Practice
+![AI Agents in Practice Banner](images/AI Agents in Practice Banner.png)
 
-![github_cover](images/github_cover.png)
+# AI Agents in Practice
 
 Hands-on labs for building, running and judging AI agents. You start with one call to a model and write the agent
 loop yourself, then see the same pieces inside the OpenAI Agents SDK, LangChain and LangGraph, LlamaIndex and other
