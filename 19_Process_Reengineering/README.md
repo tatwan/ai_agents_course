@@ -4,21 +4,29 @@
 
 ## Goal
 
-Decide which steps of a damaged-media refund process need automation, set how far each may act, and estimate the impact of a redesign. The refund stays at **draft** for a person to approve; the calculator shows how review and rework consume the capacity we hoped to release.
+Decide which steps of a damaged-media refund process are worth automating, set how far each step may act on its own,
+and estimate what a redesign is worth. The refund itself stays at **draft**, for a person to approve. The moment that
+teaches it is the estimate: the review and rework a redesign adds eat into the handling time it saves, and with ten
+minutes of review per case and one case in ten reworked, the design costs more each month than the time it frees is
+worth.
 
 ## What you will learn
 
-- Map steps and the evidence each needs, including informal copying and handoffs.
-- Apply five questions without confusing a known path with available context.
-- Set autonomy separately for each step and retain a payment-approval gate.
-- Redesign the work and calculate capacity and dollar equivalents with explicit units and assumptions.
-- Defend a build, buy or neither decision, then use the worksheet for your own process.
+- How to map a process as visible steps, with the evidence each one needs and the informal handoffs between them.
+- How to ask five questions of each step, keeping the path (Q1) apart from the evidence (Q2), and choose a workflow
+  or an agent candidate.
+- How to set `suggest`, `draft`, `act with audit` or `act` for each step, with a reason.
+- How to redesign the work and estimate the capacity it frees and its dollar value, with every assumption visible.
+- How to defend a build, buy or neither decision, and apply the same worksheet to a process of your own.
 
-## Run first
+## Before you start
 
-From the repository folder run `uv sync` (or `pip install -r requirements.txt`), then open `19_process_reengineering.ipynb` in VS Code or JupyterLab with the `.venv` kernel. Run top to bottom. No key or secret-file loading is needed. The notebook reads supplied policy files and a bundled measurement snapshot; it writes no files and starts no server. It requires basic Python lists, dictionaries and arithmetic, all explained where they carry the decision.
+In the repository folder, `uv sync` (or `pip install -r requirements.txt`), then open `19_process_reengineering.ipynb`
+in VS Code or JupyterLab with the `.venv` kernel and run it from the top. You need no key: the notebook calls no
+model, and reads only the shop's policy files and a bundled measurement snapshot. It writes no files and starts no
+server. The Python is lists, dictionaries and arithmetic, explained where it carries a decision.
 
-The worked solution in `solved/` repeats all parts and runs independently. No earlier lab has to be run.
+The worked solution in `solved/` repeats every part and runs on its own. No earlier lab has to run first.
 
 ## What you will do
 
@@ -54,9 +62,14 @@ The worked solution in `solved/` repeats all parts and runs independently. No ea
 | Part G | A missing photo blocks context; request evidence before deciding eligibility |
 | Solved challenge | At 6 review min/case and 30% rework: 2,400 min/month and $579.85 USD/month; unavailable payment evidence adds a context block without changing the workflow or human gate |
 
-The base assumptions are 1,000 cases/month, 18 before and 6 non-review after min/case, 2 review min/case, 10% extra rework at 12 min/affected case, wage 30 USD/hour (1.0 USD per wage-currency unit), one recorded lookup-equivalent model task/case, $120 operations/month and a $6,000 build allocated over 12 months. These are illustrative business assumptions. Capacity valued at a wage becomes cash savings only through an actual staffing or redeployment decision. The calculator excludes queue delays, wrong-payout losses, customer harm and compliance work.
+The base assumptions are 1,000 cases/month, 18 before and 6 non-review after min/case, 2 review min/case, 10% extra rework at 12 min/affected case, wage 30 USD/hour (convert a local wage to US dollars before entering it), one recorded lookup-equivalent model task/case, $120 operations/month and a $6,000 build allocated over 12 months. These are illustrative business assumptions. Capacity valued at a wage becomes cash savings only through an actual staffing or redeployment decision. The calculator excludes queue delays, wrong-payout losses, customer harm and compliance work.
 
-**About the saved outputs.** This notebook calls no model. Its bundled Lab 18 snapshot records `gpt-6-luna` at reasoning effort `none`, source notebook `18_evals_and_tracing.ipynb`, recorded on 2026-11-01. The changed eight-case set passed 7/8 = 0.875, as did the baseline; changed usage was 20 model calls, 9,048 input tokens, zero cached reads/writes and 581 output tokens, costing $0.00119530 total or $0.0001494125/task. The eight-case score is not a refund-error probability. We use only its token cost as an editable proxy and vary the business rework assumption separately. Each notebook's arithmetic outputs come from its own complete local run.
+**About the saved outputs.** This notebook calls no model. Its bundled Lab 18 snapshot records `gpt-6-luna` at
+reasoning effort `none`, from source notebook `18_evals_and_tracing.ipynb`, recorded on 2026-11-01. The changed
+eight-case set passed 7/8 = 0.875, like the baseline, with 20 model calls, 9,048 input tokens, no cached reads or
+writes and 581 output tokens: $0.00119530 in all, or $0.0001494125 per task. The eight-case score is not a
+refund-error rate, so we use only its token cost, as an editable stand-in, and vary the rework assumption separately.
+Each notebook's outputs come from its own complete run.
 
 ## Folder contents
 

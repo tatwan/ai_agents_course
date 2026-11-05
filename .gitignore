@@ -6,22 +6,33 @@ __pycache__/
 .jupyter/
 .python-version
 .DS_Store
-.chroma/
-**/chroma_db/
-modules/**/outputs/
-modules/10_charting_sandbox/charts/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
+
+# What the labs write while they run (vector stores, traces, workspaces, scratch databases)
+.chroma/
+**/chroma_db/
+mlruns/
+mlflow.db
+**/workspace/
+*.db
+*.sqlite*
+!data/chinook.db
+15_Code_Execution/charts/
+**/outputs/
+_scratch/
+
+# Source material kept on Tarek's machine
 archive/
 other_content/
 presentation/
+.claude/
 
-# Author / instructor working notes. On disk, not in the student repo.
-AGENTS.md
-AUDIT.md
-final_audit.md
-BUILD_PLAN.md
-CURRENT_STATE.md
-modules/**/instructor.md
-modules/**/solution.ipynb
+# Author and instructor working notes. On disk, not in the student repo.
+# solved/ is public and committed.
+/AGENTS.md
+/CLAUDE.md
+instructor/
+progress/
+**/instructor.md

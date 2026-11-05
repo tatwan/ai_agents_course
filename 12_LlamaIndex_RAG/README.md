@@ -40,21 +40,21 @@ runs on its own; you need some Python and nothing from earlier labs.
 All of it on the 36 files of `data/corpus/` (20 policies and 16 support tickets) and one rep's question: *"Ticket
 06's replacement arrived warped too. What do we offer now, and how long does the refund take?"*
 
-**Part A: Represent the Files as Documents.** Build ticket 06 as a `Document` by hand, print what the embedding model
+**Part A: Represent the files as documents.** Build ticket 06 as a `Document` by hand, print what the embedding model
 and the LLM each read from it, then build all 36.
-**Part B: Split Documents into Nodes.** Split the 36 documents with the default `SentenceSplitter`, read one node's
+**Part B: Split documents into nodes.** Split the 36 documents with the default `SentenceSplitter`, read one node's
 fields and links, and split a handbook of the 20 policies to see real cuts.
-**Part C: Build the Models from the Settings.** Print what `Settings` holds by default, build the LLM and the
+**Part C: Build the models from `Settings`.** Print what `Settings` holds by default, build the LLM and the
 embedding model from `models.env`, call each once, and log every model call's usage with an instrumentation handler.
-**Part D: Index and Retrieve.** Index the nodes, retrieve with the default top k, check the ranking against cosine
+**Part D: Index and retrieve.** Index the nodes, retrieve with the default top k, check the ranking against cosine
 similarity by hand on eight labelled questions, and filter the search to the policies.
-**Part E: Ask a Query Engine.** Answer the question with a query engine, read its `source_nodes` and the prompt it
+**Part E: Ask a query engine.** Answer the question with a query engine, read its `source_nodes` and the prompt it
 sent, then answer it again with the policy filter.
-**Part F: Give an Agent the Query Engine as a Tool.** Wrap the engine in `QueryEngineTool`, read the schema the model
+**Part F: Give an agent the query engine as a tool.** Wrap the engine in `QueryEngineTool`, read the schema the model
 sees, run a `FunctionAgent` once with its events printed, then ten times.
-**Part G: Give the Agent a Retriever Tool Instead.** Wrap a retriever in `RetrieverTool`, read what it returns, and
+**Part G: Give the agent a retriever tool instead.** Wrap a retriever in `RetrieverTool`, read what it returns, and
 run the same agent ten times.
-**Part H: Compare with the Hand-Built Agent.** Run both tools with lab 11's prompt, compare every approach in calls,
+**Part H: Compare with the hand-built agent.** Run both tools with lab 11's prompt, compare every approach in calls,
 tokens, cost and facts, and map each LlamaIndex piece to the hand-built one it replaced.
 **Challenge.** A gift-card question with a query engine filtered to one file, and a second hop on ticket 10 with both
 agents.

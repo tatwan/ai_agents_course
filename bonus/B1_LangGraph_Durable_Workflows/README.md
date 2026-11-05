@@ -4,34 +4,19 @@
 
 ## Goal
 
-Keep a refund review waiting on disk, restart Python, then approve that same saved request. The counter is the
-teaching moment: the review node is entered once before the pause and again after the restart. Workflow
-checkpointing does not make an external payment safe to repeat. Every refund here is a simulated record; no money
+We keep a refund review waiting on disk, restart Python, then approve that same saved request. The moment is a
+counter: the review node is entered once before the pause and again after the restart, so any code placed before
+`interrupt()` runs twice. Workflow checkpointing does not make an external payment safe to repeat. Every refund here is a simulated record; no money
 is sent and the shared Chinook data stays unchanged.
 
 ## What you will learn
 
-- Build a `StateGraph` from state, nodes and edges, without a model.
-- Merge parallel check updates with a reducer and recognise the error without one.
-- Inspect a checkpoint's values, next nodes and waiting interrupt.
-- Resume a SQLite-backed thread in a new Python process.
-- Fork an earlier checkpoint while retaining the original saved result.
-
-## Run first
-
-From the repository folder, run `uv sync --python 3.13` (or install `requirements.txt` in your own environment).
-Open [b1_langgraph_durable_workflows.ipynb](b1_langgraph_durable_workflows.ipynb) in VS Code or JupyterLab
-(`uv run jupyter lab`) and select that environment's kernel. No previous lab needs to have run. You need basic
-Python dictionaries, functions and lists; the notebook explains the type annotations and graph API where used.
-
-**Part D requires a kernel restart.** Run through its restart instruction, choose Restart Kernel, then continue
-from the next cell. Do not rerun Setup or the pause cell after restarting. Run All across that boundary will
-intentionally stop at the restart assertion. The full solved notebook follows the same restart sequence.
-
-All runtime files are in the gitignored `outputs/`: the SQLite checkpoint database, a local review-entry counter
-and the restart check. The notebook resets its own demonstration counter and `refund-main` thread on a full rerun.
-The challenge uses `refund-challenge`. Neither workflow writes to `data/` or calls a model. Use SQLite here for a
-local exercise; a multiworker service needs an appropriate database checkpointer and application controls.
+- How to build a `StateGraph` from state, nodes and edges, without a model.
+- How to merge updates from parallel checks with a reducer, and what the error looks like without one.
+- How to read a checkpoint's business values, scheduled nodes and waiting interrupt.
+- How to resume the same SQLite-backed thread in a new Python process.
+- How to fork an earlier checkpoint without changing the original saved result.
+- When a durable workflow is worth it, compared with the agents of labs 07 and 08.
 
 ## What you will do
 
@@ -66,6 +51,32 @@ execution and recovery, not whether a real customer should receive a refund.
 a second Python kernel for the resume. The order of parallel check events can vary; compare the signal and audit
 membership, not their arrival order. Process IDs and checkpoint IDs are intentionally not printed. Model cost is
 $0.00; that does not price production storage or infrastructure.
+
+## When to use it
+
+The core path builds the desk as an agent that decides its own next step (lab 07 with the Agents SDK, lab 08 with
+LangChain and LangGraph). This lab is a workflow whose route we wrote down, with no model. Reach for a `StateGraph`
+with a database checkpointer when the steps are known, some must wait for a person, and the waiting must survive a
+restart: in our run the $1,250 request waited in SQLite through a kernel restart, resumed with one approval, and
+kept 7 checkpoints we could branch from. The price is the replay we counted (review node entries `1 → 2`), so a
+payment belongs after the approval. A fixed pipeline that never waits can stay plain Python; a question a model
+answers with tools is less code in lab 07's `Agent` or lab 08's `create_agent`.
+
+## Before you start
+
+From the repository folder, run `uv sync --python 3.13` (or install `requirements.txt` in your own environment).
+Open [b1_langgraph_durable_workflows.ipynb](b1_langgraph_durable_workflows.ipynb) in VS Code or JupyterLab
+(`uv run jupyter lab`) and select that environment's kernel. No previous lab needs to have run. You need basic
+Python dictionaries, functions and lists; the notebook explains the type annotations and graph API where used.
+
+**Part D requires a kernel restart.** Run through its restart instruction, choose Restart Kernel, then continue
+from the next cell. Do not rerun Setup or the pause cell after restarting. Run All across that boundary will
+intentionally stop at the restart assertion. The full solved notebook follows the same restart sequence.
+
+All runtime files are in the gitignored `outputs/`: the SQLite checkpoint database, a local review-entry counter
+and the restart check. The notebook resets its own demonstration counter and `refund-main` thread on a full rerun.
+The challenge uses `refund-challenge`. Neither workflow writes to `data/` or calls a model. Use SQLite here for a
+local exercise; a multiworker service needs an appropriate database checkpointer and application controls.
 
 ## Folder contents
 

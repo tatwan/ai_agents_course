@@ -1,41 +1,21 @@
-# Lab B3: How to build the desk agent with Google ADK and LiteLLM
+# Bonus B3: How to build the desk agent with Google ADK and LiteLLM
 
 **CPU | Key: `OPENAI_API_KEY` | Own environment | Practises: framework choice, tool calling, conversation state and cost**
 
 ## Goal
 
-Build the Chinook desk agent with Google ADK while OpenAI remains the model provider. Read a model's tool request beside the Python result, then find the user's input in the stored session. The saved Helena run has three model requests, five yielded events and six stored events: these counts measure different things. A deliberately wrong session ID shows why continuing a conversation requires the right runtime state.
+We build the Chinook desk agent with Google ADK while OpenAI remains the model provider. We read a model's tool request beside the Python result, then find the user's input in the stored session. The saved Helena run has three model requests, five yielded events and six stored events: these counts measure different things. A deliberately wrong session ID shows why continuing a conversation requires the right runtime state.
 
 ## What you will learn
 
-- Call LiteLLM directly and inspect the normalized reply and usage.
-- Construct ADK's `LiteLlm` adapter before giving it to an agent.
-- Give an agent three read-only database tools and run it with a session service.
-- Read raw function requests, results, final text and state changes before summarizing events.
-- Continue one conversation, diagnose a missing session, and measure requests, tokens, time and cost.
+- How to call LiteLLM directly and read its reply and usage fields.
+- How to construct ADK's `LiteLlm` adapter before giving it to an agent.
+- How to give an ADK agent three read-only tools and run it with a session service.
+- How to read raw events, session state and a second turn without confusing tool results with model requests.
+- How to measure requests, tokens, time and estimated cost, and check the facts against the database.
+- When ADK and LiteLLM are worth their extra layers, compared with lab 07's Agents SDK.
 
-## Run first
-
-Start with [Lab 00's setup](../../00_Environment_Check/README.md) for the repository, Python, `uv` and the repository-root `.env` containing your OpenAI key. No Google key or account is needed. This lab uses the in-process LiteLLM SDK; it starts no proxy, browser UI or hosted Google resource.
-
-From the repository root:
-
-```bash
-cd bonus/B3_Google_ADK
-uv sync --locked --python 3.13
-```
-
-In VS Code, select this folder's `.venv/bin/python` for the notebook kernel. The root environment and this environment have different dependency requirements; choose the interpreter inside **B3_Google_ADK**. The notebook installs nothing.
-
-If using `pip`, create a separate virtual environment in this folder, activate it and run:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-Open [b3_google_adk.ipynb](b3_google_adk.ipynb) and run top to bottom. Familiarity with Python functions, lists and dictionaries is enough; `await`, ADK content objects and events are explained where used. The notebook defines every tool it needs and reads the bundled [Chinook data](../../data/README.md) in place. No earlier lab must have been run.
-
-## Parts
+## What you will do
 
 | Part | What it adds |
 |---|---|
@@ -66,11 +46,43 @@ Time, token counts and tool grouping may vary. The invoice facts and support-rep
 
 The ADK connector exposes cache reads but does not retain OpenAI's nested cache-write field. Every first-turn Helena request is below the configured model's 1,024-token cache threshold; the baseline estimate uses zero writes. The complete-demo upper estimate prices noncached input at the larger input/write rate. A longer application should retain raw provider usage for accurate cache-write accounting.
 
-## Challenge and solution
+**About the saved outputs.** The saved notebooks use `gpt-6-luna` with reasoning effort `none`, configured through the repository's `models.env`. The model still runs on OpenAI; Google ADK provides the local runtime and LiteLLM translates the model calls. Answers and measurements can vary across runs.
+
+## When to use it
+
+ADK ran the same desk loop as lab 07's Agents SDK (for Helena: 3 model requests, `find_customer` first), but through
+two translation layers, ADK's `LiteLlm` connector and LiteLLM, where the SDK calls OpenAI directly. One cost of those
+layers shows in the accounts: the connector drops OpenAI's cache-write field, so the whole-run $0.000432 is an upper
+estimate, not a bill. Choose ADK when your team builds on Google's stack or wants its session services and agent
+types, and LiteLLM when one interface must reach several providers. On OpenAI alone, lab 07's SDK or lab 08's
+LangChain agent is the shorter path.
+
+## Challenge
 
 Start a separate Puja Srivastava conversation. Verify 6 invoices, $36.64 and Jane Peacock in both raw tool results and final text, check `last_answer`, and measure model usage separately from event count.
 
 The [full standalone solution](solved/b3_google_adk_solution.ipynb) runs all parts and the challenge. Its Puja run used three model requests, five yielded events, six stored events, 1,140 input and 99 output tokens; estimated cost $0.0001635. Its own Helena timing and usage are read against its own saved run.
+
+## Before you start
+
+Start with [Lab 00's setup](../../00_Environment_Check/README.md) for the repository, Python, `uv` and the repository-root `.env` containing your OpenAI key. No Google key or account is needed. This lab uses the in-process LiteLLM SDK; it starts no proxy, browser UI or hosted Google resource.
+
+From the repository root:
+
+```bash
+cd bonus/B3_Google_ADK
+uv sync --locked --python 3.13
+```
+
+In VS Code, select this folder's `.venv/bin/python` for the notebook kernel. The root environment and this environment have different dependency requirements; choose the interpreter inside **B3_Google_ADK**. The notebook installs nothing.
+
+If using `pip`, create a separate virtual environment in this folder, activate it and run:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+Open [b3_google_adk.ipynb](b3_google_adk.ipynb) and run top to bottom. Familiarity with Python functions, lists and dictionaries is enough; `await`, ADK content objects and events are explained where used. The notebook defines every tool it needs and reads the bundled [Chinook data](../../data/README.md) in place. No earlier lab must have been run.
 
 ## Troubleshooting
 
@@ -87,9 +99,6 @@ Rerunning the configuration cell does not reset conversation history. For a clea
 - `resources/labB3_adapter_and_runtime.mmd` and `.png`: diagram source and exported image.
 - `pyproject.toml`, `uv.lock`, `requirements.txt`: the isolated environment and pip route.
 
-## About the saved outputs
-
-The saved notebooks use `gpt-6-luna` with reasoning effort `none`, configured through the repository's `models.env`. The model still runs on OpenAI; Google ADK provides the local runtime and LiteLLM translates the model calls. Answers and measurements can vary across runs.
 
 ## Resources
 

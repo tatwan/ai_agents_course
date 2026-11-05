@@ -92,6 +92,6 @@ on its page before you rely on it.
   [Agent Skills](https://agentskills.io/specification) and the [Agentic AI Foundation](https://aaif.io/) that hosts
   them
 
-This is the last core lab. Next: the bonus labs in [the lab list](../README.md), each rebuilding part of the desk
-with another framework or service. Lab 19 (how to re-engineer a process with agents) argues the build-or-buy decision
-for a whole process.
+This is the last core lab. Next: [the bonus labs](../bonus/README.md), each rebuilding part of the desk
+with another framework or service. [Lab 19](../19_Process_Reengineering/README.md) (how to re-engineer a process with
+agents) argues the build-or-buy decision for a whole process. Back to [the lab list](../README.md).

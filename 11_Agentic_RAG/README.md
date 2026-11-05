@@ -43,19 +43,19 @@ It names ticket 06, and the ticket names the damaged-media policy. The way to fa
 All of it on the Chinook music shop's 36 policy and ticket files in `data/corpus/`, read in place and indexed in
 Chroma in memory.
 
-**Part A: See Why One Search Misses the Second Fact.** Index the files, read `collection.query`'s raw result, wrap it
+**Part A: See why one search misses the second fact.** Index the files, read `collection.query`'s raw result, wrap it
 in `retrieve`, list the six files nearest the question, and run single-shot RAG at `k=2` and `k=4` three times each.
-**Part B: Give the Model Search as a Tool.** Write the `retrieve` tool's schema by hand, run the tool on a query
+**Part B: Give the model search as a tool.** Write the `retrieve` tool's schema by hand, run the tool on a query
 about another topic to see what the model will read, and write the system message.
-**Part C: Step Through the Turns by Hand.** Turn 1: the model asks for ticket 06. Turn 2: it reads the ticket and
+**Part C: Step through the turns by hand.** Turn 1: the model asks for ticket 06. Turn 2: it reads the ticket and
 searches for the policy the ticket names. Then the remaining turns until it answers.
-**Part D: Package the Turns in a Loop with a Turn Cap.** The same steps in `run_loop`, with a cap of 6 and a record
+**Part D: Package the turns in a loop with a turn cap.** The same steps in `run_loop`, with a cap of 6 and a record
 of every query, call and token.
-**Part E: Tell a Planned Split from a Dependent Hop.** Check which words of each query came from a file already read,
+**Part E: Tell a planned split from a dependent hop.** Check which words of each query came from a file already read,
 on five runs of the ticket-06 question and five of a question the model can split without reading anything.
-**Part F: Compare the Cost with a Bigger k.** Single-shot `k=6` against the agent in facts, calls, tokens and cost;
+**Part F: Compare the cost with a bigger k.** Single-shot `k=6` against the agent in facts, calls, tokens and cost;
 then a reworded question that moves the refund policy out of the top six.
-**Part G: Stop on a Question the Files Cannot Answer.** The CEO's mobile number, three times, and the turn cap seen
+**Part G: Stop on a question the files cannot answer.** The CEO's mobile number, three times, and the turn cap seen
 on its own.
 **Challenge.** Helena's rep and the first-reply time with `run_loop`, checked by the files found; then label the run
 as a planned split or a dependent hop.

@@ -77,6 +77,9 @@ facts (customer 6, 7 invoices, $49.62, Steve Johnson) and which session a reply 
 - **Pages and ports:** the notebook starts its pages on `http://127.0.0.1:7860`, one at a time, and closes each; Part F
   starts `app.py` on port 7861 and stops it. Open an address in your browser while its page is running to try it by
   hand.
+- **On a remote VM or in Codespaces:** `127.0.0.1` is the remote machine, not yours. VS Code forwards ports 7860 and
+  7861 for you (see its **Ports** panel; add the port there if it is missing): open the forwarded address instead of
+  `127.0.0.1`.
 - **Files it writes:** `13_Support_Desk_Agent/outputs/` (git ignores it): the sessions file, a writable copy of the
   database for Part B, and `app.py`'s own sessions file. `data/chinook.db` is only ever opened read-only.
 - **Cost:** about 60 short agent runs, most of them in Part A's comparison: around one US cent at the prices in

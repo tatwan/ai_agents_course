@@ -184,7 +184,7 @@ Two small files in the repository folder hold everything the labs need to know a
 
 | File | Holds | Committed to Git? |
 |---|---|---|
-| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`), `REASONING_EFFORT` and the prices per million tokens | yes: no secrets in it |
+| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`), `REASONING_EFFORT`, the prices per million tokens and lab 15's price per hosted container session | yes: no secrets in it |
 | `.env` | your `OPENAI_API_KEY`, and the optional bonus keys | never: `.gitignore` keeps it out |
 
 **Add your key.** Copy the example file, then open `.env` in any editor and paste your key after `OPENAI_API_KEY=`

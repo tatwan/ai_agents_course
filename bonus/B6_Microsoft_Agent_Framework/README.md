@@ -1,46 +1,23 @@
-# Lab B6: How to build a desk agent and a resumable approval workflow
+# Bonus B6: How to build the desk agent with Microsoft Agent Framework
 
 **CPU | OpenAI key | Own environment | Practises: framework tool loops, explicit workflow transitions and human approval**
 
 ## Goal
 
-Build the Chinook desk with Microsoft Agent Framework, then keep a refund review waiting across a process restart.
+We build the Chinook desk with Microsoft Agent Framework, then keep a refund review waiting across a process restart.
 The new process restores the pending request; approval adds one local queue row, repeated approval leaves one row,
 and rejection adds none. The workflow never sends money.
 
 ## What you will learn
 
-- Use the public model client before constructing an `Agent`.
-- Inspect three read-only tools, the agent's messages and per-request usage.
-- Connect typed executor methods with explicit workflow edges.
-- Restore a pending human review with `FileCheckpointStorage` in another process.
-- Check approval, rejection and repeated delivery against the stored queue.
+- How to use the public model client before putting it inside an `Agent`.
+- How to inspect the three read-only tools, messages and usage behind a desk answer.
+- How to connect typed executor methods into an explicit workflow.
+- How to save a pending review with `FileCheckpointStorage` and resume it in a new process.
+- How to check approval, rejection and repeated delivery against the queue itself.
+- When this framework fits better than the core path's Agents SDK and LangGraph.
 
-## Run first
-
-From the repository folder, create the root `.env` from `.env.example` and set `OPENAI_API_KEY` locally. Model names,
-reasoning effort and prices come from `models.env`. Then use this lab's environment:
-
-```bash
-cd bonus/B6_Microsoft_Agent_Framework
-uv sync --locked --python 3.13
-```
-
-In VS Code, open [the notebook](B6_microsoft_agent_framework.ipynb) and select this folder's `.venv/bin/python`
-as the notebook kernel. Run every cell from the top. With pip, create and activate a separate Python environment
-in this folder and run `pip install -r requirements.txt`; select that interpreter as the kernel. See
-[Lab 00's setup](../../00_Environment_Check/README.md) for editor and key setup. No other notebook needs to have run.
-
-The environment pins Microsoft Agent Framework 1.24.0. No Azure account, resources or keys are needed. The client
-uses the OpenAI Responses API. We configure no telemetry exporter or observability account. The diagram is bundled;
-learners do not need Mermaid or Chrome.
-
-Data comes from the public [Chinook sample](../../data/README.md), opened read-only. Invented duplicate-charge
-requests exercise a clearly labelled toy policy. Checkpoints and a SQLite queue are written under this folder's
-gitignored `outputs/`, with a fresh directory per notebook execution. Keep those files if you want to inspect or
-resume your own run.
-
-## Parts
+## What you will do
 
 | Part | What it teaches |
 |---|---|
@@ -68,8 +45,43 @@ resume your own run.
 **About the saved outputs.** Both notebooks use `gpt-6-luna` at reasoning effort `none` from `models.env`. Tool
 ordering, wording, timing and token counts may change. The saved learner and solution each have real outputs from
 their own complete run. The model is used for one arithmetic response and one desk answer; the refund workflow
-and challenge use no model calls. At the configured prices the complete learner run costs about $0.0001469.
-These are token charges only, not a production service estimate.
+and challenge use no model calls. At the configured prices the desk answer costs $0.0001427 (Part C) and the Part A
+call $0.0000042 (17 input and 5 output tokens), so the whole notebook spends $0.0001469 on the model, as its last
+Part C cell prints. These are token charges only, not a production service estimate.
+
+## When to use it
+
+The core path builds the agent in lab 07 (Agents SDK) and the approval pause in lab 08 (LangGraph); B1 makes a
+LangGraph workflow survive a restart. Microsoft Agent Framework gives both shapes in one library: the model chose
+the desk's tools (3 provider requests, $0.0001427), and our code chose every refund transition with no model. The
+review survived in file checkpoints and a new process approved it into one queue row; a replayed approval left one
+row because of the queue's primary key, not the checkpoint. Choose it when you inherit AutoGen code (Part F) or
+build on Microsoft's stack; starting from the core path, lab 07 and LangGraph cover the same ground.
+
+
+## Before you start
+
+From the repository folder, create the root `.env` from `.env.example` and set `OPENAI_API_KEY` locally. Model names,
+reasoning effort and prices come from `models.env`. Then use this lab's environment:
+
+```bash
+cd bonus/B6_Microsoft_Agent_Framework
+uv sync --locked --python 3.13
+```
+
+In VS Code, open [the notebook](B6_microsoft_agent_framework.ipynb) and select this folder's `.venv/bin/python`
+as the notebook kernel. Run every cell from the top. With pip, create and activate a separate Python environment
+in this folder and run `pip install -r requirements.txt`; select that interpreter as the kernel. See
+[Lab 00's setup](../../00_Environment_Check/README.md) for editor and key setup. No other notebook needs to have run.
+
+The environment pins Microsoft Agent Framework 1.24.0. No Azure account, resources or keys are needed. The client
+uses the OpenAI Responses API. We configure no telemetry exporter or observability account. The diagram is bundled;
+learners do not need Mermaid or Chrome.
+
+Data comes from the public [Chinook sample](../../data/README.md), opened read-only. Invented duplicate-charge
+requests exercise a clearly labelled toy policy. Checkpoints and a SQLite queue are written under this folder's
+gitignored `outputs/`, with a fresh directory per notebook execution. Keep those files if you want to inspect or
+resume your own run.
 
 ## Folder contents
 
@@ -91,4 +103,4 @@ These are token charges only, not a production service estimate.
 - [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling): the request, execution and result loop.
 - [Python subprocess](https://docs.python.org/3/library/subprocess.html): launching and checking another process.
 
-Back to [the bonus lab list](../README.md) or [all labs](../../README.md).
+Back to [the bonus lab list](../README.md) or [the full lab list](../../README.md).

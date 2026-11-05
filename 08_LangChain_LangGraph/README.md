@@ -120,4 +120,8 @@ what the rep needed in the rest; the approval step stopped every one of them bef
   `SqliteSaver`, threads and `get_state`.
 - [LangGraph: Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): how a graph pauses and resumes.
 
-Next: Lab 09, How to choose an agent framework (a guide). Back to [the lab list](../README.md).
+Going further: [bonus B9](../bonus/B9_LangChain_Building_Blocks/README.md) stays with one model call at a time and
+composes LangChain's smaller pieces around it: prompt templates, `prompt | model | parser` chains, typed records from
+`with_structured_output`, and `batch` and `stream`.
+
+Next: [Lab 09: How to choose an agent framework (a guide)](../09_Choose_A_Framework/README.md). Back to [the lab list](../README.md).

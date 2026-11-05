@@ -1,4 +1,4 @@
-# Lab B8 resources
+# Bonus B8 resources
 
 `golden_cases.json` and `mlflow_run_summary.json` are byte-for-byte copies of Lab 18's
 `resources/golden_cases.json` and `resources/run_summary.json`. They keep the same questions, reference checks and

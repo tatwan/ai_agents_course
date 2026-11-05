@@ -1,33 +1,19 @@
-# Lab B5: How to build the desk as a CrewAI crew
+# Bonus B5: How to build the desk as a CrewAI crew
 
 **CPU | API key: `OPENAI_API_KEY` | Own environment | Practises: scoped specialists, task context, typed output and policy checks**
 
 ## Goal
 
-Build two specialists whose tools, responsibilities and handoff you can inspect. A hand-made refund claim passes its output schema and fails the task guardrail; the live crew then shows why its model-written evidence needs a separate comparison with the actual tool results.
+We build two specialists whose tools, responsibilities and handoff (the typed result one task passes to the next, not a lab 07 handoff of control) we can inspect. A hand-made refund claim passes its output schema and fails the task guardrail; the live crew then shows why its model-written evidence needs a separate comparison with the actual tool results.
 
 ## What you will learn
 
-- Construct CrewAI's `LLM`, `Agent`, `Task` and `Crew` directly.
-- Split the three Chinook lookups between billing and support, and pass customer identity through task context.
-- Read typed outputs and compare evidence with the recorded tool results.
-- Reject a well-typed payment claim with a deterministic task guardrail.
-- Count model requests across both specialists and compare their cost with a simpler agent.
-
-## Run first
-
-The notebook stands alone. You need the repository's `data/chinook.db`, `models.env` and a repository-root `.env` containing your OpenAI key. [Lab 00](../../00_Environment_Check/README.md) explains the general setup.
-
-CrewAI requires different OpenAI and MCP versions from the core environment. From the repository folder, create this lab's isolated environment:
-
-```bash
-cd bonus/B5_CrewAI_Crew
-uv sync --locked --python 3.13
-```
-
-Open [b5_crewai_crew.ipynb](b5_crewai_crew.ipynb) in VS Code and select `bonus/B5_CrewAI_Crew/.venv/bin/python` as its interpreter. For the pip route, create a Python 3.13 virtual environment in this folder and install its `requirements.txt`. The kernel must use that environment. Packages are installed from the terminal; no notebook cell installs them.
-
-Keep the key at the repository root. The configuration reads the model and prices from `models.env`. The notebook disables CrewAI telemetry and tracing, leaves memory off, and directs local storage to ignored `outputs/`. The crew sends its model requests to OpenAI. The database opens read-only.
+- How to construct CrewAI's `LLM`, `Agent`, `Task` and `Crew` directly.
+- How to give each specialist only the lookups its task needs, and pass customer identity through task context.
+- How to read typed task outputs and compare model-written evidence with tool results.
+- How to reject a well-typed refund decision with a deterministic task guardrail.
+- How to count requests, tokens, seconds and cost across the whole crew.
+- When a crew is worth its extra requests, compared with one agent or the specialists of labs 07 and 16.
 
 ## What you will do
 
@@ -55,9 +41,34 @@ Keep the key at the repository root. The configuration reads the model and price
 
 **About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, as configured in `models.env`. Each notebook saves its own complete run. Replies, evidence formatting, request counts and timings can change. The deterministic fixture checks shape versus policy independently of model behavior; a live run that passes immediately demonstrates no repair. The cost estimate uses configured prices and the usage CrewAI exposes; its native OpenAI summary omits any cache-write premium, so the notebook also shows a conservative baseline bound.
 
-## Runtime and files
+## When to use it
+
+Lab 07 Part F splits the desk between specialists in the Agents SDK, and lab 16 measures one agent against
+specialists. CrewAI declares the same split as roles, tasks and a context edge: each specialist saw only its own
+tools, the result passed from the first task to the second was a typed `InvoiceEvidence` object we could read, and
+the task guardrail rejected a well-typed `paid` claim. The cost was 5 model requests for two tasks (about $0.00039
+for the Helena baseline), with the evidence holding in 10 of 10 repeats. Choose a crew when responsibilities really
+need different tools, objectives or context; for a fixed lookup like this, one agent or plain Python is less work,
+and a sequential crew is not a durable approval workflow.
+
+## Before you start
+
+The notebook stands alone. You need the repository's `data/chinook.db`, `models.env` and a repository-root `.env` containing your OpenAI key. [Lab 00](../../00_Environment_Check/README.md) explains the general setup.
+
+CrewAI requires different OpenAI and MCP versions from the core environment. From the repository folder, create this lab's isolated environment:
+
+```bash
+cd bonus/B5_CrewAI_Crew
+uv sync --locked --python 3.13
+```
+
+Open [b5_crewai_crew.ipynb](b5_crewai_crew.ipynb) in VS Code and select `bonus/B5_CrewAI_Crew/.venv/bin/python` as its interpreter. For the pip route, create a Python 3.13 virtual environment in this folder and install its `requirements.txt`. The kernel must use that environment. Packages are installed from the terminal; no notebook cell installs them.
+
+Keep the key at the repository root. The configuration reads the model and prices from `models.env`. The notebook disables CrewAI telemetry and tracing, leaves memory off, and directs local storage to ignored `outputs/`. The crew sends its model requests to OpenAI. The database opens read-only.
 
 The learner notebook makes one tiny model call, one baseline crew run and ten repetitions. The solution repeats that whole notebook and adds one challenge crew run. The cells print usage and an estimated cost from `models.env`; at the saved configuration this is below one US cent per notebook. A task can make several model requests. Iteration and output limits constrain the exercise; they are not a dollar-budget guarantee.
+
+## Folder contents
 
 | Path | What it holds |
 |---|---|
@@ -78,4 +89,6 @@ The learner notebook makes one tiny model call, one baseline crew run and ten re
 - [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling): application code executes proposed calls.
 - [Data notes](../../data/README.md): the public Chinook sample and checked fixture facts.
 
-Compare with [lab 09](../../09_Choose_A_Framework/README.md). Back to [the bonus labs](../README.md).
+Compare with [lab 16](../../16_Agent_Designs/README.md), which measures one agent against specialists on the same desk,
+and with [lab 09](../../09_Choose_A_Framework/README.md), which sets the frameworks' measured runs side by side. Back to
+[the bonus lab list](../README.md).

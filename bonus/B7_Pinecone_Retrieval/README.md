@@ -1,31 +1,20 @@
-# Lab B7: How to move retrieval to Pinecone
+# Bonus B7: How to move retrieval to Pinecone
 
 **CPU | Optional account lab | Keys: `OPENAI_API_KEY`, `PINECONE_API_KEY` | Practises: managed retrieval, relevance measurement and candidate selection**
 
 ## Goal
 
-Store and search the Chinook shop's policies and tickets in Pinecone, then decide what changed by comparing it with local Chroma. Both stores receive the same vectors and ten labelled questions. The staffing rule remains second in both stores: moving storage to a managed service does not by itself fix retrieval relevance.
+We store and search the Chinook shop's policies and tickets in Pinecone, then decide what changed by comparing it with local Chroma. Both stores receive the same vectors and ten labelled questions. The staffing rule remains second in both stores: moving storage to a managed service does not by itself fix retrieval relevance.
 
 ## What you will learn
 
-- Keep source IDs, text, metadata and embeddings aligned.
-- Create a uniquely owned index with the raw Pinecone SDK and inspect its readiness.
-- Upsert, fetch and search documents directly before wrapping a repeated call.
-- Compare two stores using hit@1, hit@3 and scores for shared IDs.
-- Choose metadata filters and namespaces without confusing either with authorisation.
-- Delete only this run's index and verify its absence.
-
-## Run first
-
-Use [Lab 00's setup](../../00_Environment_Check/README.md) to prepare the repository environment. From the repository root, run `uv sync --python 3.13` (or `pip install -r requirements.txt`). Copy `.env.example` to `.env` if needed and add your two keys there. Keep that file private. Open [B7_pinecone_retrieval.ipynb](B7_pinecone_retrieval.ipynb) in VS Code or JupyterLab with the repository's `.venv` kernel and run from the top. No previous lab execution is needed.
-
-For Pinecone, sign in to [the console](https://app.pinecone.io/), choose your project, and create a project API key permitted to create/delete indexes and read/write documents. Check your plan and remaining usage before running. [Current pricing](https://www.pinecone.io/pricing/) lists Starter with included usage in AWS `us-east-1`; this lab requests that deployment. Availability and quotas depend on your account. If creation is refused, stop and inspect the quota; preserve every existing index. The teaching design requires no plan upgrade or purchase.
-
-⚠️ These cells send the supplied teaching texts to OpenAI for embeddings and store them in Pinecone. Each full notebook uses two embedding calls, 2,666 input tokens and **$0.00005332** at the configured embedding price. It makes no chat-generation call. Pinecone database writes, reads and storage are separate service usage governed by your plan; the lab requests no Pinecone embedding inference. Deletion does not undo billed usage.
-
-The notebook creates one randomly named `b7-chinook-...` index, records its name and ownership tag in ignored `outputs/ownership.json`, and deletes it in **Clean up**. Run cleanup before restarting the notebook. If the kernel is lost, use that saved name and tag to identify and delete only your resource in the console. Keep existing indexes intact.
-
-[Lab 10](../../10_Retrieval/README.md) is the open-source Chroma route. This lab restates its inputs and embeds the supplied corpus itself; it reads the 36 files in `data/corpus/` without changing them. See [the data note](../../data/README.md) for their source and terms.
+- How to embed the supplied files and keep each vector attached to its file name and metadata.
+- How to create a uniquely named Pinecone index with its current raw Python SDK and read its readiness.
+- How to upsert and search documents directly, reading IDs, cosine scores, text and metadata before using a helper.
+- How to compare two stores on the same vectors with hit@1 and hit@3.
+- How to narrow a search with metadata and keep datasets separate with namespaces.
+- How to delete only the index this notebook created and verify it is gone.
+- When a managed vector store is worth an account, compared with lab 10's local Chroma.
 
 ## What you will do
 
@@ -59,6 +48,27 @@ The diagram focuses on the ten labelled comparison questions. Part F adds one sh
 
 **About the saved outputs.** Embeddings come from `text-embedding-3-small`, selected in `models.env`; the standard configuration also reports `gpt-6-luna`, but this lab makes no chat-model call. Each notebook has its own complete cloud run and cleanup. Scores can vary slightly across embedding calls. The ten-case comparisons have no repeated IDs; both notebooks' later unfiltered shipment response prints ticket 06 twice. That is one observed SDK response with unknown service-versus-client origin, preserved without deduplication; two returned slots are not evidence of two stored records. Inspect actual IDs and scores when your output differs. These small fixtures do not measure general recall, scale or latency.
 
+## When to use it
+
+Lab 10 keeps the same corpus in local Chroma with only the OpenAI key. With the same vectors, both stores scored
+hit@1 4/8 and hit@3 6/8 and returned identical ordered top-three lists for 10 of 10 questions: the managed store did
+not change relevance (that is retrieval work, labs 10 and 11). It changed who runs the database, and in return we
+needed an account, an index lifecycle, writes polled until visible and an owned-index cleanup. Choose Pinecone when
+the corpus or traffic outgrows one machine, several services share one index, or each customer needs its own
+partition and you would rather not operate the database; for a corpus this size, Chroma is enough.
+
+## Before you start
+
+Use [Lab 00's setup](../../00_Environment_Check/README.md) to prepare the repository environment. From the repository root, run `uv sync --python 3.13` (or `pip install -r requirements.txt`). Copy `.env.example` to `.env` if needed and add your two keys there. Keep that file private. Open [B7_pinecone_retrieval.ipynb](B7_pinecone_retrieval.ipynb) in VS Code or JupyterLab with the repository's `.venv` kernel and run from the top. No previous lab execution is needed.
+
+For Pinecone, sign in to [the console](https://app.pinecone.io/), choose your project, and create a project API key permitted to create/delete indexes and read/write documents. Check your plan and remaining usage before running. [Pinecone pricing](https://www.pinecone.io/pricing/) lists (checked 5 November 2026) Starter with included usage in AWS `us-east-1`; this lab requests that deployment. Availability and quotas depend on your account. If creation is refused, stop and inspect the quota; preserve every existing index. The teaching design requires no plan upgrade or purchase.
+
+⚠️ These cells send the supplied teaching texts to OpenAI for embeddings and store them in Pinecone. Each full notebook uses two embedding calls, 2,666 input tokens and **$0.00005332** at the configured embedding price. It makes no chat-generation call. Pinecone database writes, reads and storage are separate service usage governed by your plan; the lab requests no Pinecone embedding inference. Deletion does not undo billed usage.
+
+The notebook creates one randomly named `b7-chinook-...` index, records its name and ownership tag in ignored `outputs/ownership.json`, and deletes it in **Clean up**. Run cleanup before restarting the notebook. If the kernel is lost, use that saved name and tag to identify and delete only your resource in the console. Keep existing indexes intact.
+
+[Lab 10](../../10_Retrieval/README.md) is the open-source Chroma route. This lab restates its inputs and embeds the supplied corpus itself; it reads the 36 files in `data/corpus/` without changing them. See [the data note](../../data/README.md) for their source and terms.
+
 ## Folder contents
 
 | Path | What it is |
@@ -79,4 +89,4 @@ The diagram focuses on the ten labelled comparison questions. Part F adds one sh
 - [OpenAI embeddings](https://developers.openai.com/api/docs/guides/embeddings): vector objects and token usage.
 - [Chroma configuration](https://docs.trychroma.com/docs/collections/configure) and [metadata filters](https://docs.trychroma.com/docs/querying-collections/metadata-filtering): cosine space and the local `where` argument.
 
-Back to [the bonus labs](../README.md) or [the lab list](../../README.md).
+Back to [the bonus lab list](../README.md) or [the full lab list](../../README.md).

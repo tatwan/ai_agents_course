@@ -33,10 +33,10 @@
 ::time=35
 
 ## Q5: For the jazz-fusion question, who decides the next step?
-- [x] The model — it generates the conversational response
+- [ ] The model — it generates the conversational response
 - [ ] You — every reply is explicitly scripted
 - [ ] The visitor — they execute the answer
-- [ ] The finance team
+- [x] Nobody — it gives one reply, with no next step
 ::time=35
 
 ## Q6: How far should a chatbot answering “What is jazz fusion?” go?
@@ -67,21 +67,21 @@
 - [ ] Act
 ::time=35
 
-## Q10: An inbox system automatically refunds customers up to a fixed limit, with nobody reviewing it. What is the best shape?
+## Q10: A system reads each free-text customer email, decides whether it asks for a refund, and refunds up to a fixed limit, with nobody reviewing it. What is the best shape?
 - [ ] Chatbot
-- [x] Workflow
-- [ ] Agent
+- [ ] Workflow
+- [x] Agent
 - [ ] Search engine
 ::time=35
 
-## Q11: How far does the auto-refund system go?
+## Q11: How far should the auto-refund system go?
 - [ ] Suggest
-- [ ] Draft
+- [x] Draft
 - [ ] Act with audit
-- [x] Act
+- [ ] Act
 ::time=20
 
-## Q12: What risk-control concern is most important for automatic refunds?
+## Q12: If the shop still wants these refunds to run without review, which control matters most?
 - [ ] Whether the response sounds friendly
 - [x] Clear limits, fraud controls, and an audit trail
 - [ ] Whether the system uses a chatbot interface

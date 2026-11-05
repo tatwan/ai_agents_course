@@ -4,23 +4,28 @@
 
 ## Goal
 
-Build evidence for whether the Chinook support agent does its job, which steps it takes, and what each task costs.
-The main comparison shows why a judge that reads a planted ticket claim can accept a false payment statement. We
-compare that verdict with a billing record, then test a lookup change on the same questions and checks.
+Build the evidence for three questions about the Chinook support agent: does it do its job, which steps does it take,
+and what does each task cost? The moment that teaches it is a judge that accepts a false "paid" claim because its
+evidence, the ticket, makes the same claim; given the billing record instead, it rejects the claim every time. Then we
+test a lookup change on the same questions and checks.
 
 ## What you will learn
 
-- Price individual model calls, including cached reads and cache writes, and stop further calls at a running budget.
-- Read a task as timed model and tool spans, first by hand and then in MLflow.
-- Write golden cases whose answer key stays outside the agent's prompt.
-- Check answer facts, tool executions and returned records separately, and inspect every failing reply.
-- Calibrate a judge against human labels and compare one tool change with a fixed test set.
+- How to price each model call, cached input and cache writes included, and stop a task's calls at a running budget.
+- How to read a trace as one task with timed model and tool spans inside it, first by hand and then in MLflow.
+- How to write golden cases whose answer key never reaches the agent.
+- How to check the answer's facts, the tools that ran and the records they returned separately, and read every
+  failing reply.
+- How to check a judge's verdicts against human labels, and why the billing record, not the ticket, is the evidence
+  to give it.
+- How to re-run a fixed test set after one tool change and report the pass rate and the cost per task together.
 
 ## Coming from
 
-You can call a model and read a function-tool request. This lab defines and explains its own read-only Chinook tools
-and request loop, so it runs without any previous notebook having run. The simple Chat Completions loop is a
-fundamental we can inspect; new API applications can start with Responses, and frameworks can add their own tracing.
+You can call a model and read a function-tool request (labs 01 and 03). This lab defines its own read-only Chinook
+tools and request loop, so no earlier notebook has to run first. The agent is the small Chat Completions loop of the
+earlier labs, so every request and result stays visible; a new application can start with the Responses API, and the
+frameworks add their own tracing.
 
 ## What you will do
 
@@ -62,45 +67,48 @@ checks fail while the unchanged tool path still passes. The worked notebook runs
 | Part C | One hand model span per ledger row; tool spans retain actual arguments and results |
 | Part D | 3 `CHAT_MODEL` spans match 3 ledger rows; tool spans and the `desk` root are stored in MLflow |
 | Part E | 8 test cases; only their questions are sent to the agent |
-| Part F | Baseline 7/8; the model recovered the unaccented name itself, but answered the unrelated poem request |
+| Part F | Baseline 5/8: the unaccented name not found (the model did not try the accent), one of the two Marks chosen instead of a question back, and the unrelated poem written |
 | Part G | Ticket evidence: planted paid reply accepted 5/5, correct requested reply accepted 0/5. Billing evidence: 0/5 and 5/5 respectively |
-| Part H | Changed set 7/8; the unrelated poem still fails. Repeated unaccented question: exact lookup 3/5, suggestions 5/5 |
+| Part H | Changed set 7/8: the unaccented name now found; Mark passes too, by run-to-run variation (the change only adds suggestions when nothing matches); the unrelated poem still fails. Repeated unaccented question: exact lookup 2/5, suggestions 5/5 |
 | Challenge | A new customer checked against their own records; a scripted wrong total fails facts even when tool execution and record checks still pass |
 
-The changed eight-question set used **20 model calls**, **9,048 input tokens** (zero cached reads or writes) and
-**581 output tokens**. Its total model-token charge was **$0.00119530**, or **$0.0001494125 per task**, with a
-**7/8 = 0.875 pass rate**. The whole learner notebook, including judges and repeated tests, made 116 successful
-model calls costing $0.00630420. This cost is separate from the eight-task comparison.
+The notebook prints the totals itself, in its `LAB18 RESULT` and `changed set` lines: the changed eight-question set
+used **20 model calls**, **9,048 input tokens** (0 cached reads, 0 writes) and **587 output tokens**, a model-token
+charge of **$0.00119830**, or **$0.00014979 per task**, with a **7/8 = 0.875 pass rate**. The whole learner notebook,
+judges and repeated tests included, made 114 successful model calls costing $0.00617180; that cost is separate from
+the eight-task comparison.
 
-[`resources/run_summary.json`](resources/run_summary.json) keeps the recorded baseline and changed-set results,
+[`resources/run_summary.json`](resources/run_summary.json) keeps an earlier recorded run (1 November 2026: 20 model
+calls, 9,048 input and 581 output tokens, $0.0001494125 per task, 7/8) with its baseline and changed-set results,
 per-case replies, checks, call counts, token counts and trace IDs. `changed.cost_per_task_usd` is the sum of all
 eight task costs divided by eight, including the failure; `changed.pass_rate` uses those same eight tasks.
 `tokens.input` includes cached and written input, so ordinary input is `input - cached - written`.
 `prices_per_million_tokens_usd` records the four list-price rates used. The snapshot lets a process calculator
 quote this measurement without running the notebook first; it does not update itself when you rerun the notebook.
 
-**About the saved outputs.** They use `gpt-6-luna` at reasoning effort `none`, configured through `models.env`.
-Each notebook's checkpoints describe its own run. Replies, call counts and timings vary. In particular, an exact
-lookup returns no match for the unaccented name, but the model sometimes tries the accented spelling on its own.
-We retain those successes alongside the failures. The eight-case score measures the checks we wrote; it is not a
-real-world error probability. Token prices exclude hosting, human review, tax and account discounts.
+**About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the settings in `models.env`. The
+learner notebook and the worked solution each describe their own run; replies, call counts and timings vary. The exact
+lookup never matches the unaccented name, but the model sometimes tries the accented spelling on its own, and we keep
+those successes beside the failures. In the saved learner run the baseline also chose one of the two Marks instead of
+asking, which earlier runs did not do. The eight-case score measures the checks we wrote, not a real-world error rate,
+and the token prices leave out hosting, human review, tax and account discounts.
 
 ## Before you start
 
-- Run Lab 00's environment checks. From the repository folder run `uv sync` (or `pip install -r requirements.txt`),
-  add `OPENAI_API_KEY` to `.env`, and open `18_evals_and_tracing.ipynb` in VS Code or JupyterLab with the `.venv` kernel.
-- The notebook uses the supplied `data/chinook.db` read-only and `data/corpus/` in place. The payment-status record
-  is an explicit lab fixture, and the planted-ticket variant is constructed in memory. No payment API is called.
-- MLflow needs no account or external server. Trace metadata go in `outputs/mlflow.db`; trace artifacts go in
-  `mlruns/`. Git ignores both. Traces include prompts, tool arguments and replies; keep real customer secrets out
-  of a trace store.
-- The notebook disables MLflow usage telemetry and its agent hint. It shows trace fields directly rather than
-  opening an automatic notebook viewer.
-- Model and judge requests are paid. The task budget stops between calls, so a call already in flight can cross
-  the threshold. `max_completion_tokens`, a turn cap and the notebook-wide successful-call ledger add limits;
-  they do not replace provider-level spend controls.
-- The notebook's troubleshooting table covers a missing key, a wrong working folder, a missing database and the
-  notebook-budget stop. A non-`stop` finish is retained and fails the completion check.
+- **Lab 00 first.** It checks the environment and that your key reaches the model. Then, in the repository folder,
+  `uv sync` (or `pip install -r requirements.txt`), put `OPENAI_API_KEY` in `.env`, and open
+  `18_evals_and_tracing.ipynb` in VS Code or JupyterLab with the `.venv` kernel.
+- **Data:** the notebook opens `data/chinook.db` read-only and reads `data/corpus/` in place. The billing record is a
+  small lab fixture, and the planted-ticket variant is built in memory. No payment API is called.
+- **MLflow** needs no account or server. Trace metadata go in `outputs/mlflow.db` and trace artifacts in `mlruns/`;
+  git ignores both. Traces hold prompts, tool arguments and replies, so keep real customer secrets out of a trace
+  store. The notebook turns off MLflow's usage telemetry and its agent hint, and reads the trace fields itself
+  instead of opening MLflow's notebook viewer.
+- **Cost:** the model and judge calls are paid. The task budget stops between calls, so a call already in flight can
+  cross it; `max_completion_tokens`, a turn cap and the notebook's $2 stop add limits, but they do not replace the
+  provider's own spend limits.
+- The notebook ends with a troubleshooting table: a missing key, a wrong working folder, a missing database and the
+  notebook's budget stop. A finish other than `stop` is kept, and fails the finished check.
 
 ## Open the local trace UI
 
@@ -110,9 +118,9 @@ This is optional; the notebook retrieves the same stored spans directly. In a te
 uv run mlflow ui --backend-store-uri sqlite:///outputs/mlflow.db --host 127.0.0.1 --port 5018
 ```
 
-Open `http://127.0.0.1:5018`, choose **Chinook desk evaluation**, then open **Traces**. On a remote workspace,
-forward port 5018. We use 5018 because macOS commonly occupies 5000. Ctrl+C stops the UI; the database and trace
-artifacts remain available when the kernel restarts.
+Open `http://127.0.0.1:5018`, choose **Chinook desk evaluation**, then open **Traces**. On a remote VM or in
+Codespaces, open the address VS Code forwards for port 5018 instead. We use 5018 because macOS often has 5000
+taken. Ctrl+C stops the UI; the database and trace artifacts remain available when the kernel restarts.
 
 ## Folder contents
 
@@ -134,4 +142,4 @@ artifacts remain available when the kernel restarts.
 - [MLflow usage tracking](https://mlflow.org/docs/latest/community/usage-tracking/): telemetry controls.
 - [Python `difflib`](https://docs.python.org/3/library/difflib.html#difflib.get_close_matches): close string matches.
 
-Next: Lab 19: How to re-engineer a process with agents. Back to [the lab list](../README.md).
+Next: [Lab 19: How to re-engineer a process with agents](../19_Process_Reengineering/README.md). Back to [the lab list](../README.md).

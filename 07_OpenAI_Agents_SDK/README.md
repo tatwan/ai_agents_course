@@ -56,13 +56,13 @@ with one destination.
 
 | After | You should see |
 |---|---|
-| Part A | two one-second sleeps: about 2 s one after the other, about 1 s gathered, results in argument order; `time.sleep` inside `async def` still about 2 s; two real calls gathered in about the time of the slower one (ours: 5.92 s against 2.02 s) |
+| Part A | two one-second sleeps: about 2 s one after the other, about 1 s gathered, results in argument order; `time.sleep` inside `async def` still about 2 s; two real calls gathered in about the time of the slower one (ours: 6.93 s against 1.95 s) |
 | Part B | Helena 6, 7 invoices, $49.62, Steve Johnson; Puja 59, 6 invoices, $36.64, Jane Peacock; `function_tool`'s schema for `find_customer` matches lab 03's (strict, `name` a string with its description); a `Desk` agent with three tools, drawn |
 | Part C | three model calls: `find_customer`, then `get_invoices` and `get_support_rep` in one reply, then the answer with 7, $49.62 and Steve Johnson; input tokens growing per request (206, 264 and 375); a trace `task` → `agent` → three `turn`s, each with a `response` and its `function` spans; `MaxTurnsExceeded` at `max_turns=1` |
 | Part D | no SDK default for our model; the trace shows effort `medium` without `model_settings` and `none` with it; 0 reasoning tokens on the lookup at both; reasoning tokens on the comparison only at the API's default; the right numbers at both |
-| Part E | without a session the follow-up asks who "she" is; with `SQLiteSession` it answers $49.62; 10 items stored, found again from the file |
+| Part E | without a session the follow-up does not know who "she" is and asks for her full name; with `SQLiteSession` it answers $49.62; 10 items stored, found again from the file |
 | Part F | one agent: three facts, 3 requests; our code: three facts from two specialists run at once; as tools: three facts, 8 requests, specialists' runs nested in the trace, `last_agent` `Manager`; handoff: the rep missing, `last_agent` `Invoices`, no `get_support_rep` call; over five runs each: one agent 5 of 5, as tools 5 of 5, handoff 0 of 5 with all three facts; the rep-only question answered by `Support reps` |
-| Challenge | handing back: handoffs `Triage -> Invoices -> Triage -> Support reps`, more requests and tokens than one agent, all three facts in 5 of 5 in the saved run (15 of 20 over all our runs) runs; the manager with a session: Helena's three facts after *And what about Helena Holý?*, with the specialists' `input` naming Helena in full |
+| Challenge | handing back: handoffs `Triage -> Invoices -> Triage -> Support reps`, more requests and tokens than one agent, all three facts in 5 of 5 in the saved run (15 of 20 over all our runs); the manager with a session: Helena's three facts after *And what about Helena Holý?*, with the specialists' `input` naming Helena in full |
 
 **About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the model `models.env` names
 (Part D also runs it at the API's default effort). The model chooses its tool calls and writes its replies on every

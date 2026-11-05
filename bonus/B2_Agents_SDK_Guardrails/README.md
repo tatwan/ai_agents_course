@@ -1,22 +1,23 @@
-# Lab B2: How to put guardrails and approvals on an Agents SDK agent
+# Bonus B2: How to put guardrails and approvals on an Agents SDK agent
 
 **CPU | API key: `OPENAI_API_KEY` | Practises: controlling the agent loop, reviewing proposed writes and checking execution evidence**
 
 ## Goal
 
-Add automatic checks and a human approval pause to the Chinook support desk. A test card number stops the run with
+We add automatic checks and a human approval pause to the Chinook support desk. A test card number stops the run with
 zero model calls; a hand-made reply exposes what an output guardrail rejects; a refund tool waits until we approve
 or reject its proposed call. All refund requests are invented and go to a local toy queue. No tool sends money.
 
 ## What you will learn
 
-- Stop card-like input before the agent starts a model call.
-- Check a typed final reply and explain why a valid schema does not establish truth.
-- Put `needs_approval=True` on a write tool and inspect its pending arguments.
-- Save a paused `RunState`, restore it and resume with approval or rejection.
-- Read the queue after each decision and explain what approval leaves to the tool.
+- How to stop card-like input before the agent starts a model call.
+- How to check a typed final reply, and why a valid schema does not make the reply true.
+- How to put `needs_approval=True` on a write tool and inspect its pending arguments.
+- How to save a paused `RunState`, restore it, and resume with an approval or a rejection.
+- How to read the queue after each decision, and what approval leaves to the tool.
+- When each control is worth adding to the lab 07 agent, and when LangGraph's pause (lab 08) fits better.
 
-## Coming from
+## Where this lab starts
 
 An agent chooses tools; our code executes them. Lab 07 introduces the SDK loop, but this notebook defines every
 lookup, agent and check again so it runs on its own. Here we control when that loop may start, when a proposed tool
@@ -64,6 +65,15 @@ Replies, tool choices, token counts and timings can vary. Check the pending argu
 wording. The card-pattern and hand-made-output checks are deterministic. The field-based output guardrail checks
 only `payment_sent`; it does not verify all claims in the answer text.
 
+## When to use it
+
+Lab 07 builds the desk as an Agents SDK `Agent`; this lab adds three controls to it, each at a different point. An
+input guardrail with `run_in_parallel=False` finishes before any model work (the test card: 0 model calls). An output
+guardrail checks a typed field before the reply leaves, after the tokens are spent (3 model calls in our live check).
+`needs_approval=True` with a saved `RunState` holds a write for a person (the queue stayed empty until we resumed the
+approved state). If your desk runs on LangGraph, lab 08's `HumanInTheLoopMiddleware` and checkpointer give the same
+pause; this version suits a desk built on lab 07, where we store the paused state ourselves.
+
 ## Before you start
 
 - Complete [Lab 00](../../00_Environment_Check/README.md), then run `uv sync --python 3.13` from the repository
@@ -97,4 +107,4 @@ only `payment_sent`; it does not verify all claims in the answer text.
   tracing controls and SDK integrations.
 - [Pydantic models](https://docs.pydantic.dev/latest/concepts/models/): typed objects and validation.
 
-Return to [the bonus lab list](../README.md) or [the full lab list](../../README.md).
+Back to [the bonus lab list](../README.md) or [the full lab list](../../README.md).

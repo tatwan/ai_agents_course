@@ -1,28 +1,19 @@
-# Lab B8: How to trace and evaluate an agent with LangSmith
-
-## Goal
-
-Trace the Chinook support agent in LangSmith and evaluate fixed questions whose reference answers stay outside its prompt. Inspect a row whose tool path passes while its reply fails: the trace and the answer check establish different things.
-
-## What you will learn
-
-- Register a teaching agent and select its local tracing environment.
-- Wrap an OpenAI call and add tool and parent runs with `traceable`.
-- Retrieve current SDK run records, including nested operations and their token usage.
-- Create a dataset with separate questions and references, then score it with `evaluate`.
-- Read failed replies beside their costs, compare with local MLflow, and remove owned resources.
+# Bonus B8: How to trace and evaluate the same agent with LangSmith
 
 **CPU | Keys: `OPENAI_API_KEY`, `LANGSMITH_API_KEY` | Optional account lab | Practises: tracing, evaluation and cost accounting**
 
-## Run first
+## Goal
 
-Use the [environment setup](../../00_Environment_Check/README.md), then run `uv sync` from the repository folder (or `pip install -r requirements.txt`) and select its `.venv` kernel. Put the existing OpenAI and LangSmith keys in the repository `.env`. The notebook loads them without displaying them. Use an existing authorized workspace; no subscription purchase is needed by these instructions.
+We trace the Chinook support agent in LangSmith and evaluate fixed questions whose reference answers stay outside its prompt. We then read a row whose tool path passes while its reply fails: the trace and the answer check establish different things.
 
-The executed route uses an **agent-based LangSmith Cloud workspace** and a key allowed to register an external agent (`projects:create`), create a dataset and experiment, and delete those teaching resources. An agent record organizes traces; it does not deploy or host the Python agent. See [registration and permissions](https://docs.langchain.com/langsmith/create-an-agent). A project-based or self-hosted workspace uses the [project compatibility route](https://docs.langchain.com/langsmith/observability-quickstart); its setup differs from the registration cells here.
+## What you will learn
 
-Open [the guided notebook](B8_langsmith_tracing_and_evals.ipynb) and run from the top. It defines the desk, database tools, policy fixtures, loop and evaluator itself. You do not need to execute [Lab 18](../../18_Evals_And_Tracing/README.md) first. The [worked notebook](solved/B8_langsmith_tracing_and_evals_solution.ipynb) also runs independently and adds a held-out customer and an altered-answer check.
-
-LangSmith receives prompts, tool results, replies, reference outputs and scores for the public Chinook sample and handmade fixtures. Keep private customer data out of this exercise. Model requests use only the configured OpenAI client. The notebook stops further model calls once its successful-call ledger reaches $2; a request already in progress can cross that threshold. Output and turn limits bound each task too.
+- How to register a teaching agent, address its local environment and read its runs through the public SDK.
+- How to wrap one OpenAI call, then add tool and parent spans to a small agent loop.
+- How to create a dataset with questions and separate reference outputs, and run code evaluators with `evaluate`.
+- How to read every failure beside its tokens, configured token cost and elapsed time.
+- How to compare LangSmith fields with the bundled MLflow measurement and remove your own cloud resources.
+- When a hosted trace store is worth an account, compared with lab 18's local MLflow.
 
 ## What you will do
 
@@ -63,7 +54,27 @@ The recorded MLflow comparison uses the same eight questions, close-name lookup 
 
 **About the saved outputs.** The learner and worked notebooks each use `gpt-6-luna` at reasoning effort `none`, selected through `models.env`. Each describes its own run. Replies, call paths, tokens and elapsed time vary. Keep a different live result; do not repeat runs until they match the saved score. Both saved runs removed their own cloud resources, so their printed SDK records and local snapshots are the evidence to read.
 
-## Files and cleanup
+## When to use it
+
+Lab 18 traces and evaluates this same desk with MLflow on our own machine and only the OpenAI key. Here the same
+eight cases, lookup and code checks go to LangSmith, and the measurements line up: 7/8, 20 calls and 9,048 input
+tokens in both. LangSmith adds hosted traces, datasets and experiment rows that a team can open and compare across
+runs; it costs an account and a key with registration rights, a wait for indexing before a trace can be read, data
+leaving the machine, and a cleanup by exact ID. Choose it when several people must read the same traces and
+experiments, or your agents already run on LangChain or LangGraph; stay with MLflow when one machine is enough or the
+data must stay local. Moving the traces does not change the score.
+
+## Before you start
+
+Use the [environment setup](../../00_Environment_Check/README.md), then run `uv sync` from the repository folder (or `pip install -r requirements.txt`) and select its `.venv` kernel. Put the existing OpenAI and LangSmith keys in the repository `.env`. The notebook loads them without displaying them. Use an existing authorized workspace; no subscription purchase is needed by these instructions.
+
+The executed route uses an **agent-based LangSmith Cloud workspace** and a key allowed to register an external agent (`projects:create`), create a dataset and experiment, and delete those teaching resources. An agent record organizes traces; it does not deploy or host the Python agent. See [registration and permissions](https://docs.langchain.com/langsmith/create-an-agent). A project-based or self-hosted workspace uses the [project compatibility route](https://docs.langchain.com/langsmith/observability-quickstart); its setup differs from the registration cells here.
+
+Open [the guided notebook](B8_langsmith_tracing_and_evals.ipynb) and run from the top. It defines the desk, database tools, policy fixtures, loop and evaluator itself. You do not need to execute [Lab 18](../../18_Evals_And_Tracing/README.md) first. The [worked notebook](solved/B8_langsmith_tracing_and_evals_solution.ipynb) also runs independently and adds a held-out customer and an altered-answer check.
+
+LangSmith receives prompts, tool results, replies, reference outputs and scores for the public Chinook sample and handmade fixtures. Keep private customer data out of this exercise. Model requests use only the configured OpenAI client. The notebook stops further model calls once its successful-call ledger reaches $2; a request already in progress can cross that threshold. Output and turn limits bound each task too.
+
+## Folder contents
 
 | Path | Purpose |
 |---|---|
@@ -85,4 +96,4 @@ Live runs write `outputs/owned.json` and `outputs/run_summary.json`, both gitign
 - [Evaluate a target](https://docs.langchain.com/langsmith/evaluate-llm-application): datasets, target functions and code evaluators.
 - [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling): the model requests a tool; your code executes it.
 
-Back to [bonus labs](../README.md) or [all labs](../../README.md).
+Back to [the bonus lab list](../README.md) or [the full lab list](../../README.md).

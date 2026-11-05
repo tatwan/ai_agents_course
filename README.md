@@ -39,7 +39,7 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | 07 | [How the OpenAI Agents SDK runs your loop](07_OpenAI_Agents_SDK/) |
 | 08 | [How LangChain and LangGraph run the same agent](08_LangChain_LangGraph/) |
-| 09 | How to choose an agent framework (a guide) |
+| 09 | [How to choose an agent framework (a guide)](09_Choose_A_Framework/) |
 | 10 | [How to answer from documents with retrieval](10_Retrieval/) |
 | 11 | [How to give an agent a search tool](11_Agentic_RAG/) |
 | 12 | [How to build the same RAG agent with LlamaIndex](12_LlamaIndex_RAG/) |
@@ -73,7 +73,8 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 | B5 | [How to build the desk as a CrewAI crew](bonus/B5_CrewAI_Crew/) |
 | B6 | [How to build the desk agent with Microsoft Agent Framework](bonus/B6_Microsoft_Agent_Framework/) |
 | B7 | [How to move retrieval to Pinecone](bonus/B7_Pinecone_Retrieval/) (requires a Pinecone account) |
-| B8 | How to trace and evaluate the same agent with LangSmith (requires a LangSmith account) |
+| B8 | [How to trace and evaluate the same agent with LangSmith](bonus/B8_LangSmith_Tracing_And_Evals/) (requires a LangSmith account) |
+| B9 | [How to compose LangChain's building blocks](bonus/B9_LangChain_Building_Blocks/) |
 
 ## What a lab folder holds
 

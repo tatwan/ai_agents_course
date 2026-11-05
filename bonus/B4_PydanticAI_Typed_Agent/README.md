@@ -1,40 +1,24 @@
 # Bonus B4: How to build a typed desk agent with Pydantic AI
 
-## Goal
-
-Build the Chinook desk agent with typed output, injected dependencies and deterministic validators. The teaching
-moment is a well-typed refund proposal that breaks a small teaching policy: code rejects it, and the run's message
-history shows the model being asked to repair it.
-
-## What you will learn
-
-- Describe an answer with Pydantic and distinguish field validity from factual validity.
-- Construct an agent directly and pass the database through `RunContext`.
-- Read the three-tool desk run, typed output, requests, tokens and price.
-- Enforce a policy with an output validator and inspect its `ModelRetry` feedback.
-- Test tools and repair with `FunctionModel` while live model requests are disabled.
-
 **CPU | API key: `OPENAI_API_KEY` | Environment: repository core | Practises: typed Python boundaries,
 dependency injection, factual checks and model-free tests**
 
-## Run first
+## Goal
 
-Complete [Lab 00's setup](../../00_Environment_Check/README.md). From the repository folder, run
-`uv sync --python 3.13` or `pip install -r requirements.txt`, put your OpenAI key in the root `.env` (copied from
-`.env.example`), then select the repository `.venv` kernel in VS Code or JupyterLab. Open
-[b4_pydanticai_typed_agent.ipynb](b4_pydanticai_typed_agent.ipynb) and run from the top.
+We build the Chinook desk agent with typed output, injected dependencies and deterministic validators. The moment
+that teaches it is a well-typed refund proposal that breaks a small teaching policy: code rejects it, and the run's
+message history shows the model being asked to repair it.
 
-This bonus uses the **root environment**. Any older local environment in this folder is unnecessary. Python functions,
-dictionaries and basic type hints are enough to start; the notebook explains `await`, dataclasses, `RunContext` and
-decorator registration where they are used. No other lab needs to have been run.
+## What you will learn
 
-The notebook reads `data/chinook.db` in place with SQLite's read-only connection. Its invoice dates are historical
-sample data, as [the data README](../../data/README.md) explains. The $12 refund and $10 threshold are invented
-teaching fixtures, separate from the bundled shop policies. The notebook issues no payments and writes no files.
-Live cells use the configured OpenAI model; no hosted tracing account is needed. The no-model tests replace the
-provider and disable live model requests.
+- How to describe an expected answer with a Pydantic model, and why a valid field is not a true fact.
+- How to construct a Pydantic AI agent directly and pass services through `RunContext`.
+- How to read the three-tool desk run: its messages, typed result, requests, tokens and price.
+- How to enforce a policy with an output validator and find its `ModelRetry` in the message history.
+- How to test tools and repairs with `FunctionModel` while live model requests are disabled.
+- When Pydantic AI is worth choosing over the typed answers of labs 07 and 08.
 
-## Parts
+## What you will do
 
 | Part | What it teaches |
 |---|---|
@@ -65,6 +49,32 @@ Wording, tool order, token counts and time can change. The real policy runs prin
 ones. Current Pydantic AI records a tool-bound retry as `ToolReturnPart(outcome="retried")`; older examples may use
 the deprecated `RetryPromptPart`. The deterministic tests exercise rejection even if a live model's first answer
 already passes. The README's customer facts and no-model checks are stable for these bundled fixtures.
+
+## When to use it
+
+Lab 08's `create_agent` (with `response_format`) and the Agents SDK (with `output_type`) already return typed
+answers. Pydantic AI earns its place when the checks around the answer are the point: the database reached tools and
+validators through `RunContext`, the output validator repaired a well-typed but wrong refund decision (5 of 5
+repeats, one retry each, 2 requests instead of 1), and two tests ran the real tools and validators with 0 provider
+requests. The Helena baseline looked like the other single-agent builds: 3 requests, $0.0001417. If all you need is a
+typed final answer, stay on the core path.
+
+## Before you start
+
+Complete [Lab 00's setup](../../00_Environment_Check/README.md). From the repository folder, run
+`uv sync --python 3.13` or `pip install -r requirements.txt`, put your OpenAI key in the root `.env` (copied from
+`.env.example`), then select the repository `.venv` kernel in VS Code or JupyterLab. Open
+[b4_pydanticai_typed_agent.ipynb](b4_pydanticai_typed_agent.ipynb) and run from the top.
+
+This bonus uses the **root environment**. Any older local environment in this folder is unnecessary. Python functions,
+dictionaries and basic type hints are enough to start; the notebook explains `await`, dataclasses, `RunContext` and
+decorator registration where they are used. No other lab needs to have been run.
+
+The notebook reads `data/chinook.db` in place with SQLite's read-only connection. Its invoice dates are historical
+sample data, as [the data README](../../data/README.md) explains. The $12 refund and $10 threshold are invented
+teaching fixtures, separate from the bundled shop policies. The notebook issues no payments and writes no files.
+Live cells use the configured OpenAI model; no hosted tracing account is needed. The no-model tests replace the
+provider and disable live model requests.
 
 ## Folder contents
 

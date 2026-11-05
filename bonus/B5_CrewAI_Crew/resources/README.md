@@ -1,4 +1,4 @@
-# Lab B5 resources
+# Bonus B5 resources
 
 `labB5_crew.mmd` is the source for `labB5_crew.png`. Ink nodes show the model's work; lime nodes show Python coordination, lookup operations and the recommendation check. The context arrow carries the invoice task's typed output to support.
 
