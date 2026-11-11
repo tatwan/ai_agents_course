@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44, "wrappingWidth": 280}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 10: the desk agent as a LangGraph graph. The state (the messages list) enters at START; the model node calls the
+%% model; our route function picks the next node; the tools node runs our lookups and the back edge loops to the model.
+%% The dashed box marks where HumanInTheLoopMiddleware pauses before a write (Part F); the checkpointer saves the state
+%% after every step (Parts F and G).
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab10_graph_by_hand.mmd -o lab10_graph_by_hand.png -b white -s 2
+flowchart LR
+    start([START<br/>state in:<br/>messages]) --> model[model node<br/>one call to the model,<br/>tools bound;<br/>appends its reply]
+    model --> route{route, our Python:<br/>does the reply<br/>ask for tools?}
+    route -->|yes| tools[tools node<br/>ToolNode runs<br/>each call;<br/>appends tool messages]
+    tools -->|back edge| model
+    route -->|no| finish([END<br/>state out:<br/>the answer last])
+    pause[approval pause, Part F:<br/>a write waits here for<br/>approve, edit or reject] -.- route
+    saver[(checkpointer:<br/>saves the state<br/>after every step)] -.- model
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    classDef note fill:#FFFFFF,color:#0B1220,stroke:#6B7383,stroke-dasharray:5 4
+    class model model
+    class route,tools code
+    class pause,saver note

@@ -19,7 +19,7 @@ mlflow.db
 *.db
 *.sqlite*
 !data/chinook.db
-15_Code_Execution/charts/
+17_Code_Execution/charts/
 **/outputs/
 _scratch/
 

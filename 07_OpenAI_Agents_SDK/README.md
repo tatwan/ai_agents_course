@@ -44,7 +44,7 @@ function and sending the result back, then the same steps in a loop, on one city
 out their order.
 **Part E: Pass a question to a specialist with a handoff.** A triage agent, two specialists, and who answered.
 **Part F: Use tools that run on OpenAI's side.** Web search, file search over a PDF (the AI governance guide in
-`21_AI_Governance_Document/`), both in one agent, and deleting what we stored.
+`data/documents/`), both in one agent, and deleting what we stored.
 **Part G (optional): Run the same agent on another vendor's model.** The weather agent on a Gemini model through
 LiteLLM.
 **Challenge.** Give the adventure planner a budget tool.
@@ -99,7 +99,7 @@ run we made on this model (more than ten).
   `brew install graphviz` on a Mac). Without it only the drawing cells fail.
 - **Traces:** the SDK sends a trace of every run (questions, tool results, answers) to the Traces page of the OpenAI
   account that owns the key. Notebook 1, Part C says how to switch that off.
-- **Stored on OpenAI's side:** notebook 1, Part F uploads the AI governance guide (`21_AI_Governance_Document/`) to a
+- **Stored on OpenAI's side:** notebook 1, Part F uploads the AI governance guide (`data/documents/`) to a
   vector store and deletes both at the end of the part. Run that last cell.
 - **Optional Gemini key:** Part G of notebook 1 runs only when `GEMINI_API_KEY` is in `.env`. Nothing else needs it.
 - **Files it writes:** notebook 2 keeps its conversation in `07_OpenAI_Agents_SDK/outputs/sessions.db`, which git
@@ -136,4 +136,4 @@ run we made on this model (more than ten).
 - [Visualization](https://openai.github.io/openai-agents-python/visualization/): `draw_graph`
 - [Python `asyncio`: coroutines and tasks](https://docs.python.org/3/library/asyncio-task.html): `await`, `gather`
 
-Next: [Lab 08: How LangChain and LangGraph run the same agent](../08_LangChain_LangGraph/README.md). Back to [the lab list](../README.md).
+Next: [Lab 08: How to build and run an agent with Google ADK](../08_Google_ADK/README.md). Back to [the lab list](../README.md).

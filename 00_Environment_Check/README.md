@@ -184,7 +184,7 @@ Two small files in the repository folder hold everything the labs need to know a
 
 | File | Holds | Committed to Git? |
 |---|---|---|
-| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`), `REASONING_EFFORT`, the prices per million tokens and lab 15's price per hosted container session | yes: no secrets in it |
+| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`), `REASONING_EFFORT`, the prices per million tokens and lab 17's price per hosted container session | yes: no secrets in it |
 | `.env` | your `OPENAI_API_KEY`, and the optional bonus keys | never: `.gitignore` keeps it out |
 
 **Add your key.** Copy the example file, then open `.env` in any editor and paste your key after `OPENAI_API_KEY=`
@@ -223,36 +223,36 @@ reports each as set up or "optional, not set up".
 
 | Lab | Folder | Why it has its own environment |
 |---|---|---|
-| 12 | `12_LlamaIndex_RAG` | LlamaIndex needs `openai` 2.x; the main environment pins 3.x |
-| B3 | `bonus/B3_Google_ADK` | Google ADK's OpenAI support needs `openai` 2.x; the main environment pins 3.x |
-| B5 | `bonus/B5_CrewAI_Crew` | CrewAI needs `openai` 2.x and `mcp` 1.x |
-| B6 | `bonus/B6_Microsoft_Agent_Framework` | Agent Framework adds over a hundred packages, kept out of the main install |
+| 08 | `08_Google_ADK` | Google ADK's OpenAI support needs `openai` 2.x; the main environment pins 3.x |
+| 14 | `14_LlamaIndex_RAG` | LlamaIndex needs `openai` 2.x; the main environment pins 3.x |
+| B4 | `bonus/B4_CrewAI_Crew` | CrewAI needs `openai` 2.x and `mcp` 1.x |
+| B5 | `bonus/B5_Microsoft_Agent_Framework` | Agent Framework adds over a hundred packages, kept out of the main install |
 
 To create one, run `uv sync` inside that lab's folder, for example:
 
 ```bash
-cd 12_LlamaIndex_RAG
+cd 14_LlamaIndex_RAG
 uv sync --python 3.13
 cd ..
 ```
 
 Then open the lab's notebook in VS Code and choose **that folder's** `.venv` as the kernel (for example
-`12_LlamaIndex_RAG/.venv/bin/python`), not the one in the repository folder. Choosing the wrong one is easy to spot:
-Lab 00 run on lab 12's environment reports most packages `missing`.
-Where `uv` is blocked, lab 12's README creates the same environment with `pip` from its `requirements.txt`.
+`14_LlamaIndex_RAG/.venv/bin/python`), not the one in the repository folder. Choosing the wrong one is easy to spot:
+Lab 00 run on lab 14's environment reports most packages `missing`.
+Where `uv` is blocked, lab 14's README creates the same environment with `pip` from its `requirements.txt`.
 
 ## Optional tools
 
 | Tool | Used by | Install |
 |---|---|---|
 | Graphviz (`dot`) | lab 07, to draw an agent's structure; only that drawing needs it | Ubuntu: `sudo apt install -y graphviz`; macOS: `brew install graphviz`; Windows and others: [graphviz.org/download](https://graphviz.org/download/) |
-| Docker | lab 15's container runner; lab 15 also runs without it | [Docker Desktop](https://docs.docker.com/get-started/get-docker/) (macOS, Windows), or Docker Engine on Linux |
+| Docker | lab 17's container runner; lab 17 also runs without it | [Docker Desktop](https://docs.docker.com/get-started/get-docker/) (macOS, Windows), or Docker Engine on Linux |
 
 After installing Graphviz, restart the notebook's kernel so it sees the new program.
 
 ## Optional keys
 
-Two bonus labs use services that need an account: Pinecone (B7) and LangSmith (B8). Their lines are in `.env.example`;
+Two bonus labs use services that need an account: Pinecone (B6) and LangSmith (B7). Their lines are in `.env.example`;
 remove the `#` and paste the key after the `=` in your `.env`. Every core lab runs without them, and the notebook only
 says whether each is set.
 
@@ -275,7 +275,7 @@ bonus keys, each reported as present or optional.
 | After | You should see |
 |---|---|
 | Part A | `key found: yes`, with the model and reasoning effort from `models.env` |
-| Part B | a Python inside `>=3.11,<3.15`; `19 pinned packages, 0 different` |
+| Part B | a Python inside `>=3.11,<3.15`; `20 pinned packages, 0 different` |
 | Part C | a one-word reply (ours: `ready`), the model that answered, and its tokens (ours: 12 in, 4 out) |
 | Part D | `59 customers, 412 invoices`; `36 files, 20 policies, 16 tickets` |
 | Part E | a line per tool, environment and key: present, or optional and not set up |
@@ -297,7 +297,7 @@ kernel; each message was triggered on purpose and copied.
 | `uv sync`: ``error: The requested interpreter resolved to Python 3.10.18, which is incompatible with the project's Python requirement: `>=3.11, <3.15` (from `project.requires-python`)`` | `--python` named a version outside the range | run `uv sync --python 3.13` |
 | `pip install`: `ERROR: Ignored the following versions that require a different python version: ...` then `No matching distribution found for contourpy==1.3.3` | the virtual environment runs a Python older than 3.11 | delete `.venv`, install Python 3.13, create the environment again (route D, step 3) |
 | Config cell: `ModuleNotFoundError: No module named 'dotenv'` | the notebook runs on a Python without the repository's packages | choose the repository's `.venv` as the kernel ([Choose the kernel](#choose-the-kernel)) |
-| Part B: most packages `missing`, `openai` at `2.54.0` | the kernel is another lab's own environment (here lab 12's) | choose the `.venv` in the repository folder |
+| Part B: most packages `missing`, `openai` at `2.54.0` | the kernel is another lab's own environment (here lab 14's) | choose the `.venv` in the repository folder |
 | Config cell: `StopIteration` | the notebook is not inside the repository folder (copied, downloaded alone or opened from elsewhere) | open it from the cloned or unzipped repository, where `models.env` sits |
 | Config cell: `AssertionError: Put OPENAI_API_KEY in .env at the repository folder (copy .env.example).` | no `.env` beside `models.env` (or it was saved as `.env.txt`), or its key line is empty | copy `.env.example` to `.env` and paste the key; on Windows, turn on file name extensions to see the real name |
 | Part E: `failed to connect to the docker API at unix:///...; check if the path is correct and if the daemon is running` | Docker is installed but not running, or `DOCKER_HOST` points to a socket that does not exist | start Docker Desktop (Linux: `sudo systemctl start docker`), or unset a stale `DOCKER_HOST` |

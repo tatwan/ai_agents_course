@@ -15,7 +15,7 @@ or reject its proposed call. All refund requests are invented and go to a local 
 - How to put `needs_approval=True` on a write tool and inspect its pending arguments.
 - How to save a paused `RunState`, restore it, and resume with an approval or a rejection.
 - How to read the queue after each decision, and what approval leaves to the tool.
-- When each control is worth adding to the lab 07 agent, and when LangGraph's pause (lab 08) fits better.
+- When each control is worth adding to the lab 07 agent, and when LangGraph's pause (lab 10) fits better.
 
 ## Where this lab starts
 
@@ -71,7 +71,7 @@ Lab 07 builds the desk as an Agents SDK `Agent`; this lab adds three controls to
 input guardrail with `run_in_parallel=False` finishes before any model work (the test card: 0 model calls). An output
 guardrail checks a typed field before the reply leaves, after the tokens are spent (3 model calls in our live check).
 `needs_approval=True` with a saved `RunState` holds a write for a person (the queue stayed empty until we resumed the
-approved state). If your desk runs on LangGraph, lab 08's `HumanInTheLoopMiddleware` and checkpointer give the same
+approved state). If your desk runs on LangGraph, lab 10's `HumanInTheLoopMiddleware` and checkpointer give the same
 pause; this version suits a desk built on lab 07, where we store the paused state ourselves.
 
 ## Before you start

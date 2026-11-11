@@ -1,0 +1,26 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 22, "rankSpacing": 30}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Before and after: the same damaged-media refund process. Lime = bounded code/checks; ink = optional model drafting; white = people and records.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab22_process_map.mmd -o lab22_process_map.png -b white -s 2
+flowchart TB
+    subgraph before["Before: 18 human min/case assumed"]
+      direction LR
+      b1[Receive and<br/>copy ticket] --> b2[Check order<br/>and evidence]
+      b2 --> b3[Decide<br/>eligibility]
+      b3 --> b4[Draft<br/>reply]
+      b4 --> b5[Approve and<br/>issue refund]
+      b5 --> b6[Close on<br/>receipt]
+    end
+    subgraph after["After: 6 handling + 2 review human min/case assumed, before extra rework"]
+      direction LR
+      a1[Capture once;<br/>check evidence<br/>ACT WITH AUDIT] -->|complete| a2[Prepare eligibility<br/>and reply<br/>DRAFT]
+      a1 -->|missing| ex[Request evidence;<br/>hold decision]
+      ex --> a1
+      a2 --> a3[Review queue:<br/>decision + reply<br/>HUMAN]
+      a3 --> a4[Payment request<br/>DRAFT until human<br/>approval and execution]
+      a4 -->|confirmed receipt| a5[Close + log receipt<br/>ACT WITH AUDIT]
+    end
+    before ~~~ after
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class a2 model
+    class a1,a5 code

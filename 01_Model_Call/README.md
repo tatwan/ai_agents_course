@@ -85,4 +85,4 @@ check the shape of each result (`stop` or `length`, 46 or not, which call has mo
 - [OpenAI: conversation state](https://developers.openai.com/api/docs/guides/conversation-state): sending the history yourself, and `previous_response_id`
 - [OpenAI: migrate to the Responses API](https://developers.openai.com/api/docs/guides/migrate-to-responses): the Chat Completions and Responses fields side by side
 
-Next: [Lab 02: What is an agent](../02_What_Is_An_Agent/). Back to [the lab list](../README.md).
+Next: [Lab 02: How a model asks for a tool](../02_Tool_Calling/README.md). Back to [the lab list](../README.md).

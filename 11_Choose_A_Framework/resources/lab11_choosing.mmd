@@ -1,0 +1,40 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 26, "rankSpacing": 26}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 11: how to choose an agent framework in five steps (white, for any job), each beside the Chinook support
+%% desk's answer (lime, worked in Part D); the pick in ink.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab11_choosing.mmd -o lab11_choosing.png -b white -s 2
+flowchart TB
+    subgraph S1["step 1"]
+        direction LR
+        M1["<b>Answer the six questions</b><br/>pause? several agents?<br/>other vendors? who maintains?<br/>tracing? your own loop?"]
+        D1["a refund waits hours for a supervisor;<br/>every refund is audited"]
+        M1 --- D1
+    end
+    subgraph S2["step 2"]
+        direction LR
+        M2["<b>Filter on the must-haves</b><br/>keep the frameworks that<br/>score 3 on each one"]
+        D2["pause 3 and tracing 3:<br/>LangChain, LangGraph,<br/>Microsoft Agent Framework"]
+        M2 --- D2
+    end
+    subgraph S3["step 3"]
+        direction LR
+        M3["<b>Weigh and add up</b><br/>a weight of 1 to 3 per criterion,<br/>from the answers"]
+        D3["LangChain 33, LangGraph 32,<br/>Microsoft Agent Framework 33 of 36:<br/>the sum cannot separate them"]
+        M3 --- D3
+    end
+    subgraph S4["step 4"]
+        direction LR
+        M4["<b>Read the evidence</b><br/>runs of the same agent, and the<br/>needs the scores leave out"]
+        D4["a Python team, one gate;<br/>create_agent is a LangGraph graph"]
+        M4 --- D4
+    end
+    subgraph S5["step 5"]
+        direction LR
+        M5["<b>Pick, and write down<br/>what would change it</b>"]
+        D5["<b>LangChain create_agent</b><br/>with an approval pause and<br/>a checkpointer that outlives the process"]
+        M5 --- D5
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
+    classDef desk fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    classDef pick fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    class D1,D2,D3,D4 desk
+    class D5 pick

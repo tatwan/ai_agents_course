@@ -3,8 +3,8 @@
 # AI Agents in Practice
 
 Hands-on labs for building, running and judging AI agents. You start with one call to a model and write the agent
-loop yourself, then see the same pieces inside the OpenAI Agents SDK, LangChain and LangGraph, LlamaIndex and other
-frameworks. Then you ground an agent in a database and a document collection, run the code it writes safely, choose
+loop yourself, then see the same pieces inside the OpenAI Agents SDK, Google ADK, LangChain and LangGraph, LlamaIndex and
+other frameworks. Then you ground an agent in a database and a document collection, run the code it writes safely, choose
 between one agent and several, defend it from untrusted text, and evaluate, trace and cost it.
 
 Every lab works on one running case: the support desk of the Chinook music shop, with its customer database
@@ -27,9 +27,9 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | 00 | [How to set up the lab environment](00_Environment_Check/) |
 | 01 | [How to call a model and read the response](01_Model_Call/) |
-| 02 | [What is an agent](02_What_Is_An_Agent/) |
-| 03 | [How a model asks for a tool](03_Tool_Calling/) |
-| 04 | [How to write the agent loop](04_Agent_Loop/) |
+| 02 | [How a model asks for a tool](02_Tool_Calling/) |
+| 03 | [How to write the agent loop](03_Agent_Loop/) |
+| 04 | [What is an agent](04_What_Is_An_Agent/) |
 | 05 | [How to manage what an agent sees](05_Context_And_Skills/) |
 | 06 | [How to share tools with MCP](06_MCP/) |
 
@@ -38,29 +38,32 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 | Lab | Title |
 |---|---|
 | 07 | [How the OpenAI Agents SDK runs your loop](07_OpenAI_Agents_SDK/) |
-| 08 | [How LangChain and LangGraph run the same agent](08_LangChain_LangGraph/) |
-| 09 | [How to choose an agent framework (a guide)](09_Choose_A_Framework/) |
-| 10 | [How to answer from documents with retrieval](10_Retrieval/) |
-| 11 | [How to give an agent a search tool](11_Agentic_RAG/) |
-| 12 | [How to build the same RAG agent with LlamaIndex](12_LlamaIndex_RAG/) |
+| 08 | [How to build and run an agent with Google ADK](08_Google_ADK/) |
+| 09 | [How to compose LangChain's building blocks](09_LangChain/) |
+| 10 | [How LangChain and LangGraph run the same agent](10_LangGraph/) |
+| 11 | [How to choose an agent framework (a guide)](11_Choose_A_Framework/) |
+| 12 | [How to answer from documents with retrieval](12_Retrieval/) |
+| 13 | [How to give an agent a search tool](13_Agentic_RAG/) |
+| 14 | [How to build the same RAG agent with LlamaIndex](14_LlamaIndex_RAG/) |
 
 **Part C: business agents**
 
 | Lab | Title |
 |---|---|
-| 13 | [How to build a customer-support agent over a database](13_Support_Desk_Agent/) |
-| 14 | [How a coding agent edits files and runs tests](14_Coding_Agent/) |
-| 15 | [How to run model-written code safely](15_Code_Execution/) |
+| 15 | [How to build a customer-support agent over a database](15_Support_Desk_Agent/) |
+| 16 | [How a coding agent edits files and runs tests](16_Coding_Agent/) |
+| 17 | [How to run model-written code safely](17_Code_Execution/) |
 
 **Part D: designs and production**
 
 | Lab | Title |
 |---|---|
-| 16 | [How to choose an agent design](16_Agent_Designs/) |
-| 17 | [How to defend an agent from untrusted text](17_Prompt_Injection/) |
-| 18 | [How to evaluate and trace an agent](18_Evals_And_Tracing/) |
-| 19 | [How to re-engineer a process with agents](19_Process_Reengineering/) |
-| 20 | [What agent platforms sell (a guide)](20_Agent_Platforms/) |
+| 18 | [How to choose an agent design](18_Agent_Designs/) |
+| 19 | [How to defend an agent from untrusted text](19_Prompt_Injection/) |
+| 20 | [How to evaluate and trace an agent](20_Evals_And_Tracing/) |
+| 21 | How to call any model through one interface with LiteLLM (coming) |
+| 22 | [How to re-engineer a process with agents](22_Process_Reengineering/) |
+| 23 | [What agent platforms sell (a guide)](23_Agent_Platforms/) |
 
 **Bonus labs**
 
@@ -68,13 +71,11 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | B1 | [How to make a LangGraph workflow survive a restart](bonus/B1_LangGraph_Durable_Workflows/) |
 | B2 | [How to put guardrails and approvals on an Agents SDK agent](bonus/B2_Agents_SDK_Guardrails/) |
-| B3 | [How to build and run an agent with Google ADK](bonus/B3_Google_ADK/) |
-| B4 | [How to build a typed desk agent with Pydantic AI](bonus/B4_PydanticAI_Typed_Agent/) |
-| B5 | [How to build the desk as a CrewAI crew](bonus/B5_CrewAI_Crew/) |
-| B6 | [How to build the desk agent with Microsoft Agent Framework](bonus/B6_Microsoft_Agent_Framework/) |
-| B7 | [How to move retrieval to Pinecone](bonus/B7_Pinecone_Retrieval/) (requires a Pinecone account) |
-| B8 | [How to trace and evaluate the same agent with LangSmith](bonus/B8_LangSmith_Tracing_And_Evals/) (requires a LangSmith account) |
-| B9 | [How to compose LangChain's building blocks](bonus/B9_LangChain_Building_Blocks/) |
+| B3 | [How to build a typed desk agent with Pydantic AI](bonus/B3_PydanticAI_Typed_Agent/) |
+| B4 | [How to build the desk as a CrewAI crew](bonus/B4_CrewAI_Crew/) |
+| B5 | [How to build the desk agent with Microsoft Agent Framework](bonus/B5_Microsoft_Agent_Framework/) |
+| B6 | [How to move retrieval to Pinecone](bonus/B6_Pinecone_Retrieval/) (requires a Pinecone account) |
+| B7 | [How to trace and evaluate the same agent with LangSmith](bonus/B7_LangSmith_Tracing_And_Evals/) (requires a LangSmith account) |
 
 ## What a lab folder holds
 
@@ -109,8 +110,8 @@ Then copy `.env.example` to `.env` and paste your `OPENAI_API_KEY` into it. Mode
 notebook in VS Code and choose the repository's `.venv` as the kernel (or run `uv run jupyter lab`). Notebooks never
 install packages, and never print the key.
 
-Labs 12, B3, B5 and B6 have their own environment: run `uv sync` inside the lab folder and choose that folder's
-`.venv`. Graphviz (lab 07), Docker (lab 15) and the Pinecone and LangSmith keys (bonus B7 and B8) are optional.
+Labs 08, 14, B4 and B5 have their own environment: run `uv sync` inside the lab folder and choose that folder's
+`.venv`. Graphviz (lab 07), Docker (lab 17) and the Pinecone and LangSmith keys (bonus B6 and B7) are optional.
 
 ## Data
 
@@ -120,3 +121,4 @@ Instructor-supplied; do not regenerate these files. See [data/README.md](data/RE
 |---|---|
 | `data/chinook.db` | The Chinook shop's database: customers, invoices, tracks and the support reps |
 | `data/corpus/` | The shop's 20 policies and 16 support tickets, as markdown files |
+| `data/documents/` | A reference guide to AI governance frameworks (PDF), read by lab 07's file search |

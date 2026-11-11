@@ -66,7 +66,7 @@
 - [x] A container, one folder mounted
 ::time=35
 
-## Q9: Lab 16 found one agent right on every request. Which is a good reason to add a second agent to the refund desk?
+## Q9: Lab 18 found one agent right on every request. Which is a good reason to add a second agent to the refund desk?
 - [x] The refund tool writes; lookups just read
 - [ ] A second agent gives more accurate answers
 - [ ] Each tool should have its own agent

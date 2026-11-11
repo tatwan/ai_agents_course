@@ -1,0 +1,16 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 12, Part C: two ways to split the handbook (the 20 policies joined in memory). A split every 300 characters
+%% cuts the damaged-twice rule between two chunks and loses its heading; a split at each heading keeps every rule
+%% whole, with an id and a section that point back to the source. Lime: the split to keep.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab12_chunks_keep_their_source.mmd -o lab12_chunks_keep_their_source.png -b white -s 2
+flowchart LR
+    handbook[handbook<br/>20 policies joined<br/>in memory] --> bysize[split every<br/>300 characters]
+    handbook --> byheading[split at each<br/># heading]
+    bysize --> c2["handbook[600:900]<br/>... If the same title arriv"]
+    bysize --> c3["handbook[900:1200]<br/>es damaged twice, offer a refund ...<br/># Data retention ..."]
+    byheading --> h2["handbook#02<br/>section: Damaged media<br/>the whole policy"]
+    c2 --> lost[rule cut in half<br/>no heading in chunk 3]
+    c3 --> lost
+    h2 --> kept[rule whole<br/>id and section<br/>point back to the source]
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class byheading,h2,kept code

@@ -16,7 +16,7 @@ is sent and the shared Chinook data stays unchanged.
 - How to read a checkpoint's business values, scheduled nodes and waiting interrupt.
 - How to resume the same SQLite-backed thread in a new Python process.
 - How to fork an earlier checkpoint without changing the original saved result.
-- When a durable workflow is worth it, compared with the agents of labs 07 and 08.
+- When a durable workflow is worth it, compared with the agents of labs 07 and 10.
 
 ## What you will do
 
@@ -54,13 +54,13 @@ $0.00; that does not price production storage or infrastructure.
 
 ## When to use it
 
-The core path builds the desk as an agent that decides its own next step (lab 07 with the Agents SDK, lab 08 with
+The core path builds the desk as an agent that decides its own next step (lab 07 with the Agents SDK, lab 10 with
 LangChain and LangGraph). This lab is a workflow whose route we wrote down, with no model. Reach for a `StateGraph`
 with a database checkpointer when the steps are known, some must wait for a person, and the waiting must survive a
 restart: in our run the $1,250 request waited in SQLite through a kernel restart, resumed with one approval, and
 kept 7 checkpoints we could branch from. The price is the replay we counted (review node entries `1 → 2`), so a
 payment belongs after the approval. A fixed pipeline that never waits can stay plain Python; a question a model
-answers with tools is less code in lab 07's `Agent` or lab 08's `create_agent`.
+answers with tools is less code in lab 07's `Agent` or lab 10's `create_agent`.
 
 ## Before you start
 

@@ -1,0 +1,15 @@
+[project]
+name = "ai-agents-lab-b4"
+version = "0.1.0"
+description = "Isolated environment for B4_CrewAI_Crew"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "crewai==1.15.34",
+    "openai==2.54.0",
+    "mcp==1.30.0",
+    "ipykernel==7.4.0",
+    "python-dotenv==1.2.4",
+]
+
+[tool.uv]
+package = false

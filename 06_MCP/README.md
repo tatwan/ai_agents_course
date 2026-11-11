@@ -25,7 +25,7 @@ every request, the same server answers with its tools, each with an `outputSchem
 
 ## Coming from
 
-Lab 03 described the three lookups to the model as JSON schemas and ran its tool calls by hand, and lab 04 put that
+Lab 02 described the three lookups to the model as JSON schemas and ran its tool calls by hand, and lab 03 put that
 round trip in a loop. Here the lookups move out of the notebook into a server process, and the loop reaches them
 through MCP. The lab repeats the lookups and the loop it needs, so it runs on its own.
 

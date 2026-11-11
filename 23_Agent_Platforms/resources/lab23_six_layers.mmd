@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 18, "rankSpacing": 22}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 23: the six layers of the Chinook desk agent, the open standard on three of them, and where lock-in lives.
+%% Ink: the model. Lime: the two layers that lock you in (their data stays with the vendor). White: layers that move.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab23_six_layers.mmd -o lab23_six_layers.png -b white -s 2
+flowchart LR
+    subgraph Desk["the Chinook desk agent: six layers, and whether each one moves to another vendor"]
+        direction LR
+        L1["<b>1. Model</b><br/><br/>moves:<br/>change one line,<br/>re-run your tests"]
+        L2["<b>2. Tools</b><br/>standard: MCP<br/><br/>moves:<br/>tools behind<br/>an MCP server"]
+        L3["<b>3. Orchestration</b><br/><br/>moves:<br/>your own loop or<br/>an open framework"]
+        L4["<b>4. Context<br/>and memory</b><br/>standard: Agent Skills<br/><br/>locks in:<br/>stored history,<br/>documents, notes"]
+        L5["<b>5. Delegation</b><br/>standard: A2A<br/><br/>moves:<br/>agents that<br/>speak A2A"]
+        L6["<b>6. Governance</b><br/><br/>locks in:<br/>identities,<br/>a year of traces"]
+        L1 --> L2 --> L3 --> L4 --> L5 --> L6
+    end
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef sticky fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class L1 model
+    class L4,L6 sticky

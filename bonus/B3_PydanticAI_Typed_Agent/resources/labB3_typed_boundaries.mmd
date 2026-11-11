@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 36}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Typed desk and refund boundaries: dependencies reach code; only selected tool results and retries reach the model.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB3_typed_boundaries.mmd -o labB3_typed_boundaries.png -b white -s 2
+flowchart TB
+    request[Request] --> model[Model proposes tool calls or output]
+    deps[Dependencies: read-only connection / teaching policy] --> context[RunContext]
+    context --> tools[Code runs named lookups]
+    model -->|tool call| tools
+    tools -->|selected result| model
+    model --> parse[Framework parses Pydantic output]
+    parse --> check{Application validator}
+    context --> check
+    check -->|passes| accepted[Accepted Python object]
+    check -->|ModelRetry / bounded correction| model
+    accepted --> handler[Separate authorized action handler]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class context,tools,check code

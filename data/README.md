@@ -43,6 +43,11 @@ db = sqlite3.connect(f"file:{path}?mode=ro", uri=True, check_same_thread=False)
 lookup in a worker thread; it does not itself make a connection read-only or make concurrent writes safe.
 Labs that demonstrate writes create a separate database in their own ignored output folder.
 
+## `documents/`
+
+One PDF, `AI_Governance_Frameworks_Reference_Guide.pdf`: a nine-page reference guide to AI governance frameworks.
+Lab 07 uploads it for the file search tool. It is not about the Chinook shop.
+
 ## `corpus/`
 
 There are 36 short Markdown files: 20 shop policies and 16 support tickets for the Chinook desk. The retrieval

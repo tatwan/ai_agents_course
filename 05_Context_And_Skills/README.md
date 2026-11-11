@@ -27,7 +27,7 @@ every load.
 
 ## Coming from
 
-Lab 04 wrote the agent loop and measured it: every call sends the whole message list again, so the input tokens grow
+Lab 03 wrote the agent loop and measured it: every call sends the whole message list again, so the input tokens grow
 with each turn. This lab looks inside that list, part by part, and cuts it. Lab 06 moves the tools themselves into
 their own process.
 

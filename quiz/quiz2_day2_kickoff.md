@@ -82,7 +82,7 @@
 
 ## Q11: In the OpenAI Agents SDK, what is `Runner.run` doing?
 - [ ] Running your tools inside the model
-- [x] Running the loop you wrote in Lab 04
+- [x] Running the loop you wrote in Lab 03
 - [ ] Training the model on your tools
 - [ ] Drawing the trace of the run
 ::time=25
