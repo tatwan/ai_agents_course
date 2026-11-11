@@ -1,15 +1,16 @@
 [project]
 name = "ai-agents-lab-b3"
-version = "0.1.0"
+version = "0.2.0"
 description = "Isolated environment for B3_Google_ADK"
 requires-python = ">=3.11,<3.15"
+# Latest stable releases, checked on PyPI on 10 Nov 2026.
+# openai stays on 2.54.0: google-adk 2.14.0's openai extra requires openai>=2.20,<3.
 dependencies = [
-    "google-adk==2.13.0",
-    "litellm==1.106.6",
-    "mcp==2.3.0",
+    "google-adk[openai]==2.14.0",
     "openai==2.54.0",
     "ipykernel==7.4.0",
     "python-dotenv==1.2.4",
+    "requests==2.34.2",
 ]
 
 [tool.uv]

@@ -1,98 +1,123 @@
 # Lab 07: How the OpenAI Agents SDK runs your loop
 
-**CPU | API key: `OPENAI_API_KEY` | Optional: Graphviz for the drawings | Practises: building an agent in a framework and recognising the loop inside it; choosing how two agents work together**
+**CPU | API key: `OPENAI_API_KEY` | Optional: Graphviz for the drawings, `GEMINI_API_KEY` for one optional part | Practises: building an agent in a framework and recognising the loop inside it; choosing how two agents work together**
 
 ## Goal
 
-Rebuild the Chinook desk agent in the OpenAI Agents SDK and read what its `Runner` did, item by item and span by span,
-as the loop we wrote by hand in lab 04. Every SDK call is a coroutine, so the lab starts with `await`. The moment that
-teaches the framework comes in Part F, when one question needs two specialists. Asked *How many invoices does Puja
-Srivastava have, what do they add up to, and who is her support rep?*, a triage agent that **hands the question off**
-to the invoices specialist loses the rep every time we ran it (6 of 6 runs in the saved notebook): control moved to an agent with no
-rep tool and never came back. The same two specialists **used as tools** answer all three facts (6 of 6), at
-8 model requests against 3 for one agent with all three tools.
+Meet the OpenAI Agents SDK on an everyday question, then put it to work at the Chinook support desk. The lab has
+two notebooks.
+
+**Notebook 1** is a playground. We ask a model about today's weather in Amman, watch it fail, write the tool loop
+by hand once, and then let the SDK run the same loop with three names: `function_tool`, `Agent` and `Runner.run`.
+From there one agent chains several tools, a triage agent hands a question to a specialist, and hosted tools search
+the web and a PDF.
+
+**Notebook 2** takes the same SDK to the desk. One question there needs two
+specialists: *How many invoices does Puja Srivastava have, what do they add up to, and who is her support rep?* A
+triage agent that **hands the question off** loses the rep: control moves to the invoices specialist, which has no
+rep tool, and never comes back. The same two specialists **used as tools** answer all three facts, at 8 model
+requests against 3 for one agent with all three tools.
 
 ## What you will learn
 
-- How `async def`, `await` and `asyncio.gather` work, and why two model calls made with `AsyncOpenAI` finish in
-  about the time of the slower one.
-- How to turn plain Python functions into tools with `function_tool`, give them to an `Agent`, and run it with
-  `Runner.run`.
-- How to read a run as the loop from lab 04: the `RunResult` (`new_items`, `raw_responses`, `usage`) and a trace of
-  the run, kept in the notebook.
-- Why every agent here sets `ModelSettings` from `models.env`, and how to read the effort the API really used.
-- How to keep a conversation across runs with `SQLiteSession`.
-- How to wire two specialists as tools and as a handoff, say who controls the next step in each, and what each costs.
-
-## Coming from
-
-Lab 04 wrote the agent loop by hand: send the messages and tools, run the tool calls, send the results back, stop on
-an answer or a turn cap. Lab 05 kept the conversation and measured what it costs; lab 06 let the SDK use our tools
-through MCP in a few lines. Here the SDK runs that whole loop for us, and we read what it did. The lab restates the
-lookups and everything else it uses, so it runs on its own.
+- How to write the tool loop by hand on the Responses API, and which of its steps `function_tool`, `Agent` and
+  `Runner.run` take over.
+- How to read what a run did from its result: `last_agent`, `raw_responses`, `new_items` and the usage.
+- How one agent chains several tools, and how a handoff passes a question to a specialist.
+- How hosted tools (web search and file search) differ from tools that run in our own Python.
+- How to set an agent's reasoning effort from `models.env`, and keep a conversation across runs with
+  `SQLiteSession`.
+- How to connect two specialists as tools and with a handoff, and say for each who controls the next step and what
+  it costs.
 
 ## What you will do
 
-**Part A: Wait for two model calls at once with async.** From `def` to `async def`, what a coroutine is, `await`,
-two waits one after the other and together with `asyncio.gather`, the blocking `time.sleep` mistake, then two real
-model calls with `AsyncOpenAI`, timed both ways.
-**Part B: Define the desk agent in the SDK.** The three Chinook lookups called by hand, `function_tool`'s generated
-schema beside the one lab 03 wrote, the `Agent`, and its drawing with `draw_graph`.
-**Part C: Read what the runner did.** The Helena question run with `Runner.run`; `new_items`, `raw_responses` and
-`usage` read as lab 04's three turns; a trace of the run kept in the notebook with our own trace processor; the turn
-cap as `MaxTurnsExceeded`.
-**Part D: Set the reasoning effort the SDK does not set for this model.** What the SDK sends without `model_settings`,
-the effort the API used read from the trace, and a lookup and an arithmetic question run at both efforts.
-**Part E: Keep a conversation with a session.** A follow-up question without and with `SQLiteSession`, what the
-session stored, and the same conversation found again from the file.
-**Part F: Wire two specialists as tools and as a handoff.** Puja's two-part question four ways (one agent, our code
-with `gather`, specialists as tools, a handoff), each run read, five runs of three of them counted, and a question
-with one destination.
+### Notebook 1: meet the SDK on an everyday question (`07a_meet_the_agents_sdk.ipynb`)
+
+**Part A: Ask a question the model cannot answer alone.** One model call with no tools, then a plain Python function
+that gets the weather from Open-Meteo, called by hand.
+**Part B: Write the tool loop by hand, once.** The tool schema, the model's `function_call`, our code running the
+function and sending the result back, then the same steps in a loop, on one city and on three.
+**Part C: Let the Agents SDK run the same loop.** `function_tool`, `Agent`, the agent drawn with `draw_graph`,
+`Runner.run`, the run read from its result, the turn cap, and where to see the run on the Traces page.
+**Part D: Give one agent several tools and watch it chain them.** An adventure planner with three tools that works
+out their order.
+**Part E: Pass a question to a specialist with a handoff.** A triage agent, two specialists, and who answered.
+**Part F: Use tools that run on OpenAI's side.** Web search, file search over a PDF (the AI governance guide in
+`21_AI_Governance_Document/`), both in one agent, and deleting what we stored.
+**Part G (optional): Run the same agent on another vendor's model.** The weather agent on a Gemini model through
+LiteLLM.
+**Challenge.** Give the adventure planner a budget tool.
+
+### Notebook 2: the Agents SDK at the Chinook desk (`07b_agents_sdk_at_the_desk.ipynb`)
+
+**Part A: Build the desk agent from three database lookups.** The lookups called by hand, the agent with its
+reasoning effort set, its run read turn by turn, and what the run cost.
+**Part B: Keep a conversation across runs with a session.** A follow-up question without and with `SQLiteSession`,
+and what the session stored.
+**Part C: Connect two specialists as tools or with a handoff.** Puja's two-part question answered by one agent, by
+a manager that calls the specialists as tools, and by a triage agent that hands off; then a question with one
+destination.
 **Challenge.** Let the specialists hand back to the triage, and carry a conversation through the manager.
 
-![Four ways to answer the two-part question: one agent with three tools; our code running two specialists with gather; a manager calling the specialists as tools and getting control back; a triage agent handing off to the invoices specialist, which keeps control](resources/lab07_wirings.png)
+### Going further (`07_extra_async_await.ipynb`)
+
+`async`, `await` and `asyncio.gather` from the beginning, for anyone new to the `await` in `await Runner.run(...)`.
+
+![On the left, our Python code calls the model, inspects tool calls, parses arguments, runs the function, returns the output and calls the model again. On the right, our code makes one call to Runner.run, which does those steps.](resources/plain_loop_vs_runner.png)
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | two one-second sleeps: about 2 s one after the other, about 1 s gathered, results in argument order; `time.sleep` inside `async def` still about 2 s; two real calls gathered in about the time of the slower one (ours: 6.93 s against 1.95 s) |
-| Part B | Helena 6, 7 invoices, $49.62, Steve Johnson; Puja 59, 6 invoices, $36.64, Jane Peacock; `function_tool`'s schema for `find_customer` matches lab 03's (strict, `name` a string with its description); a `Desk` agent with three tools, drawn |
-| Part C | three model calls: `find_customer`, then `get_invoices` and `get_support_rep` in one reply, then the answer with 7, $49.62 and Steve Johnson; input tokens growing per request (206, 264 and 375); a trace `task` → `agent` → three `turn`s, each with a `response` and its `function` spans; `MaxTurnsExceeded` at `max_turns=1` |
-| Part D | no SDK default for our model; the trace shows effort `medium` without `model_settings` and `none` with it; 0 reasoning tokens on the lookup at both; reasoning tokens on the comparison only at the API's default; the right numbers at both |
-| Part E | without a session the follow-up does not know who "she" is and asks for her full name; with `SQLiteSession` it answers $49.62; 10 items stored, found again from the file |
-| Part F | one agent: three facts, 3 requests; our code: three facts from two specialists run at once; as tools: three facts, 8 requests, specialists' runs nested in the trace, `last_agent` `Manager`; handoff: the rep missing, `last_agent` `Invoices`, no `get_support_rep` call; over five runs each: one agent 5 of 5, as tools 5 of 5, handoff 0 of 5 with all three facts; the rep-only question answered by `Support reps` |
-| Challenge | handing back: handoffs `Triage -> Invoices -> Triage -> Support reps`, more requests and tokens than one agent, all three facts in 5 of 5 in the saved run (15 of 20 over all our runs); the manager with a session: Helena's three facts after *And what about Helena Holý?*, with the specialists' `input` naming Helena in full |
+| Notebook 1, Part A | without a tool the model says it cannot check live weather; `get_weather("Amman")` prints `TOOL CALLED` and returns today's values for Amman, Jordan |
+| Notebook 1, Part B | a `function_call` for `get_weather` with `{"city":"Amman"}` and nothing run yet; after the result is sent back, a reply with Amman's weather; three `TOOL CALLED` lines for the three-city question |
+| Notebook 1, Part C | a `FunctionTool` with a schema like Part B's (strict, `city` a string); one `TOOL CALLED` line and an answer; 2 model calls; `new_items` with a tool call, its output and a message; `MaxTurnsExceeded` at `max_turns=1` |
+| Notebook 1, Part D | three `TOOL CALLED` lines, `get_weather(Dubai)` first, and `suggest_activity` called with the weather that came back |
+| Notebook 1, Part E | the Tokyo question answered by `Weather Specialist`, the Barcelona question by `Adventure Specialist`; the handoff listed before the specialist's tool calls |
+| Notebook 1, Part F | a web answer with a source and no `TOOL CALLED` line (`web_search_call`; ours used 10,189 input tokens); the guide's four recommended references through a `file_search_call`; a `file_search_call` and one or more `web_search_call` items from the agent with both tools; the store and the file deleted |
+| Notebook 1, Part G | with a Gemini key, `TOOL CALLED` once and an answer from the Gemini model; without one, a message that the part is skipped |
+| Notebook 2, Part A | Helena 6, 7 invoices, $49.62, Steve Johnson; Puja 59, 6 invoices, $36.64, Jane Peacock; three model calls (`find_customer`, then `get_invoices` and `get_support_rep` together, then the message); input tokens growing per request (ours: 206, 264 and 375) |
+| Notebook 2, Part B | without a session the follow-up asks who "she" is; with `SQLiteSession` it answers $49.62; 10 items stored, found again under the same id, none under another |
+| Notebook 2, Part C | one agent: three facts, 3 requests; as tools: three facts, `last agent` `Manager`, 8 requests; handoff: the rep missing, `last agent` `Invoices`, no `get_support_rep` call; the rep-only question answered by `Support reps` |
+| Challenges | notebook 1: four `TOOL CALLED` lines, `estimate_budget` after `suggest_activity`; notebook 2: handoffs `Triage -> Invoices -> Triage -> Support reps` with all three facts in most runs, and Helena's three facts after *And what about Helena Holý?* |
 
-**About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the model `models.env` names
-(Part D also runs it at the API's default effort). The model chooses its tool calls and writes its replies on every
-run, so wording, timings and token counts change from run to run and from model to model; Part A's sleeps and Part
-D's effort settings do not. Check the facts, the tool calls and the counts, not the words. The handoff losing the
-rep did not vary: it happened in every run we made on this model.
+**About the saved outputs.** They come from `gpt-6-luna`, the model `models.env` names; notebook 1's optional Part G
+also ran `gemini-3.5-flash-lite`. The weather is the weather on the day of the run, and the model chooses its tool
+calls and writes its replies on every run, so wording, numbers and token counts will differ on yours. Check the
+tool calls, the agents and the facts, not the words. The handoff losing the rep did not vary: it happened in every
+run we made on this model (more than ten).
 
 ## Before you start
 
 - **Lab 00 first.** It checks the environment and that your key reaches the model.
 - **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
-  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open `07_openai_agents_sdk.ipynb` in VS Code or
-  JupyterLab (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first.
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook in VS Code or JupyterLab
+  (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its own.
+- **Internet:** notebook 1 calls Open-Meteo for the weather (free, no key) and uses OpenAI's web search.
 - **Graphviz** (optional): `draw_graph` needs the `dot` program (`sudo apt install -y graphviz` on Ubuntu,
-  `brew install graphviz` on a Mac). Without it only the drawing cells fail; every run works.
-- **Traces stay local.** The notebook replaces the SDK's trace uploader with a recorder that keeps the spans in the
-  notebook, so nothing is sent to the OpenAI dashboard.
-- **Files it writes:** Part E keeps its conversation in `07_OpenAI_Agents_SDK/outputs/sessions.db`, which git
-  ignores (both `outputs/` and `*.db` are in `.gitignore`).
-- **Data:** `data/chinook.db`, the Chinook sample music shop, opened read-only. Nothing is downloaded.
-- **Cost:** about 160 model calls of a few hundred to two thousand tokens each: around two US cents at the prices in
-  `models.env`.
+  `brew install graphviz` on a Mac). Without it only the drawing cells fail.
+- **Traces:** the SDK sends a trace of every run (questions, tool results, answers) to the Traces page of the OpenAI
+  account that owns the key. Notebook 1, Part C says how to switch that off.
+- **Stored on OpenAI's side:** notebook 1, Part F uploads the AI governance guide (`21_AI_Governance_Document/`) to a
+  vector store and deletes both at the end of the part. Run that last cell.
+- **Optional Gemini key:** Part G of notebook 1 runs only when `GEMINI_API_KEY` is in `.env`. Nothing else needs it.
+- **Files it writes:** notebook 2 keeps its conversation in `07_OpenAI_Agents_SDK/outputs/sessions.db`, which git
+  ignores.
+- **Data:** `data/chinook.db`, the Chinook sample music shop, opened read-only.
+- **Cost:** about 55 model calls in all, a few US cents. Most of it is notebook 1's web search: OpenAI charges a
+  small fee per search call on top of the tokens of the pages it reads (about 10,000 input tokens in our run).
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `07_openai_agents_sdk.ipynb` | the guided notebook, with saved outputs |
-| `resources/lab07_wirings.mmd` and `.png` | the four wirings diagram: its mermaid source and the exported image |
-| `solved/07_openai_agents_sdk_solution.ipynb` | the challenge solved, run with its outputs |
+| `07a_meet_the_agents_sdk.ipynb` | notebook 1, the playground, with saved outputs |
+| `07b_agents_sdk_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `07_extra_async_await.ipynb` | going further: `async` and `await` from the beginning |
+| `resources/plain_loop_vs_runner.png` | the picture of our loop beside `Runner.run` |
+| `solved/07a_meet_the_agents_sdk_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/07b_agents_sdk_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
 
 ## Resources
 
@@ -100,19 +125,15 @@ rep did not vary: it happened in every run we made on this model.
 - [Agents](https://openai.github.io/openai-agents-python/agents/) and
   [Running agents](https://openai.github.io/openai-agents-python/running_agents/): `Agent`, `Runner.run`, the agent
   loop, `max_turns`
-- [Tools](https://openai.github.io/openai-agents-python/tools/): `function_tool`, schemas from type hints and
-  docstrings, agents as tools
+- [Tools](https://openai.github.io/openai-agents-python/tools/): `function_tool`, hosted tools, agents as tools
 - [Results](https://openai.github.io/openai-agents-python/results/): `final_output`, `new_items`, `raw_responses`,
   `last_agent`
-- [Tracing](https://openai.github.io/openai-agents-python/tracing/): traces, spans and custom trace processors
+- [Tracing](https://openai.github.io/openai-agents-python/tracing/): what a trace records and how to control it
 - [Sessions](https://openai.github.io/openai-agents-python/sessions/): `SQLiteSession` and the other session classes
 - [Handoffs](https://openai.github.io/openai-agents-python/handoffs/) and
-  [Agent orchestration](https://openai.github.io/openai-agents-python/multi_agent/): handoffs, agents as tools and
-  orchestration in code
+  [Agent orchestration](https://openai.github.io/openai-agents-python/multi_agent/): handoffs and agents as tools
+- [Models](https://openai.github.io/openai-agents-python/models/): using other providers' models
 - [Visualization](https://openai.github.io/openai-agents-python/visualization/): `draw_graph`
-- [Python `asyncio`: coroutines and tasks](https://docs.python.org/3/library/asyncio-task.html): `await`, `gather`,
-  `TaskGroup`
-- [OpenAI: reasoning models](https://developers.openai.com/api/docs/guides/reasoning): reasoning effort and reasoning
-  tokens
+- [Python `asyncio`: coroutines and tasks](https://docs.python.org/3/library/asyncio-task.html): `await`, `gather`
 
 Next: [Lab 08: How LangChain and LangGraph run the same agent](../08_LangChain_LangGraph/README.md). Back to [the lab list](../README.md).

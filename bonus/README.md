@@ -15,7 +15,7 @@ terms. Every core lab runs without those two services.
 |---|---|
 | B1 | [How to make a LangGraph workflow survive a restart](B1_LangGraph_Durable_Workflows/) |
 | B2 | [How to put guardrails and approvals on an Agents SDK agent](B2_Agents_SDK_Guardrails/) |
-| B3 | [How to build the desk agent with Google ADK and LiteLLM](B3_Google_ADK/) |
+| B3 | [How to build and run an agent with Google ADK](B3_Google_ADK/) |
 | B4 | [How to build a typed desk agent with Pydantic AI](B4_PydanticAI_Typed_Agent/) |
 | B5 | [How to build the desk as a CrewAI crew](B5_CrewAI_Crew/) |
 | B6 | [How to build the desk agent with Microsoft Agent Framework](B6_Microsoft_Agent_Framework/) |

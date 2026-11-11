@@ -224,7 +224,7 @@ reports each as set up or "optional, not set up".
 | Lab | Folder | Why it has its own environment |
 |---|---|---|
 | 12 | `12_LlamaIndex_RAG` | LlamaIndex needs `openai` 2.x; the main environment pins 3.x |
-| B3 | `bonus/B3_Google_ADK` | Google ADK caps the LiteLLM version it accepts |
+| B3 | `bonus/B3_Google_ADK` | Google ADK's OpenAI support needs `openai` 2.x; the main environment pins 3.x |
 | B5 | `bonus/B5_CrewAI_Crew` | CrewAI needs `openai` 2.x and `mcp` 1.x |
 | B6 | `bonus/B6_Microsoft_Agent_Framework` | Agent Framework adds over a hundred packages, kept out of the main install |
 

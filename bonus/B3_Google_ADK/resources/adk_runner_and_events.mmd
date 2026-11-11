@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "flowchart": {"nodeSpacing": 40, "rankSpacing": 150}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: how one ADK run moves between our code, the Runner, the Session and the Agent.
+%% Ink: what the model does. Lime: what our own code does. White: ADK.
+%% Export: npx -y @mermaid-js/mermaid-cli -i adk_runner_and_events.mmd -o adk_runner_and_events.png -b white -s 2
+flowchart LR
+    us["our code<br/>sends one message"]:::ours
+    runner["Runner<br/>runs the loop"]
+    session[("Session<br/>keeps the events")]
+    subgraph agent["Agent: instruction, model, tools"]
+        model["model<br/>writes a function call<br/>or the answer"]:::model
+        tool["get_weather<br/>our Python function"]:::ours
+    end
+    us -- "message" --> runner
+    runner -- "loads and saves" --- session
+    runner -- "conversation so far" --> model
+    model -- "function call or answer" --> runner
+    runner -- "runs it" --> tool
+    tool -- "function response" --> runner
+    runner -- "events" --> us
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef ours fill:#C9F24D,color:#0B1220,stroke:#0B1220

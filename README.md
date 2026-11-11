@@ -68,7 +68,7 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | B1 | [How to make a LangGraph workflow survive a restart](bonus/B1_LangGraph_Durable_Workflows/) |
 | B2 | [How to put guardrails and approvals on an Agents SDK agent](bonus/B2_Agents_SDK_Guardrails/) |
-| B3 | [How to build the desk agent with Google ADK and LiteLLM](bonus/B3_Google_ADK/) |
+| B3 | [How to build and run an agent with Google ADK](bonus/B3_Google_ADK/) |
 | B4 | [How to build a typed desk agent with Pydantic AI](bonus/B4_PydanticAI_Typed_Agent/) |
 | B5 | [How to build the desk as a CrewAI crew](bonus/B5_CrewAI_Crew/) |
 | B6 | [How to build the desk agent with Microsoft Agent Framework](bonus/B6_Microsoft_Agent_Framework/) |
