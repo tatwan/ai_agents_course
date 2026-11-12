@@ -1,0 +1,22 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 48, "wrappingWidth": 280}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: the desk agent as a LangGraph graph with a review step. The state (the messages) enters at START;
+%% the model node calls the model; our route reads the reply; lookups go to the tools node and back to the model;
+%% a refund request goes to the review node, where interrupt() stops the run until a person decides.
+%% Ink: what the model does. Lime: what our own code does. Dashed: the checkpointer, which saves the state after every step.
+%% Export: npx -y @mermaid-js/mermaid-cli -i desk_graph_with_review.mmd -o desk_graph_with_review.png -b white -s 2
+flowchart LR
+    start([START<br/>state in:<br/>messages]) --> model[model node<br/>one call to the model;<br/>adds its reply]
+    model --> route{route:<br/>what does the<br/>reply ask for?}
+    route -->|a lookup| tools[tools node<br/>runs each tool call;<br/>adds the results]
+    route -->|a refund request| review[review node<br/>interrupt: the run stops<br/>and waits for a person]
+    route -->|no tool| finish([END<br/>state out: messages,<br/>the answer is the last one])
+    review -->|approve| tools
+    review -->|reject, with a reason| model
+    tools -->|back edge| model
+    saver[(checkpointer:<br/>saves the state after<br/>every step, per thread id)] -.- review
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    classDef note fill:#FFFFFF,color:#0B1220,stroke:#6B7383,stroke-dasharray:5 4
+    class model model
+    class route,tools,review code
+    class saver note

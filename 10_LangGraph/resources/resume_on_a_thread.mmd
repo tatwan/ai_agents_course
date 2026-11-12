@@ -1,0 +1,15 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 48, "wrappingWidth": 300}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: what LangGraph does with Command(resume=...) on a thread id. If the checkpointer holds a paused
+%% run for that thread, the paused node runs again and interrupt() returns the decision. If it holds nothing, a new
+%% run starts at START with an empty state, and no error is raised.
+%% Ink: what the model does. Lime: what our own code does, or the step to look at.
+%% Export: npx -y @mermaid-js/mermaid-cli -i resume_on_a_thread.mmd -o resume_on_a_thread.png -b white -s 2
+flowchart LR
+    call["our code<br/>invoke(Command(resume=...), config)"]:::code --> saver[(checkpointer:<br/>looks up the<br/>thread id)]
+    saver --> has{a paused run<br/>on this thread?}
+    has -->|yes| node["the paused node runs again;<br/>interrupt() returns the decision"]
+    node --> go([the run continues<br/>where it paused])
+    has -->|no| fresh["a new run starts at START<br/>with an empty state;<br/>no error"]:::code
+    fresh --> model["model node:<br/>called with the system prompt<br/>and no messages"]:::model
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220

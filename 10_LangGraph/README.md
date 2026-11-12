@@ -1,127 +1,148 @@
-# Lab 10: How LangChain and LangGraph run the same agent
+# Lab 10: How to draw, pause and resume an agent with LangGraph
 
-**CPU | API key: `OPENAI_API_KEY` | about 30 small model calls | Practises: recognising the agent loop inside a framework, and stopping an agent for a person's approval before it writes**
+**CPU | API key: `OPENAI_API_KEY` | Internet for the drawings | Practises: writing an agent as a graph; pausing a write for a person's decision and resuming it safely**
 
 ## Goal
 
-Rebuild the shop's support-desk agent with LangChain's `create_agent`, see that what it returns is a LangGraph graph,
-build that same graph by hand, then make the agent stop before it files a refund and wait for a person's approval,
-also across a kernel restart. Two moments teach it. The agent answers correctly, but its answer's `content` is a list
-of blocks, not a string, so the `.content.lower()` that worked on a plain model call crashes on it: the framework
-chose a different API for us. And after a restart, a paused run kept only in memory is gone; resuming it raises no
-error, and the model, now holding no request at all, can propose a refund nobody asked for.
+Meet LangGraph on a pizza order, then put it to work at the Chinook support desk. The lab has two notebooks.
+
+**Notebook 1** is a playground. We write a pizza order as a graph with no model in it: a state, three nodes and
+the edges between them. Two nodes write to the same list of toppings and one wipes out the other's work, until a
+reducer fixes it. A route sends big orders down another path, the program stops in the middle to ask the customer
+a question, and it carries on when the answer comes. Then one node becomes a model call, and we find the same
+kind of graph inside an agent made with `create_agent`.
+
+**Notebook 2** takes LangGraph to the desk. We write the desk agent's loop as a graph ourselves and put a step of
+our own inside it: a refund request stops in a `review` node until a person decides. Then we resume a thread
+whose paused run is gone, as it would be after a restart. LangGraph raises no error. It starts a new run with no
+request in it, and the model, given nothing to answer, makes something up. Reading what is waiting before a
+resume, and keeping the threads in a file, prevents it.
 
 ## What you will learn
 
-- How to construct LangChain's `ChatOpenAI` from `models.env`, call it directly and read the `AIMessage` it returns
-  (`content`, `text`, `usage_metadata`, `response_metadata`).
-- How to turn plain Python functions into LangChain tools with `tool` and build the desk agent with `create_agent`.
-- Why the agent's answer arrives as a list of content blocks, and how `.text` reads every reply the same way.
-- What `create_agent` returns, a LangGraph `CompiledStateGraph`, and how to build the same graph by hand with
-  `StateGraph`: the state, the `add_messages` reducer, the nodes, the routing function and the back edge.
-- How to ask the agent for a typed answer with `response_format`.
-- How to pause before a write with `HumanInTheLoopMiddleware`, resume with `Command`, and why only a checkpointer that
-  writes to a file (`SqliteSaver`) keeps a paused run across a restart.
-
-## Where this lab starts
-
-Lab 03 wrote the agent loop by hand: send the messages and the tool schemas, run every tool the model asks for,
-append the results, and repeat until the model answers in text. Lab 07 ran the same loop in the OpenAI Agents SDK.
-This lab runs it in LangChain (the building blocks: a chat model object, messages, tools, and `create_agent`, a
-prebuilt loop) and LangGraph (the engine underneath, which runs a program written as a graph of a state, nodes and
-edges, and can save the state after every step). It uses the same three lookups and the same question as lab 03 and
-defines everything it needs, so it runs on its own.
-
-![The desk agent as a graph: the state enters at START, the model node calls the model, our route function checks for tool calls, the tools node runs them and the back edge returns to the model; an approval pause and a checkpointer are marked](resources/lab10_graph_by_hand.png)
+- How to write a program as a graph (a state, nodes that return updates, and edges), draw it, and watch it run
+  step by step.
+- Why a node's update replaces a value by default, and how a reducer lets several nodes add to the same list.
+- How to choose the next node in our own code with a conditional edge.
+- How to pause a run inside a node with `interrupt`, and resume it with `Command`, a checkpointer and a thread id.
+- How the agent loop maps onto a graph, and how to put a review step of our own between the model and a write.
+- What a resume does on a thread with nothing waiting, how to check `get_state(config).interrupts` first, and how
+  to keep paused runs in a file with `SqliteSaver`.
 
 ## What you will do
 
-All of it on the Chinook music shop's database, `data/chinook.db`, opened read-only, with three lookups:
-`find_customer`, `get_invoices` and `get_support_rep`. The question: how many invoices Helena Holý has, what they add
-up to, and who her support rep is.
+### Notebook 1: meet LangGraph on a pizza order (`10a_meet_langgraph.ipynb`)
 
-**Part A: Call a LangChain chat model directly.** Construct `ChatOpenAI` from `models.env`, send a system and a human
-message, and read the `AIMessage` field by field.
-**Part B: Build the desk agent with `create_agent`.** Turn the three lookups into tools with `tool`, read the schema
-LangChain sends, build the agent, print and draw its graph, and run Helena's question message by message.
-**Part C: Read the agent's answer from content blocks.** Watch `.content.lower()` crash on the agent's answer, read
-the block it holds and the response id that shows which API answered, then read every reply with `.text`.
-**Part D: Build the same graph by hand in LangGraph.** Call the `add_messages` reducer on two small lists, build a
-graph with no model, then the model node, `ToolNode`, a routing function and the back edge; compare its edges with
-`create_agent`'s and run the same question.
-**Part E: Ask the agent for a typed answer.** Describe the answer as a Pydantic model, pass it as `response_format`,
-read the raw message beside the parsed object, and run two customers with `batch`.
-**Part F: Pause a refund for a person's approval.** Add a tool that writes to a refund table, put
-`HumanInTheLoopMiddleware` in front of it, read the interrupt, check the invoice and approve with `Command`.
-**Part G: Keep a paused run across a kernel restart.** Pause the same request on an `InMemorySaver` agent and a
-`SqliteSaver` agent, restart the kernel, read both threads, approve the one that survived, and see what a resume on
-the lost thread does.
-**Challenge.** Ask Puja Srivastava's question on the graph you built by hand, and reject a refund with a reason.
+**Part A: Write a program as a graph with a state, nodes and edges.** Three plain functions run by hand, then the same
+functions as a `StateGraph`, drawn, run with `invoke` and watched with `stream`.
+**Part B: Merge two nodes' updates to one key with a reducer.** A second node returns toppings and the first
+node's are gone; `Annotated[list, operator.add]` keeps both.
+**Part C: Choose the next node with a route.** A conditional edge that refuses orders over 18 dollars.
+**Part D: Pause in a node with `interrupt` and resume with `Command`.** The graph asks the customer first, with
+and without a checkpointer, and carries on after a yes.
+**Part E: Make one node a model call.** A model turns the customer's sentence into an order form, and the rest of
+the graph stays plain Python.
+**Part F: Find the same kind of graph inside `create_agent`.** The agent's `model` and `tools` nodes, its loop,
+and a run watched step by step.
+**Challenge.** Say no to a big order, and charge for delivery with a receipt.
+
+### Notebook 2: LangGraph at the Chinook desk (`10b_langgraph_at_the_desk.ipynb`)
+
+**Part A: Write the agent loop by hand, then as a graph.** Three database lookups, the loop in plain Python on
+Helena Holý's question, then the same loop as a model node, a tools node, a route and a back edge.
+**Part B: Pause a refund in a node of our own and wait for a person.** A write tool, a `review` node with
+`interrupt`, a request that waits, and an approval.
+**Part C: See what a resume does when the paused run is gone.** What the checkpointer keeps for a waiting thread,
+a desk restarted with an empty memory, and a resume that starts a new run.
+**Part D: Check what is waiting before resuming, and keep threads in a file.** `get_state(config).interrupts`
+before every resume, and `SqliteSaver` so that a second graph object finds the waiting call.
+**Challenge.** Reject a refund with a reason, and let small refunds through without a review.
+
+![The desk agent as a graph. The state, a list of messages, enters at START and goes to the model node. A route reads the model's reply: a lookup goes to the tools node and back to the model, a refund request goes to the review node, and a reply with no tool request ends the run. In the review node the run stops and waits for a person; an approval sends it on to the tools node, a rejection back to the model. A checkpointer saves the state after every step, per thread id.](resources/desk_graph_with_review.png)
+
+The dark box is the model's work, the lime boxes are our own Python, and the checkpointer is LangGraph's.
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | an `AIMessage` whose `content` is a `str`, `finish_reason` `stop`, a response id starting with `chatcmpl-` |
-| Part B | nodes `['__start__', 'model', 'tools', '__end__']`; `find_customer`, then `get_invoices` and `get_support_rep` in one reply; an answer with 7 invoices, 49.62 US dollars and Steve Johnson, printed as a list |
-| Part C | `AttributeError: 'list' object has no attribute 'lower'`; one block of type `text`; a response id starting with `resp_`; `.text` gives the answer and `names the rep: True` |
-| Part D | `add_messages` appends, then replaces by `id`; the lookup graph returns `customer_id` 6 and `invoice_count` 7; `✅ same nodes and edges`; the hand-built graph gives the same answer |
-| Part E | `['messages', 'structured_response']`; `DeskAnswer(customer_name='Helena Holý', invoice_count=7, total_usd=49.62, support_rep='Steve Johnson')`; an average invoice of 7.09; Puja with 6, 36.64 and Jane Peacock |
-| Part F | a fifth node, `HumanInTheLoopMiddleware.after_model`; an interrupt for `file_refund_request` with invoice 393 and 1.98, and an empty table; after approval, one row |
-| Part G | after the restart, the `memory` thread empty and the `file` thread waiting on invoice 284 and 8.91; after approval, two rows; a resume on the lost thread raises no error and starts a new run (in our run it asked what the rep needed, and 2 of 5 more empty threads got an invented refund); still two rows |
+| Notebook 1, Part A | by hand and as a graph, one `ORDER PLACED` line and an order with five keys, `price` 11.0; the nodes `__start__`, `take_order`, `price`, `place_order`, `__end__`; three steps in the stream |
+| Notebook 1, Part B | without a reducer the order is placed with `['mushrooms', 'olives']` only; with `Annotated[list, operator.add]` it is placed with all four toppings; 14.00 dollars both times |
+| Notebook 1, Part C | `route` returns `place_order` for 12.50 and `refuse` for 20.00; two dotted arrows leave `price`; the party order ends with `not placed: over 18 dollars` and no `ORDER PLACED` line |
+| Notebook 1, Part D | without a checkpointer the run stops at *This order comes to $20.00. Go ahead?* and a resume raises `Cannot use Command(resume=...) without checkpointer`; with `InMemorySaver`, `next` is `('ask_first',)`; after `Command(resume=True)`, one `ORDER PLACED` line with six toppings and `next` empty |
+| Notebook 1, Part E | an `OrderForm` with the size `large` and the extras the sentence names (ours: four); the graph stops at the question and places the order after a yes; the model is called in `read_request` only |
+| Notebook 1, Part F | a `CompiledStateGraph` with the nodes `__start__`, `model`, `tools`, `__end__`; `model` asks for `quote_price`, one `TOOL CALLED` line, `tools` returns 17.0, `model` answers |
+| Notebook 2, Part A | Helena Holý is customer 6 (7 invoices, $49.62, support rep Steve Johnson) and Puja Srivastava is customer 59 (6 invoices, $36.64, support rep Jane Peacock); a first reply with empty `.text` and one tool call; `find_customer` first, then `get_invoices` and `get_support_rep`, then the answer; three model calls (ours: 166, 224 and 335 input tokens, 21, 52 and 25 output tokens); the same four nodes as `create_agent`'s graph |
+| Notebook 2, Part B | a `review` node between `model` and `tools`; Puja's request waits on `file_refund_request` for invoice 284 and 8.91, `next` is `('review',)` and the table is empty; after `Command(resume="approve")`, one row |
+| Notebook 2, Part C | Helena's request waits at `review` (ours: 4 messages, 5 checkpoints); on the restarted desk the resume raises no error, the thread starts with an `ai` message and has no `human` message, nothing in it is about Helena, and the table still has one row (ours: 15 messages, seven lookups of a made-up name) |
+| Notebook 2, Part D | `❌ nothing is waiting on this thread: not resumed` and `None` on a desk with an empty memory; with `SqliteSaver`, a second graph object on the same file finds the call for invoice 393 and 1.98 waiting, and after the approval the table has two rows |
+| Challenges | notebook 1: after `Command(resume=False)`, no `ORDER PLACED` line, `approved` `False` and no `status`; a medium placed at 16.50 with a two-line receipt, and a large that stops at 19.50. Notebook 2: a `tool` message starting *Not run. The reviewer rejected it:* and no row for invoice 229 (the solved file starts from an empty table, so there it stays empty); a refund of 1.98 filed without a stop, and one of 8.91 waiting at `review` |
 
-**About the saved outputs.** They come from `gpt-6-luna` with reasoning effort `none`, the model named in
-`models.env`. Replies change from run to run, and from model to model if you change `models.env`: check the facts and
-the shape of each run (which tools, in which order, where it stops), not the wording. With another model, Part C can
-change too: whether the agent's `content` is a list depends on which OpenAI API LangChain picks for that model, which
-is why the lab reads replies with `.text`. Part G's resume on the lost thread is a spread, not a fixed result: over
-23 such resumes we have seen, the model wrote a refund request nobody asked for in 14 and asked
-what the rep needed in the rest; the approval step stopped every one of them before it could write.
+**About the saved outputs.** They come from `gpt-6-luna`, the model `models.env` names. Parts A to D of notebook
+1 call no model and print the same on every run. Elsewhere the model chooses its tool calls and writes its
+replies on every run, so wording, reasons and token counts will differ on yours. Check the tool calls, the nodes
+and the facts, not the words. Every refund request we sent stopped at `review` (17 of 17), and every approval
+wrote its row. The resume on a lost thread started a new run without an error in all 41 runs we made. What the
+model did next varied: in 38 it made up a customer name and looked it up, in 3 it asked what to look up, and in 17
+of the 38 it reported a real customer's invoice figures under the made-up name. It never proposed a refund.
+
+## When to use it
+
+LangGraph suits a job where our code must control some of the steps: a rule that always holds, a step that waits
+for a person, a run that has to continue after a restart. It gave this lab two things the ready-made loop does
+not show: a node of our own inside the loop, and a checkpointer we could read. It has two costs. The agent took
+about twenty lines where `create_agent` takes one, so write the graph by hand only when a step of your own is
+needed. And a resume on a thread with nothing waiting does not fail, so every resume needs a check first.
 
 ## Before you start
 
-- **Lab 00 first.** It checks the environment, your key and the shop's data.
-- **Open** `10_langchain_langgraph.ipynb` in VS Code or JupyterLab on the repository's `.venv` kernel and run the
-  cells from the top. Part G asks you to restart the kernel and run the config cell again; the notebook says when.
-- **Data:** `data/chinook.db`, read in place and opened read-only. Parts F and G write two files of their own in this
-  lab's `outputs/` folder (`refund_requests.db` and `checkpoints.db`), which git ignores; delete the folder whenever you
-  like.
-- **Cost:** about 30 calls of a few hundred tokens each, well under one US cent at the prices in `models.env`. The
-  solution notebook makes about 7 more.
+- **Lab 00 first.** It checks the environment and that your key reaches the model.
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook from this folder in VS Code or
+  JupyterLab (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its
+  own.
+- **Internet for the drawings:** `draw_mermaid_png()` sends a graph's description (node names and arrows, none of
+  our data) to [mermaid.ink](https://mermaid.ink) and gets a picture back. Without internet only the drawing
+  cells fail; each notebook's Troubleshooting table shows how to print the same graph as text.
+- **No kernel restart.** Notebook 2 imitates a restart with a new checkpointer object, so every cell runs top to
+  bottom in one kernel.
+- **Files it writes:** notebook 2 keeps its refund table in `10_LangGraph/outputs/refund_requests.db` and its
+  checkpoints in `10_LangGraph/outputs/checkpoints.db`. Git ignores the `outputs/` folder.
+- **Data:** `data/chinook.db`, the Chinook sample music shop, opened read-only.
+- **Cost:** about 40 model calls in all, a fraction of one US cent. Parts A to D of notebook 1 call no model.
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `10_langchain_langgraph.ipynb` | the lab notebook, with saved outputs |
-| `resources/lab10_graph_by_hand.mmd` | the source (mermaid) of the graph this lab builds |
-| `resources/lab10_graph_by_hand.png` | that diagram, exported from the source |
-| `resources/lab10_create_agent_graph.mmd` | the Mermaid text `create_agent`'s graph prints, in the lab's colours |
-| `resources/lab10_create_agent_graph.png` | that drawing, exported from the source |
-| `solved/10_langchain_langgraph_solution.ipynb` | the challenge, solved and run |
+| `10a_meet_langgraph.ipynb` | notebook 1, the playground, with saved outputs |
+| `10b_langgraph_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `resources/desk_graph_with_review.png` and `.mmd` | the picture of the desk graph with its review step, and its source |
+| `resources/resume_on_a_thread.png` and `.mmd` | the picture of what a resume does on a thread, and its source |
+| `solved/10a_meet_langgraph_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/10b_langgraph_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
+
+## Going further
+
+- **A real restart.** Bonus lab B1 restarts the kernel, resumes a workflow from its checkpoint file, and shows
+  what runs twice when a node has code before its `interrupt`.
+- **LangGraph Studio.** `langgraph dev` starts a local server and a browser page that draws a graph and steps
+  through a run. It needs the `langgraph-cli[inmem]` package and a LangSmith API key (a free account), which this
+  repository does not install or ask for, so the lab draws its graphs in the notebook.
 
 ## Resources
 
-- [LangChain: Agents](https://docs.langchain.com/oss/python/langchain/agents): `create_agent`, its loop, tools,
-  system prompt and middleware.
-- [LangChain: Messages](https://docs.langchain.com/oss/python/langchain/messages): message objects, `.text` and
-  content blocks.
-- [LangChain: ChatOpenAI](https://docs.langchain.com/oss/python/integrations/chat/openai): the OpenAI chat model,
-  including when it uses the Responses API.
-- [LangChain: Tools](https://docs.langchain.com/oss/python/langchain/tools): `tool`, docstrings and type hints as the
-  schema.
-- [LangChain: Structured output](https://docs.langchain.com/oss/python/langchain/structured-output): `response_format`
-  and the provider and tool strategies.
-- [LangChain: Human-in-the-loop](https://docs.langchain.com/oss/python/langchain/human-in-the-loop):
-  `HumanInTheLoopMiddleware`, decisions and resuming with `Command`.
-- [LangGraph: Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api): state, reducers, nodes, edges and
-  conditional edges.
-- [LangGraph: Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers): `InMemorySaver`,
-  `SqliteSaver`, threads and `get_state`.
-- [LangGraph: Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): how a graph pauses and resumes.
+- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview): what LangGraph is for
+- [Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api): state, reducers, nodes, edges,
+  conditional edges and `Command`
+- [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): `interrupt`, `Command(resume=...)` and
+  the rules for code around an interrupt
+- [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers): `InMemorySaver`, `SqliteSaver`, threads,
+  `get_state` and `get_state_history`
+- [Streaming](https://docs.langchain.com/oss/python/langgraph/streaming): `stream` and its modes
+- [LangChain agents](https://docs.langchain.com/oss/python/langchain/agents): `create_agent`, the ready-made loop
+- [LangChain human-in-the-loop](https://docs.langchain.com/oss/python/langchain/human-in-the-loop):
+  `HumanInTheLoopMiddleware`, the ready-made review step
+- [Run a local server](https://docs.langchain.com/oss/python/langgraph/local-server): `langgraph dev` and Studio
 
-The LangChain half of this lab continues in [lab 09](../09_LangChain/README.md), which stays with one model call at a
-time and composes LangChain's smaller pieces around it: prompt templates, `prompt | model | parser` chains, typed records from
-`with_structured_output`, and `batch` and `stream`.
-
-Next: [Lab 11: How to choose an agent framework (a guide)](../11_Choose_A_Framework/README.md). Back to [the lab list](../README.md).
+Back: [Lab 09: How to build an agent from LangChain's pieces](../09_LangChain/README.md). Next: [Lab 11: How to choose an agent framework](../11_Choose_A_Framework/README.md). Back to [the lab list](../README.md).
