@@ -1,24 +1,30 @@
 %%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 400}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
-%% Lab 16: a coding agent is the agent loop plus four file tools. Every path goes through the path check, so the
-%% file tools stay inside workspace/. run_tests starts Python on whatever the files now hold, and that code can reach
-%% everything our user can: the dashed edge leaves the workspace. Our code lime, the model ink.
+%% Lab 16: the coding agent at the Chinook shop. Our code adds AGENTS.md to the system message; the model replies
+%% with tool calls; our loop runs them. read_file and write_file send every file name through the path check, so
+%% they stay inside workspace/; list_files takes no name and lists workspace/. run_tests starts Python on whatever
+%% the files now hold, and that code can reach everything our user can: the dashed edge leaves the workspace.
+%% Our code lime (the file tools included), the model ink, files white.
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab16_coding_agent.mmd -o lab16_coding_agent.png -b white -s 2
 flowchart TB
-    model["model<br/>reads the task: the tests fail,<br/>make them pass; decides<br/>the next tool call"]
-    loop["our loop<br/>runs each call, appends the result,<br/>stops on text or after 10 turns"]
-    check["path check (Part B)<br/>refuses a path that<br/>leaves the workspace"]
-    files["list_files<br/>read_file<br/>write_file"]
+    system["system message<br/>our instructions + AGENTS.md (Part E)"]
+    model["model<br/>replies with the next tool call<br/>or with its answer"]
+    loop["our loop<br/>runs each call, appends the result,<br/>stops on an answer or after 15 turns"]
+    check["path check (Part D)<br/>refuses a file name that<br/>leaves the workspace"]
+    files["read_file<br/>write_file"]
+    listing["list_files<br/>takes no file name"]
     tests["run_tests<br/>python -m unittest -v<br/>in the workspace"]
-    subgraph WS["workspace/ (a fresh copy of workspace_start/)"]
-        disk[("pricing.py<br/>test_pricing.py")]
+    subgraph WS[" "]
+        disk[("workspace/<br/>a fresh copy of workspace_start/<br/>AGENTS.md, pricing.py,<br/>test_pricing.py")]
     end
     outside[("the rest of your machine<br/>../../.env, your environment,<br/>the network")]
+    system --> model
     model -->|tool calls| loop
     loop -->|results| model
     loop --> check --> files --> disk
+    loop --> listing --> disk
     loop --> tests -->|imports the code<br/>the model wrote| disk
-    tests -.->|"that code runs with<br/>your permissions (Part F)"| outside
+    tests -.->|"that code runs with<br/>your permissions (Part G)"| outside
     classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
     classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
     class model model
-    class loop,check,tests code
+    class system,loop,check,files,listing,tests code
