@@ -1,0 +1,46 @@
+"""Lab 06 challenge, notebook 1: the shopping-list server with a third tool, remove_item.
+
+A copy of 06_MCP/shopping_server.py; only remove_item is added. Because the list file is found from this
+file's own location, this copy keeps its own list in solved/outputs/shopping_list.txt.
+"""
+
+from pathlib import Path
+
+from mcp.server import MCPServer
+
+# The list is a text file in outputs/ beside this file, one item per line
+LIST_FILE = Path(__file__).resolve().parent / "outputs" / "shopping_list.txt"
+
+mcp = MCPServer("shopping")
+
+
+@mcp.tool()
+def add_item(item: str) -> str:
+    """Add one item to the shopping list."""
+    LIST_FILE.parent.mkdir(exist_ok=True)
+    with open(LIST_FILE, "a", encoding="utf-8") as file:
+        file.write(item + "\n")
+    return f"Added {item}."
+
+
+@mcp.tool()
+def list_items() -> list[str]:
+    """List every item on the shopping list, in the order they were added."""
+    if not LIST_FILE.exists():
+        return []
+    return LIST_FILE.read_text(encoding="utf-8").splitlines()
+
+
+@mcp.tool()
+def remove_item(item: str) -> str:
+    """Remove one item from the shopping list."""
+    items = list_items()
+    if item not in items:
+        return f"{item} is not on the list."
+    items.remove(item)
+    LIST_FILE.write_text("".join(line + "\n" for line in items), encoding="utf-8")
+    return f"Removed {item}."
+
+
+if __name__ == "__main__":
+    mcp.run("stdio")

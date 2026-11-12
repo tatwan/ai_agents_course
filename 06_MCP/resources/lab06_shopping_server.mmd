@@ -1,0 +1,30 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 25, "rankSpacing": 45, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 06, notebook 1: three programs use one MCP server. The Inspector, the Python client and our host (the ask
+%% function, which also talks to the model) each start shopping_server.py as its own process and speak to it over
+%% stdio. The server runs the two tools on one text file. Our code lime, the model ink.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab06_shopping_server.mmd -o lab06_shopping_server.png -b white -s 2
+flowchart LR
+    model[model<br/>OpenAI API]
+    subgraph PROGRAMS["programs that use the server"]
+        direction TB
+        insp[MCP Inspector<br/>terminal and browser]
+        pyc[mcp.Client<br/>in a notebook cell]
+        host[host: our ask function<br/>with its mcp.Client]
+    end
+    subgraph SERVER["server: its own process"]
+        direction TB
+        srv[shopping_server.py<br/>MCPServer]
+        t1[add_item]
+        t2[list_items]
+        file[(shopping_list.txt)]
+        srv --> t1 & t2
+        t1 & t2 --> file
+    end
+    model <-->|tool calls| host
+    insp <-->|stdio| srv
+    pyc <-->|stdio| srv
+    host <-->|stdio: one JSON line<br/>per message| srv
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class host,srv,t1,t2 code
