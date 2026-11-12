@@ -1,0 +1,26 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 28, "rankSpacing": 44, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 17, notebook 2: how the chart's numbers reach the code. Part B: the rows go to the model as text and the model
+%% types them into its code. Part D: run_sql uploads the rows as a CSV file for the container and tells the model only
+%% their shape; what the code prints goes back to the model (dashed). Ink: what the model does. Lime: what our code
+%% does. White: data and the container.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab17_data_paths.mmd -o lab17_data_paths.png -b white -s 2
+flowchart TB
+    subgraph B["Part B: the rows go through the model"]
+        direction LR
+        db1[(chinook.db)] --> sql1[run_sql<br/>runs the query]
+        sql1 -->|the rows, as text| m1[Model<br/>types the numbers<br/>into its code]
+        m1 -->|code with the numbers in it| ci1[Code interpreter<br/>container: has no database]
+    end
+    subgraph D["Part D: the rows go to the code"]
+        direction LR
+        db2[(chinook.db)] --> sql2[run_sql<br/>runs the query,<br/>uploads a CSV]
+        sql2 -->|only the shape:<br/>5 rows, year, revenue| m2[Model<br/>writes code that<br/>reads the file]
+        sql2 -->|the rows, as a file<br/>in /mnt/data| ci2[Code interpreter<br/>container: has the CSV file]
+        m2 -->|code with no numbers| ci2
+        ci2 -.->|what the code prints| m2
+    end
+    B ~~~ D
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class m1,m2 model
+    class sql1,sql2 code
