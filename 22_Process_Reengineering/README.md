@@ -1,91 +1,101 @@
 # Lab 22: How to re-engineer a process with agents
 
-**CPU | No API key | No model calls | Practises: process design, per-step autonomy and impact estimates**
+**CPU | No API key | No model calls | Practises: mapping a process as steps, choosing a workflow or an agent per step, setting autonomy, and estimating what a redesign is worth**
 
 ## Goal
 
-Decide which steps of a damaged-media refund process are worth automating, set how far each step may act on its own,
-and estimate what a redesign is worth. The refund itself stays at **draft**, for a person to approve. The moment that
-teaches it is the estimate: the review and rework a redesign adds eat into the handling time it saves, and with ten
-minutes of review per case and one case in ten reworked, the design costs more each month than the time it frees is
+Decide, step by step, which parts of a process to hand to software, how far each part may act before a person
+looks, and whether the redesign is worth what it costs. The notebook starts with a Friday team lunch and then takes
+the same method to a damaged-media refund at the Chinook music shop's support team, where one step needs an agent and
+the payment waits for a person. In both, the lesson comes from a check a person adds after work is handed to
+software. At lunch, reading every order back makes the organiser's Friday longer than before. On the refund, when a
+reviewer re-checks the agent's work, the redesign still frees hours every month but costs more than those hours are
 worth.
 
 ## What you will learn
 
-- How to map a process as visible steps, with the evidence each one needs and the informal handoffs between them.
-- How to ask five questions of each step, keeping the path (Q1) apart from the evidence (Q2), and choose a workflow
-  or an agent candidate.
-- How to set `suggest`, `draft`, `act with audit` or `act` for each step, with a reason.
-- How to redesign the work and estimate the capacity it frees and its dollar value, with every assumption visible.
-- How to defend a build, buy or neither decision, and apply the same worksheet to a process of your own.
-
-## Before you start
-
-In the repository folder, `uv sync` (or `pip install -r requirements.txt`), then open `22_process_reengineering.ipynb`
-in VS Code or JupyterLab with the `.venv` kernel and run it from the top. You need no key: the notebook calls no
-model, and reads only the shop's policy files and a bundled measurement snapshot. It writes no files and starts no
-server. The Python is lists, dictionaries and arithmetic, explained where it carries a decision.
-
-The worked solution in `solved/` repeats every part and runs on its own. No earlier lab has to run first.
+- How to write a process down as steps, with the minutes a person spends on each step and the evidence it reads.
+- How to ask five questions of each step, and tell a step for a fixed workflow from a step where an agent fits.
+- How to set an autonomy level (suggest, draft, act with audit, act) for each step, with a reason, and why a payment
+  stays at draft even when every step of it is known.
+- How to count a redesign's minutes, including the review and the rework it adds.
+- How to turn the minutes a redesign frees into dollars at a wage, set them against what the system costs, and
+  change one assumption to see what moves.
 
 ## What you will do
 
-**Part A: Map the process.** Read the policies and an illustrative case, inspect one step dictionary, then map six steps and their human effort.
+One notebook, `22_process_reengineering.ipynb`: a Friday lunch first (Parts A and B), then the shop's refund
+(Parts C to G).
 
-**Part B: Ask the five questions of each step.** Separate path, evidence, recoverability, value and ownership; print every answer with a plain reason.
+**Part A: Decide which steps of a Friday team lunch to hand over.** Four steps and their minutes, two questions per
+step, the four autonomy levels, and the payment kept at draft.
+**Part B: Count the minutes a read-back adds to the lunch.** The organiser reads every order back after a missed
+allergy, and lunch takes longer than before the handover.
+**Part C: Map the damaged-media refund as steps.** The customer's email, the policy's "damaged twice" rule, six
+steps with their evidence and minutes, and the before-and-after drawing.
+**Part D: Ask five questions of each step, and find the step that needs an agent.** The five questions (the path,
+the evidence, undoing a mistake, the volume and the owner), the earlier damage ticket that names no album, and `route`
+run on every step.
+**Part E: Set how far each step may go on its own.** An autonomy level and a reason per step.
+**Part F: Redesign the refund and count its minutes.** Handling and review counted apart.
+**Part G: Estimate what the redesign is worth each month, and raise the review time.** Minutes first, then dollars,
+by hand and as `estimate`, and the same redesign with a longer review.
+**Challenge.** A shorter read-back at lunch, a refund case with no photo, and the review time where the redesign
+stops paying.
 
-**Part C: Set how far each step may go.** Choose autonomy per step, keeping payment at draft and closure dependent on a receipt.
-
-**Part D: Redesign the process.** Remove retyping, move evidence checks earlier, join eligibility and reply preparation, and add a review queue.
-
-**Part E: Estimate the impact.** Reconstruct a recorded token charge, separate it from business assumptions, and vary review and rework to find where the benefit disappears.
-
-**Part F: Decide build, buy or neither.** Compare illustrative system costs and identify the operating evidence that the decision still needs.
-
-**Part G: Apply it to your own process.** Use a worksheet with a missing-photo fallback and a solo path.
-
-**Challenge.** Recalculate with more review/rework, block the payment step on unavailable context, and write an owned decision. The worked notebook shows every result and reason.
-
-![Before and after the damaged-media refund process, with bounded checks, optional drafting, human review and receipt-based closure](resources/lab22_process_map.png)
+![The damaged-media refund before and after the redesign: six steps by hand at 18 minutes a case on top; below, our code logs and checks, an agent finds the earlier damage report, our code applies the policy, one model call drafts the reply, a person reviews for 2 minutes and a person approves the refund in 2 minutes](resources/lab22_process_map.png)
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | Six ordered steps, 18.0 human min/case in the assumed baseline |
-| Part B | Five explained answers per step; Q1 Yes for all six; refund/Q3 No |
-| Part C | Three steps at draft, three at act with audit; refund waits for human approval |
-| Part D | Five redesigned steps, 6 handling + 2 review = 8 human min/case before extra rework |
-| Part E | 8,800 min/month released; $3,779.85 USD/month net capacity-value estimate; break-even review 9.56 min/case at the base assumptions |
-| Sensitivity | At 10 review min/case and 10% rework: 800 min/month released but −$220.15 USD/month net value |
-| Part F | Illustrative build $3,779.85 and buy $3,199.85 USD/month; compare access, ownership and observed quality before choosing |
-| Part G | A missing photo blocks context; request evidence before deciding eligibility |
-| Solved challenge | At 6 review min/case and 30% rework: 2,400 min/month and $579.85 USD/month; unavailable payment evidence adds a context block without changing the workflow or human gate |
+| Part A | 4 steps and 12 minutes of the organiser's time; 1 minute after the handover, the payment at draft |
+| Part B | 13 minutes with the read-back, against 12 before the handover |
+| Part C | 6 steps, 18 minutes a case, the evidence each step reads; the drawing |
+| Part D | `route` on the refund: `('workflow', ['a person approves'])`; five workflows and one agent (`history`) |
+| Part E | `log` and `check` act with audit, `history` suggests, `decide`, `reply` and `refund` are drafts |
+| Part F | 2 minutes of handling and 2 of review, 4 in all, against 18 |
+| Part G | base scenario: 12.8 minutes saved a case, 3,840 minutes (64 hours) freed a month, worth 1,920 USD; system cost 1,203 USD, of which the model calls are 3 USD; net +717 USD a month. With 8 minutes of review: 2,040 minutes (34 hours) freed and −183 USD a month |
+| Challenge | 4 minutes for lunch with 3 orders read back; with no photo, `('workflow', ['fix the record first'])`; the net falls 150 USD per minute of review and turns negative between 6 minutes (+117) and 7 (−33) |
 
-The base assumptions are 1,000 cases/month, 18 before and 6 non-review after min/case, 2 review min/case, 10% extra rework at 12 min/affected case, wage 30 USD/hour (convert a local wage to US dollars before entering it), one recorded lookup-equivalent model task/case, $120 operations/month and a $6,000 build allocated over 12 months. These are illustrative business assumptions. Capacity valued at a wage becomes cash savings only through an actual staffing or redeployment decision. The calculator excludes queue delays, wrong-payout losses, customer harm and compliance work.
+The scenario's numbers are assumptions, written in one dictionary in Part G: 300 cases a month, 30 US dollars an
+hour, one case in ten reworked for 12 minutes, 1 US cent of model calls a case, 200 dollars a month to run and a
+12,000-dollar build spread over 12 months. Change any of them and run `estimate` again.
 
-**About the saved outputs.** This notebook calls no model. Its bundled Lab 20 snapshot records `gpt-6-luna` at
-reasoning effort `none`, from source notebook `20_evals_and_tracing.ipynb`, recorded on 2026-11-01. The changed
-eight-case set passed 7/8 = 0.875, like the baseline, with 20 model calls, 9,048 input tokens, no cached reads or
-writes and 581 output tokens: $0.00119530 in all, or $0.0001494125 per task. The eight-case score is not a
-refund-error rate, so we use only its token cost, as an editable stand-in, and vary the rework assumption separately.
-Each notebook's outputs come from its own complete run.
+**About the saved outputs.** The notebook calls no model and every number is written in the notebook, so the outputs
+are the same on every run. The model cost, like every number in the scenario, is an assumption we chose.
+
+## Before you start
+
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), then open
+  `22_process_reengineering.ipynb` in VS Code or JupyterLab (`uv run jupyter lab`) with the `.venv` kernel, and run
+  it from the top.
+- **No key needed.** The notebook calls no model and does not read `.env`.
+- **Data:** it reads two files of the shop's corpus in place, `data/corpus/policy_damaged_media.md` and
+  `data/corpus/ticket_06_germany_warped_vinyl.md`, and writes nothing.
+
+| What you see | Why | Fix |
+|---|---|---|
+| `StopIteration` in the setup cell | no folder above the notebook holds `models.env`, so the notebook was opened outside the repository | open the notebook from inside the cloned repository folder |
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `22_process_reengineering.ipynb` | Guided process-design notebook with real local outputs |
-| `solved/22_process_reengineering_solution.ipynb` | All parts and a fully worked challenge, run independently |
-| `resources/lab20_run_summary.json` | Fixed recorded measurement; no prior run required |
-| `resources/README.md` | Snapshot fields, policy provenance and limits |
-| `resources/lab22_process_map.mmd` and `.png` | Source and exported before/after diagram |
+| `22_process_reengineering.ipynb` | the notebook, with saved outputs |
+| `resources/lab22_process_map.png` and `.mmd` | the before-and-after drawing and its source |
+| `solved/22_process_reengineering_solution.ipynb` | the challenge solved, run with its outputs |
 
 ## Resources
 
-- [Python data structures](https://docs.python.org/3/tutorial/datastructures.html): dictionaries and lists.
-- [Python JSON](https://docs.python.org/3/library/json.html): loading the recorded measurement.
-- [Python copies](https://docs.python.org/3/library/copy.html): independent challenge assessments.
-- [NIST AI Risk Management Framework](https://airc.nist.gov/airmf-resources/airmf/): governance, context, measurement and ongoing management.
+- [Python tutorial: data structures](https://docs.python.org/3/tutorial/datastructures.html): lists, tuples and
+  dictionaries, and looping over a dictionary with `.items()`.
+- [Python tutorial: unpacking argument lists](https://docs.python.org/3/tutorial/controlflow.html#unpacking-argument-lists):
+  what the `*` in `route(*answers["refund"])` does.
+- [Anthropic: Building effective agents](https://www.anthropic.com/research/building-effective-agents): workflows
+  (predefined code paths) against agents (the model directs its own steps), and when each fits.
+- [OpenAI: A practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf):
+  the section "When should you build an agent?" on complex decisions, rules that are hard to maintain, and
+  unstructured data.
 
 Next: [Lab 23: What agent platforms sell](../23_Agent_Platforms/README.md). Back to [the lab list](../README.md).
