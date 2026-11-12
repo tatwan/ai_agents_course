@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"nodeSpacing": 40, "rankSpacing": 60, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: our code asks a Router for a name of our own; each name is a deployment that points at a model;
+%% the dotted arrow is the fallback: when quick fails, the Router tries careful.
+%% Ink: models. Lime: our own code. White: LiteLLM.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab21_router.mmd -o lab21_router.png -b white -s 2
+flowchart TB
+    us["our code<br/>router.completion(model='quick')"]:::ours
+    subgraph router["Router"]
+        quick["deployment quick<br/>id: quick-on-openai"]
+        careful["deployment careful<br/>id: careful-on-openai"]
+    end
+    m1["the model behind quick"]:::model
+    m2["the model behind careful"]:::model
+    us --> quick
+    quick --> m1
+    careful --> m2
+    quick -. "fallback when quick fails" .-> careful
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef ours fill:#C9F24D,color:#0B1220,stroke:#0B1220

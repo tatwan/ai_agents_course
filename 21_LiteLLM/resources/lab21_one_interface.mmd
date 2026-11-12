@@ -1,0 +1,16 @@
+%%{init: {"theme": "base", "flowchart": {"nodeSpacing": 40, "rankSpacing": 60, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: our code makes one kind of call; LiteLLM passes it on to the vendor named in front of the model.
+%% Ink: models. Lime: our own code. White: LiteLLM.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab21_one_interface.mmd -o lab21_one_interface.png -b white -s 2
+flowchart TB
+    us["our code<br/>litellm.completion(model, messages)"]:::ours
+    litellm["LiteLLM<br/>reads the prefix of the model name,<br/>returns every reply in one shape"]
+    openai["openai/...<br/>an OpenAI model"]:::model
+    gemini["gemini/...<br/>a Gemini model"]:::model
+    anthropic["anthropic/...<br/>an Anthropic model"]:::model
+    us --> litellm
+    litellm --> openai
+    litellm --> gemini
+    litellm --> anthropic
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef ours fill:#C9F24D,color:#0B1220,stroke:#0B1220

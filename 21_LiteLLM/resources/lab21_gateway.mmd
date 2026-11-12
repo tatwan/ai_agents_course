@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "flowchart": {"nodeSpacing": 40, "rankSpacing": 60, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: the desk agent calls the gateway at one address with the gateway's key and the name desk;
+%% the gateway holds the config file and the vendor's key, and falls back from desk-primary to desk-backup.
+%% Ink: models. Lime: our own code. White: LiteLLM.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab21_gateway.mmd -o lab21_gateway.png -b white -s 2
+flowchart LR
+    agent["desk agent<br/>ask_desk(client, 'desk', question)"]:::ours
+    subgraph gateway["LiteLLM gateway at one address"]
+        config["config file:<br/>names, fallbacks,<br/>where to read the vendor's key"]
+        primary["deployment desk<br/>id: desk-primary"]
+        backup["deployment desk-backup<br/>id: desk-backup-1"]
+    end
+    m1["primary model"]:::model
+    m2["backup model"]:::model
+    agent -- "OpenAI-style call<br/>with the gateway's key" --> primary
+    primary --> m1
+    backup --> m2
+    primary -. "fallback" .-> backup
+    primary -- "reply and headers:<br/>deployment, fallbacks, cost" --> agent
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef ours fill:#C9F24D,color:#0B1220,stroke:#0B1220
