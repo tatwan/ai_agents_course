@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 46, "wrappingWidth": 240}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: notebook 2, Part D. The model asks for file_refund_request, the middleware stops the run before
+%% the tool runs, the checkpointer keeps the paused run under its thread id, and a person's decision continues it:
+%% approve runs the tool, reject sends the reason back to the model.
+%% Ink: what the model does. Lime: the step to look at (the pause and the person's decision). White: LangChain.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab09_refund_approval.mmd -o lab09_refund_approval.png -b white -s 2
+flowchart LR
+    request(["rep's request"]) --> model["model<br/>asks for<br/>file_refund_request"]
+    model --> pause["HumanInTheLoopMiddleware<br/>stops before the tool runs"]
+    pause -. "paused run,<br/>kept by thread id" .- saver[("checkpointer")]
+    pause --> person{"a person checks<br/>the shop's record"}
+    person -->|approve| tool["file_refund_request<br/>runs: one request filed"]
+    person -->|"reject, with a reason"| told["the model is told why:<br/>nothing is filed"]
+    tool --> reply["model<br/>writes the reply"]
+    told --> reply
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef look fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model,reply model
+    class pause,person look

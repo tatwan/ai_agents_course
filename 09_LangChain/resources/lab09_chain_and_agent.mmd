@@ -1,24 +1,24 @@
 %%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44, "wrappingWidth": 260}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
-%% Lab 09: the two shapes the lab compares. Top: the chain prompt | llm | parser, whose three steps our code fixed;
-%% each edge is labelled with the object one step hands the next. Bottom: lab 10's agent, where the route after the
-%% model depends on what the model wrote, and the tools node loops back to the model.
-%% Ink = the model's work; lime = our code (template, parser, lookups, route).
+%% What it shows: the two shapes of notebook 1. Top: the chain prompt | llm | parser, whose three steps our code
+%% fixed; each arrow is labelled with the object one step hands the next. Bottom: the agent create_agent returns,
+%% where the path after each model call depends on what the model wrote, and the tools step goes back to the model.
+%% Ink: what the model does. Lime: what our own code does (template, parser, tools, the check for tool calls).
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab09_chain_and_agent.mmd -o lab09_chain_and_agent.png -b white -s 2
 flowchart TB
-    subgraph chain["Fixed chain (this lab): our code set the steps"]
+    subgraph chain["A chain: our code sets the steps"]
         direction LR
-        input([dict<br/>policy, ticket]) -->|dict| template[ChatPromptTemplate<br/>fills the gaps]
-        template -->|ChatPromptValue| model1[ChatOpenAI<br/>one model call]
-        model1 -->|AIMessage| parser[StrOutputParser<br/>keeps the text]
-        parser -->|str| output([draft reply])
+        input(["dictionary<br/>name, hobby"]) -->|dict| template["ChatPromptTemplate<br/>fills the gaps"]
+        template -->|ChatPromptValue| model1["ChatOpenAI<br/>one model call"]
+        model1 -->|AIMessage| parser["StrOutputParser<br/>keeps the text"]
+        parser -->|str| output(["birthday message"])
     end
-    subgraph agent["Agent (lab 10): the model picks the next step"]
+    subgraph agent["An agent: the model picks the next step"]
         direction LR
-        messages([messages]) --> model2[model node<br/>one model call<br/>per turn]
-        model2 --> route{tool calls<br/>in the reply?}
-        route -->|yes| tools[tools node<br/>runs our lookups]
-        tools -->|back edge| model2
-        route -->|no| answer([answer])
+        messages(["messages"]) --> model2["model<br/>one model call<br/>per turn"]
+        model2 --> route{"tool calls<br/>in the reply?"}
+        route -->|yes| tools["tools<br/>runs our functions"]
+        tools -->|back to the model| model2
+        route -->|no| answer(["answer"])
     end
     chain ~~~ agent
     classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
