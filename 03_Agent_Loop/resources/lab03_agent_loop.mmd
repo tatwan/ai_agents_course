@@ -1,18 +1,19 @@
-%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
-%% Lab 03: the agent loop on the course's map. The model decides; our code checks, runs the tool and appends the
-%% result, then sends the whole list again. Two exits: the model answers, or our turn cap stops the loop.
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 03: the agent loop. The model replies with tool calls or with text (ink); our code runs each tool call,
+%% adds the model's reply and the results to the messages list and checks the turn cap (lime), then sends the
+%% whole list again.
+%% Two exits: the model's answer, or our turn cap.
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab03_agent_loop.mmd -o lab03_agent_loop.png -b white -s 2
 flowchart LR
-    req[request<br/>the rep's question] --> ctx[context<br/>the messages list<br/>sent in full]
-    ctx --> model[model decides<br/>tool calls or text]
-    model -->|finish_reason<br/>tool_calls| check[your code checks<br/>a known tool?<br/>arguments parse?]
-    check --> tool[tool runs<br/>find_customer<br/>get_invoices<br/>get_support_rep]
-    tool --> result[result appended<br/>one tool message<br/>per call]
+    question[the question] --> list[messages list<br/>sent in full<br/>on every turn]
+    list --> model[model replies<br/>tool calls or text]
+    model -->|finish_reason<br/>tool_calls| run[our code runs<br/>each tool call]
+    run --> result[reply and results added<br/>one tool message<br/>per call]
     result --> left{turns<br/>left?}
-    left -->|yes: repeat| ctx
-    left -->|no| cap[exit 2: turn cap<br/>no answer]
-    model -->|finish_reason<br/>stop| answer[exit 1: answer<br/>the reply text]
+    left -->|yes: go round again| list
+    left -->|no| cap[exit 2: the turn cap<br/>no answer]
+    model -->|finish_reason<br/>stop| answer[exit 1: the answer<br/>the reply's text]
     classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
     classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
     class model model
-    class check,result,left code
+    class run,result,left code

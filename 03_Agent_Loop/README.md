@@ -1,106 +1,122 @@
 # Lab 03: How to write the agent loop
 
-**CPU | API key: `OPENAI_API_KEY` | about 45 small model calls**
+**CPU | API key: `OPENAI_API_KEY` | Practises: writing the tool loop with no framework, reading a run turn by turn, and designing what a tool returns**
 
 ## Goal
 
-Write the loop that turns one tool call into an agent: call the model, run the tools it asks for, send the results
-back, and repeat until the model answers or a turn cap stops it. The moment comes at the end. Typed without its
-accent, "Helena Holy" gets an empty list from our exact-match lookup, and the agent usually stops with a fluent "I
-couldn't find a customer ..." without trying another spelling. The loop records that as a finished answer. One change to what
-the tool returns, a list of close names, lets the agent find her in four turns.
+Write the loop that lets a model work through a question one step at a time: call the model, run the tools it asks
+for, send the results back, and repeat until it answers or a turn cap stops it. The lab has two notebooks.
+
+**Notebook 1** is a playground. We play an envelope hunt, where each envelope holds a clue to the next, so nobody
+can say in advance how many must be opened. One tool call run by hand ends with the model asking for another
+envelope and no code left to open it. The loop closes that gap, and then a hunt with no end shows why the loop needs
+an exit of our own.
+
+**Notebook 2** takes the same loop to the Chinook support desk. A rep asks how many invoices Helena Holý has, what
+they add up to and who her support rep is: three lookups, where two cannot start before the first has answered.
+Then a lookup fails in the middle of a run. And then the rep types *Helena Holy*, without the accent: the lookup
+finds nobody, the model writes a polite reply, and the loop ends as if the question had been answered. One change
+to what the tool returns lets the same loop find her.
 
 ## What you will learn
 
-- How to turn the tool-call round trip into a loop that stops on `finish_reason` or on a turn cap, and why it needs
-  both.
-- How to record each turn: the tools called and the prompt tokens of every call, which grow because the whole list is
-  sent again.
-- How ReAct (a thought, an action and an observation written as text) differs from native tool calls on the same
-  question, and what each costs.
-- How to return a tool's error to the model as a result, instead of letting it crash the loop.
-- Why reliability falls with every turn, with 0.95 to the power n worked for 1, 3, 6 and 10 turns.
-- How to design a tool result that helps the model recover from a near miss.
-
-## Where this lab starts
-
-Lab 02 ran one tool-call round trip by hand: send the messages with the tool schemas; run each requested function and
-append the assistant message and one `tool` message per call; send the list again for the answer. This lab puts those
-steps in a loop, because only the model's reply says whether another round trip is needed. The notebook restates the
-three lookups, their schemas and the round trip, so it runs on its own; you need some Python and nothing from earlier
-labs.
-
-![The agent loop: the model decides, our code checks, runs the tool and appends the result, then sends the list again; two exits, an answer or the turn cap](resources/lab03_agent_loop.png)
+- How to run one tool call by hand on the Chat Completions API, and turn those steps into a loop that stops when a
+  reply has no tool call in it.
+- How to read a run from its message list and turn by turn, and why every call sends more tokens than the one
+  before.
+- How to add a turn cap, and tell a run that ended with an answer from a run the cap stopped.
+- How to give the loop several tools, with one schema each and a dictionary from tool names to functions.
+- How to return a tool's error to the model as a result, so that a failing tool does not crash the run.
+- Why a `finish_reason` of `stop` does not mean the question was answered, and how to write a tool result that
+  helps the model recover from a near miss.
 
 ## What you will do
 
-All of it on the Chinook music shop's database, `data/chinook.db`, opened read-only, with three lookups:
-`find_customer`, `get_invoices` and `get_support_rep`. The question: how many invoices Helena Holý has, what they add
-up to, and who her support rep is.
+### Notebook 1: meet the loop on an envelope hunt (`03a_meet_the_agent_loop.ipynb`)
 
-**Part A: Turn the round trip into an agent loop.** Call the three lookups yourself for the right answers, describe
-them as strict tool schemas, run one turn by hand, then write the loop: call, append, stop on text, otherwise run every
-call and go round again, inside a turn cap.
-**Part B: Measure how the context grows each turn.** Put the loop in `run_agent`, record each turn's messages sent,
-prompt tokens and output tokens, and price the run from `models.env`.
-**Part C: Stop the loop on an answer or a turn cap.** Read the `finish_reason` values, run the same question with a
-cap of one turn, and see why a loop needs both exits.
-**Part D: Compare ReAct text with native tool calls.** Write a ReAct prompt and a parser for its `Thought:`, `Action:`
-and `Action Input:` lines, run it on the same question, and compare calls, tokens and cost with the native run.
-**Part E: Return tool errors to the model as results.** Catch the error a lookup raises for a customer id that does
-not exist, send it back as the tool's result and read the model's reply; then work out 0.95 to the power n.
-**Part F: Help the agent recover from a near-miss name.** Run "Helena Holy" against the exact-match lookup five times
-and read every reply, then return `close_names` from `difflib` and run it five times again.
-**Challenge.** Stop an agent on a cost budget as well as a turn cap, on Puja Srivastava's question.
+**Part A: Ask a question that needs an unknown number of steps.** One model call with no tools, then a plain Python
+function that opens an envelope, played by hand.
+**Part B: Run one tool call by hand, and see where it stops.** The tool schema, the model's request, our code
+running the function and sending the result back, and a second reply that asks for the next envelope.
+**Part C: Turn those steps into a loop.** The loop, the run read from its message list, the prompt tokens of each
+turn, and the loop as a drawing.
+**Part D: Give the loop a second exit, the turn cap.** A hunt that goes in a circle, and a hunt with no end.
+**Challenge.** Add a second tool, and make the loop say why it stopped.
+
+### Notebook 2: the agent loop at the Chinook desk (`03b_agent_loop_at_the_desk.ipynb`)
+
+**Part A: Run the loop over three lookups that depend on each other.** The three lookups called by hand, their
+schemas, the dictionary of functions, and Helena's question read turn by turn.
+**Part B: Return a tool's error to the model as a result.** A closed database, the error caught and sent back as
+text, and what the model does with it.
+**Part C: Find and fix a run that ends normally without an answer, on a near-miss name.** *Helena Holy* without the
+accent, the empty result, the polite reply, and a tool result that lists the close names.
+**Challenge.** A first name that matches two customers, and a loop that says why it stopped.
+
+### Going further (`03_extra_react.ipynb`)
+
+The same loop written as plain text, the ReAct pattern, beside native tool calls: what the API's tool calls took over
+from our prompt and our parser. We build it once, to understand what the loop does; agents today use native tool
+calls. Notebook 2 also ends with a short "Going further" on what a run costs, the other values of `finish_reason`, and
+why long runs fail more often.
+
+![The agent loop: the messages list goes to the model; when the model replies with tool calls our code runs them, adds the reply and the results to the list and sends it again; the two exits are the model's answer and our turn cap](resources/lab03_agent_loop.png)
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | three turns: `find_customer`, then `get_invoices` and `get_support_rep` in one reply, then the answer with 7 invoices, 49.62 US dollars and Steve Johnson |
-| Part B | messages sent 2, 4 and 7; prompt tokens rising each turn (ours: 259, 316, 431); 1,006 input tokens paid for in all, more than any single call sent |
-| Part C | with `max_turns=1`: one turn ending in `tool_calls`, stop reason `turn cap`, answer `None` |
-| Part D | the same facts from both loops; the ReAct run with a `Thought:` line every turn, 4 calls against the native 3, and more tokens (ours: 1,282 input and 161 output against 1,006 and 95) |
-| Part E | the `tool` message `Error: ValueError: no customer with id 60` and a reply saying no such customer was found; 0.950, 0.857, 0.735 and 0.599 for 1, 3, 6 and 10 turns |
-| Part F | exact match: `[]` and a "couldn't find" reply that ends the run (4 of 5 in our run; the fifth tried the accented name from memory); with close names: four turns and the right facts (5 of 5) |
+| Notebook 1, Part A | without a tool the model cannot say where the prize is (ours wrote that it would start by opening envelope 1, and nothing was opened); by hand, three `TOOL CALLED` lines, and envelope 2 holds the prize |
+| Notebook 1, Part B | `finish_reason` `tool_calls`, `content` `None`, one call to `open_envelope` with `{"number":1}` and nothing run yet; after the result is sent back, a second tool call, for envelope 4 |
+| Notebook 1, Part C | three `TOOL CALLED` lines (envelopes 1, 4 and 2) in four turns; the answer names envelope 2; 9 messages in the transcript; prompt tokens growing per turn (ours: 182, 221, 260 and 299) |
+| Notebook 1, Part D | in the circle, three `TOOL CALLED` lines and then a reply, with no fourth envelope opened; in the hunt with no end, eight `TOOL CALLED` lines and `answer: None` |
+| Notebook 2, Part A | Helena Holý: `customer_id` 6, 7 invoices, $49.62, Steve Johnson; three turns (`find_customer`, then `get_invoices` and `get_support_rep` in one reply, then the answer); prompt tokens growing per turn (ours: 259, 316 and 419) |
+| Notebook 2, Part B | `Error: ProgrammingError: Cannot operate on a closed database.` as a tool result; no crash; a reply saying the database cannot be reached (ours tried the lookup twice first) |
+| Notebook 2, Part C | `[]` for *Helena Holy*, then a "could not find" reply in two turns, ended by `stop`; with close names, four turns (`find_customer` twice, the second time with the accent) and Helena's three facts |
+| Challenges | notebook 1: `open_envelope(1)`, `open_drawer(kitchen)`, `open_envelope(3)` and an answer naming envelope 3; then five `TOOL CALLED` lines, `None` and `turn cap`. Notebook 2: a tool result listing Mark Philips and Mark Taylor, and after one more sentence in the system prompt a reply that asks which Mark; then `None` and `turn cap` after two turns |
 
-**About the saved outputs.** They come from `gpt-6-luna` with reasoning effort `none`, the model named in
-`models.env`. Replies change from run to run, and from model to model if you change `models.env`: check the facts
-(7 invoices, 49.62, Steve Johnson) and the shape of each run (the number of turns, which tools, which exit), not the
-wording. Token counts can move by a few if the model words a tool call differently. In Part F, the exact-match question
-stopped without an answer in 18 of the 20 runs we have seen (this notebook's five and fifteen more outside it), and twice the model tried the accented name on its own, from what it knows of this public sample database
-rather than from the tool. A run of yours may do either; read the replies it prints.
+**About the saved outputs.** They come from `gpt-6-luna`, the model `models.env` names. The model chooses its tool
+calls and writes its replies on every run, so wording and token counts will differ on yours. Check the tool calls and
+the facts, not the words. How often each result repeated on this model: in the circle the model stopped after three
+envelopes in all 11 runs we made (the saved reply wrongly names envelope 1 as the prize; the other ten said only that
+the clues loop); the hunt with no end ran to the cap every time, also with a cap of 40. *Helena Holy* ended with a
+polite "not found" in 29 of the 31 runs we have seen, and in the other two the model tried the accented name by
+itself; with close names it found her in every run. In the extra notebook the text loop stopped after one envelope
+with a wrong final answer in 2 of 10 runs, and never wrote its own `Observation:` line.
 
 ## Before you start
 
-- **Lab 00 first.** It checks the environment, your key and the shop's data.
-- **Open** `03_agent_loop.ipynb` in VS Code or JupyterLab on the repository's `.venv` kernel and run the cells from
-  the top. The config cell finds `models.env` and your key from the repository folder.
-- **Data:** `data/chinook.db`, read in place and opened read-only. Nothing is downloaded or written.
-- **Cost:** about 45 calls of a few hundred tokens each, well under one US cent at the prices in `models.env`. The
-  solution notebook makes 5 more.
+- **Lab 00 first.** It checks the environment and that your key reaches the model.
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook in VS Code or JupyterLab
+  (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its own.
+- **Reasoning effort:** `REASONING_EFFORT=none` in `models.env`, as shipped. On Chat Completions the model calls
+  tools only at that setting.
+- **Data:** notebook 2 reads `data/chinook.db`, the Chinook sample music shop, opened read-only. Notebook 1 and the
+  extra notebook use a dictionary of five envelopes and nothing else.
+- **Cost:** about 40 small model calls in all, well under one US cent.
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `03_agent_loop.ipynb` | the lab notebook, with saved outputs |
-| `resources/lab03_agent_loop.mmd` | the loop diagram's source (mermaid) |
-| `resources/lab03_agent_loop.png` | the diagram, exported from the source |
-| `solved/03_agent_loop_solution.ipynb` | the challenge, solved and run |
+| `03a_meet_the_agent_loop.ipynb` | notebook 1, the playground, with saved outputs |
+| `03b_agent_loop_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `03_extra_react.ipynb` | going further: ReAct as text beside native tool calls |
+| `resources/lab03_agent_loop.png` and `.mmd` | the drawing of the loop and its source |
+| `solved/03a_meet_the_agent_loop_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/03b_agent_loop_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
 
 ## Resources
 
 - [OpenAI: function calling](https://developers.openai.com/api/docs/guides/function-calling): tool schemas, strict
-  mode, `tool_calls`, parallel calls and sending results back.
+  mode, tool calls and sending results back
 - [OpenAI: Chat Completions API reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create):
-  `finish_reason`, `usage` and `max_completion_tokens`.
-- [Yao and others, the ReAct paper (2022)](https://arxiv.org/abs/2210.03629): the paper that named the pattern in
-  Part D, reasoning and acting written as one text.
-- [OpenAI Agents SDK: running agents](https://openai.github.io/openai-agents-python/running_agents/): the agent loop
-  a framework runs for you, with `max_turns`.
-- [Python: `difflib`](https://docs.python.org/3/library/difflib.html): `get_close_matches` and `SequenceMatcher`.
-- [Python: `sqlite3`](https://docs.python.org/3/library/sqlite3.html): opening a database read-only with a URI.
+  `messages`, `tools`, `finish_reason` and `usage`
+- [OpenAI Agents SDK: running agents](https://openai.github.io/openai-agents-python/running_agents/): the same loop
+  as a framework runs it, with `max_turns`
+- [Yao and others, the ReAct paper (2022)](https://arxiv.org/abs/2210.03629): reasoning and acting written as one
+  text
+- [Python: `difflib`](https://docs.python.org/3/library/difflib.html): `get_close_matches`
 
-Next: [Lab 04: What is an agent](../04_What_Is_An_Agent/README.md). Back to
-[the lab list](../README.md).
+Next: [Lab 04: What is an agent](../04_What_Is_An_Agent/README.md). Back to [the lab list](../README.md).
