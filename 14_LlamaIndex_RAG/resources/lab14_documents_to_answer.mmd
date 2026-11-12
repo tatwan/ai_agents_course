@@ -1,17 +1,16 @@
 %%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 44}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
-%% Lab 14: the LlamaIndex path from files to an agent's answer. Files become Documents, a splitter makes Nodes, the
-%% index embeds and stores them, a retriever returns the nearest Nodes. Two ways to give that search to an agent:
-%% a query engine (a second model writes a sentence from the Nodes, the step that hides the files, lit) or a
-%% retriever tool (the Nodes' text and file names go to the agent). Ink: a model writes text.
+%% Lab 14: the LlamaIndex path from a folder of files to an agent's answer. SimpleDirectoryReader turns the files into
+%% Documents, the index embeds them (one vector per node) and a retriever returns the nearest nodes with their scores.
+%% Two ways to hand that search to an agent: a query engine tool (a second model call writes a sentence from the nodes:
+%% the step that hides the files, lit) or a retriever tool (the nodes' text goes to the agent). Ink: a model writes text.
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab14_documents_to_answer.mmd -o lab14_documents_to_answer.png -b white -s 2
 flowchart LR
-    files[36 files<br/>data/corpus] --> docs[Documents<br/>text + metadata]
-    docs --> nodes[Nodes<br/>SentenceSplitter]
-    nodes --> index[VectorStoreIndex<br/>one vector per Node]
-    index --> ret[retriever<br/>top k Nodes<br/>with scores]
+    files[a folder<br/>of files] --> docs[Documents<br/>SimpleDirectoryReader]
+    docs --> index[VectorStoreIndex<br/>one vector per node]
+    index --> ret[retriever<br/>top k nodes<br/>with scores]
     ret --> qe[query engine<br/>a model writes<br/>a sentence]
     qe --> qet[QueryEngineTool<br/>returns the sentence]
-    ret --> rt[RetrieverTool<br/>returns text<br/>and file names]
+    ret --> rt[RetrieverTool<br/>returns the text<br/>of the nodes]
     qet --> agent[FunctionAgent<br/>model writes queries<br/>and the answer]
     rt --> agent
     classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
