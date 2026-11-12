@@ -1,145 +1,142 @@
 # Lab 20: How to evaluate and trace an agent
 
-**CPU | API key: `OPENAI_API_KEY` | Practises: evaluating, tracing and costing an agent; checking a judge against known facts**
+**CPU | API key: `OPENAI_API_KEY` | Runs a local MLflow page on port 5020 | Practises: testing an agent with a fixed test set, reading its traces, and choosing the evidence a judge reads**
 
 ## Goal
 
-Build the evidence for three questions about the Chinook support agent: does it do its job, which steps does it take,
-and what does each task cost? The moment that teaches it is a judge that accepts a false "paid" claim because its
-evidence, the ticket, makes the same claim; given the billing record instead, it rejects the claim every time. Then we
-test a lookup change on the same questions and checks.
+Test an agent with questions whose right answers are written down first, read every step it took as a trace on the
+MLflow page, and use a second model as a judge only when it reads the record that settles the question (at the desk,
+the billing record, not the customer's ticket). The lab has two notebooks and an extra one.
+
+**Notebook 1** works on a small library helper with one tool that reads the opening hours. Three test questions pass.
+The fourth asks about a public holiday the hours never mention, and the helper answers "Yes" with Monday's usual
+hours. The trace on the MLflow page shows that it read the hours and answered beyond them. Then a judge marks a wrong
+quiz answer as right, because the evidence it was given came from a prank website.
+
+**Notebook 2** takes the same tools to the Chinook support desk. The desk agent is traced, then tested on eight fixed
+cases with MLflow's evaluation, and every failing case is read from its reply and its trace: a customer's name typed
+without its accent ends in "no such customer". Then a judge reads ticket 16, which claims that a refund was paid.
+Given the ticket as its evidence, the judge accepts a false "paid" reply and quotes the ticket back. Given the billing
+record, the same judge rejects it.
 
 ## What you will learn
 
-- How to price each model call, cached input and cache writes included, and stop a task's calls at a running budget.
-- How to read a trace as one task with timed model and tool spans inside it, first by hand and then in MLflow.
-- How to write golden cases whose answer key never reaches the agent.
-- How to check the answer's facts, the tools that ran and the records they returned separately, and read every
-  failing reply.
-- How to check a judge's verdicts against human labels, and why the billing record, not the ticket, is the evidence
-  to give it.
-- How to re-run a fixed test set after one tool change and report the pass rate and the cost per task together.
-
-## Coming from
-
-You can call a model and read a function-tool request (labs 01 and 02). This lab defines its own read-only Chinook
-tools and request loop, so no earlier notebook has to run first. The agent is the small Chat Completions loop of the
-earlier labs, so every request and result stays visible; a new application can start with the Responses API, and the
-frameworks add their own tracing.
+- How to write test cases with an answer key the agent never sees, and check each reply in code.
+- How to start the MLflow page on your own machine, record every agent run as a trace with `mlflow.openai.autolog()`,
+  and read a trace as a tree of spans: the run, the agent, each model call and each tool call.
+- How to use a failing test and its trace together: the test says the answer is wrong, and the trace shows what the
+  agent read and did before it answered.
+- How to write a test set as data and run it with `mlflow.genai.evaluate`, with scorers that check the reply and
+  scorers that read the trace to check which tools ran.
+- How a judge marks an answer against the evidence it is given, how to build one with MLflow's `make_judge`, and why
+  it must read the record that decides and not the text that makes a claim.
+- How to price every model call from its usage, cached input included, and stop a run at a budget (extra notebook).
 
 ## What you will do
 
-**Part A: Price one call from its usage.** Read the SDK object before calculating ordinary-input, cached-read,
-cache-write and output costs; turn that arithmetic into one ledger row.
+### Notebook 1: test, trace and judge a library helper (`20a_meet_evals_and_tracing.ipynb`)
 
-**Part B: Keep a ledger and a budget in the loop.** Inspect the database, call the public client and tools by hand,
-then combine them into a loop with per-call accounting, a turn limit and a stop between calls.
+**Part A: Test the helper with questions whose answers we wrote down first.** The opening hours, the helper agent,
+one reply checked against a regular expression, three cases, then the public holiday case.
+**Part B: Trace a run and read its spans on the MLflow page.** The page started on port 5020, recording switched on
+with `autolog`, the holiday question traced, the trace printed as a tree, the tool's output, and the same trace on the
+page.
+**Part C: Mark an answer with a second model, and see that the verdict follows the evidence.** A quiz judge given a
+prank website's line, then an atlas's line.
+**Challenge.** Fix the holiday answer without breaking the other three cases.
 
-**Part C: Trace a run by hand.** Read the task's model and tool operations as timed child spans, with each tool's
-arguments and result attached.
+### Notebook 2: test and trace the Chinook desk agent (`20b_evals_and_tracing_at_the_desk.ipynb`)
 
-**Part D: Store and read the trace with MLflow.** Use a span directly, enable OpenAI autologging, wrap the tool
-functions, and retrieve the stored trace and token-usage attributes. The local UI is optional.
+**Part A: Build the desk agent and trace one question.** Three database lookups, the refund policy, ticket 16 with a
+planted claim and the billing record as tools; the agent; Helena's question traced and read as a tree.
+**Part B: Run eight fixed cases with MLflow's evaluation and read the failures.** One case field by field, the set as
+MLflow data, two scorers, `mlflow.genai.evaluate`, the results table, the failing cases with their tool calls, and the
+evaluation on the page.
 
-**Part E: Write golden cases with an answer key.** Inspect one familiar case before loading eight fixed questions
-covering successful lookups, spelling, ambiguous and missing names, policy, a planted claim and an unrelated task.
+![One row of the test set in mlflow.genai.evaluate: the question goes to the desk agent, which produces a reply and a trace; the expectations go only to the two scorers, facts_in_reply and right_tools, whose scores are saved as an evaluation run on the MLflow page](resources/lab20_evaluation.png)
 
-**Part F: Check the answer and the path separately.** Check one real run first, then run every case and print every
-failure with its actual tool arguments and results.
+The drawing follows one row of Part B through `mlflow.genai.evaluate`. The dark box is the model's work, the green
+boxes are our code (the two scorers), and the white boxes are data: the row, the reply, the trace and the saved run.
 
-**Part G: Judge a reply against the right evidence.** Fix human labels for three hand-written candidate replies,
-then run the same rubric against a ticket and against billing. Print every disagreement.
+**Part C: Judge a reply against the ticket, then against the billing record.** A judge built with `make_judge`, a
+false "paid" reply judged twice, and the same fact checked in code.
+**Challenge.** Close spellings for the customer lookup, and a scorer that checks the records the tools returned.
 
-**Part H: Re-run the set after one tool change.** Add close-name suggestions to the lookup result, retain the
-prompt and scorer, compare all eight cases and repeat the spelling case with each version.
+### Going further (`20_extra_cost_and_budget.ipynb`)
 
-**Challenge.** Add a held-out customer case, then deliberately change the real answer's total and explain which
-checks fail while the unchanged tool path still passes. The worked notebook runs independently.
-
-![A desk task as model-call and tool-call spans, each linked to the same root task](resources/lab20_trace_tree.png)
+Price every request of a desk agent's run from its usage, see a long instructions block written to the prompt cache
+and read from it, and stop a run with a budget hook before the call that would pass the budget.
 
 ## Checkpoints
 
-| After | You should see in the saved learner run |
+| After | You should see |
 |---|---|
-| Part A | One completion's raw `usage`, four price categories and one ledger row |
-| Part B | Helena: 7 invoices, $49.62, Steve Johnson; 3 model calls; a positive-budget stop after 1 call, and no call with a zero budget |
-| Part C | One hand model span per ledger row; tool spans retain actual arguments and results |
-| Part D | 3 `CHAT_MODEL` spans match 3 ledger rows; tool spans and the `desk` root are stored in MLflow |
-| Part E | 8 test cases; only their questions are sent to the agent |
-| Part F | Baseline 5/8: the unaccented name not found (the model did not try the accent), one of the two Marks chosen instead of a question back, and the unrelated poem written |
-| Part G | Ticket evidence: planted paid reply accepted 5/5, correct requested reply accepted 0/5. Billing evidence: 0/5 and 5/5 respectively |
-| Part H | Changed set 7/8: the unaccented name now found; Mark passes too, by run-to-run variation (the change only adds suggestions when nothing matches); the unrelated poem still fails. Repeated unaccented question: exact lookup 2/5, suggestions 5/5 |
-| Challenge | A new customer checked against their own records; a scripted wrong total fails facts even when tool execution and record checks still pass |
+| Notebook 1, Part A | three ✅ lines (Saturday 4 pm, closed on Sunday, 9:00 on Wednesday), then the same three and one ❌: *Yes, Riverside Library is open next Monday from 9:00 to 20:00.* |
+| Notebook 1, Part B | the page at http://127.0.0.1:5020; a tree with `AgentRunner.run`, the agent, two turns (shown as `Unknown`), two model calls and one `get_opening_hours` call; the tool's output is the opening hours, with nothing about holidays |
+| Notebook 1, Part C | the prank line gives CORRECT, the atlas line gives WRONG, each with a reason that points to the evidence |
+| Notebook 2, Part A | Helena: 7 invoices, $49.62, Steve Johnson; `find_customer` with the accented name returning customer 6, then `get_invoices` and `get_support_rep` with id 6 |
+| Notebook 2, Part B | eight rows; ours: 6 of 8 passed, `accent` failed both scorers (`{'matches': []}` for `Helena Holy`) and `out_of_scope` failed the facts scorer with a poem. 7 of 8 is also a normal result (see below) |
+| Notebook 2, Part C | with the ticket, `supported: True` and a reason repeating "approved and paid on 2013-11-03"; with billing, `supported: False`; the code check prints `None` and `False` |
+| Challenges | notebook 1: four ✅ lines, the holiday reply saying the hours do not cover public holidays. Notebook 2: with close spellings `accent` passes all three scorers (the agent looks Helena up again with the accent); without them the evidence scorer fails on `accent` too |
 
-The notebook prints the totals itself, in its `LAB18 RESULT` and `changed set` lines: the changed eight-question set
-used **20 model calls**, **9,048 input tokens** (0 cached reads, 0 writes) and **587 output tokens**, a model-token
-charge of **$0.00119830**, or **$0.00014979 per task**, with a **7/8 = 0.875 pass rate**. The whole learner notebook,
-judges and repeated tests included, made 114 successful model calls costing $0.00617180; that cost is separate from
-the eight-task comparison.
-
-[`resources/run_summary.json`](resources/run_summary.json) keeps an earlier recorded run (1 November 2026: 20 model
-calls, 9,048 input and 581 output tokens, $0.0001494125 per task, 7/8) with its baseline and changed-set results,
-per-case replies, checks, call counts, token counts and trace IDs. `changed.cost_per_task_usd` is the sum of all
-eight task costs divided by eight, including the failure; `changed.pass_rate` uses those same eight tasks.
-`tokens.input` includes cached and written input, so ordinary input is `input - cached - written`.
-`prices_per_million_tokens_usd` records the four list-price rates used. The snapshot lets a process calculator
-quote this measurement without running the notebook first; it does not update itself when you rerun the notebook.
-
-**About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the settings in `models.env`. The
-learner notebook and the worked solution each describe their own run; replies, call counts and timings vary. The exact
-lookup never matches the unaccented name, but the model sometimes tries the accented spelling on its own, and we keep
-those successes beside the failures. In the saved learner run the baseline also chose one of the two Marks instead of
-asking, which earlier runs did not do. The eight-case score measures the checks we wrote, not a real-world error rate,
-and the token prices leave out hosting, human review, tax and account discounts.
+**About the saved outputs.** They come from `gpt-6-luna` with reasoning effort `none`, the model `models.env` names.
+The model writes new replies on every run, so check the ticks, the tools called and the verdicts, not the wording;
+timings and trace ids differ too. How often each result repeated on this model: the helper answered the holiday
+question with "Yes" in all 14 runs we made with its instructions as written; without the sentence asking it to start
+with Yes or No, it said the hours do not cover holidays in all 12 runs we tried. At the desk, the `accent` case failed
+in all 7 runs of the set we counted, and the agent wrote the poem in 3 of those 7 and declined it in the other 4. The
+quiz judge followed the evidence in 10 of 10 calls each way, and the desk judge accepted the false reply with the
+ticket as evidence and rejected it with billing in 5 of 5 calls each way.
 
 ## Before you start
 
-- **Lab 00 first.** It checks the environment and that your key reaches the model. Then, in the repository folder,
-  `uv sync` (or `pip install -r requirements.txt`), put `OPENAI_API_KEY` in `.env`, and open
-  `20_evals_and_tracing.ipynb` in VS Code or JupyterLab with the `.venv` kernel.
-- **Data:** the notebook opens `data/chinook.db` read-only and reads `data/corpus/` in place. The billing record is a
-  small lab fixture, and the planted-ticket variant is built in memory. No payment API is called.
-- **MLflow** needs no account or server. Trace metadata go in `outputs/mlflow.db` and trace artifacts in `mlruns/`;
-  git ignores both. Traces hold prompts, tool arguments and replies, so keep real customer secrets out of a trace
-  store. The notebook turns off MLflow's usage telemetry and its agent hint, and reads the trace fields itself
-  instead of opening MLflow's notebook viewer.
-- **Cost:** the model and judge calls are paid. The task budget stops between calls, so a call already in flight can
-  cross it; `max_completion_tokens`, a turn cap and the notebook's $2 stop add limits, but they do not replace the
-  provider's own spend limits.
-- The notebook ends with a troubleshooting table: a missing key, a wrong working folder, a missing database and the
-  notebook's budget stop. A finish other than `stop` is kept, and fails the finished check.
-
-## Open the local trace UI
-
-This is optional; the notebook retrieves the same stored spans directly. In a terminal, from this lab folder:
-
-```sh
-uv run mlflow ui --backend-store-uri sqlite:///outputs/mlflow.db --host 127.0.0.1 --port 5018
-```
-
-Open `http://127.0.0.1:5018`, choose **Chinook desk evaluation**, then open **Traces**. On a remote VM or in
-Codespaces, open the address VS Code forwards for port 5018 instead. We use 5018 because macOS often has 5000
-taken. Ctrl+C stops the UI; the database and trace artifacts remain available when the kernel restarts.
+- **Lab 00 first.** It checks the environment and that your key reaches the model.
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook in VS Code or JupyterLab
+  (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its own.
+- **The MLflow page:** both notebooks start it themselves on http://127.0.0.1:5020 and stop it in their last code cell,
+  after the Challenge. From
+  a terminal, in this folder: `uv run mlflow server --host 127.0.0.1 --port 5020 --backend-store-uri
+  sqlite:///outputs/mlflow.db`. The first start takes about half a minute. On a remote machine or in Codespaces, open
+  the address VS Code forwards for port 5020. No account is needed.
+- **Where traces go:** into `20_Evals_And_Tracing/outputs/mlflow.db` on your machine, which git ignores. With
+  `autolog` on, the Agents SDK does not send these runs to the Traces page of your OpenAI account.
+- **Data:** `data/chinook.db`, the Chinook sample music shop, opened read-only; `data/corpus/` for the refund policy
+  and ticket 16 (the ticket's planted line is replaced in memory; the file is not changed); `resources/golden_cases.json`
+  for the eight test cases.
+- **Cost:** about 60 model calls across the two notebooks and the extra, well under one US cent at the prices in
+  `models.env`.
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `20_evals_and_tracing.ipynb` | Guided notebook with real saved outputs |
-| `solved/20_evals_and_tracing_solution.ipynb` | The same parts and worked challenge, run independently |
-| `resources/golden_cases.json` | The fixed eight-question set and answer-key fields, read by both notebooks |
-| `resources/run_summary.json` | A recorded learner-run result for comparison and process-impact calculations |
-| `resources/lab20_trace_tree.mmd` and `.png` | Source and exported drawing of the task and its child spans |
+| `20a_meet_evals_and_tracing.ipynb` | notebook 1, the library helper, with saved outputs |
+| `20b_evals_and_tracing_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `20_extra_cost_and_budget.ipynb` | going further: prices, the prompt cache and a budget |
+| `resources/golden_cases.json` | the eight test cases notebook 2 runs |
+| `resources/lab20_evaluation.png` and `.mmd` | the drawing of one row through `mlflow.genai.evaluate`, and its source |
+| `resources/lab20_mlflow_trace.png` | the MLflow page with notebook 1's holiday trace open |
+| `resources/lab20_mlflow_evaluation.png` | the MLflow page with notebook 2's evaluation run open |
+| `solved/20a_meet_evals_and_tracing_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/20b_evals_and_tracing_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
 
 ## Resources
 
-- [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling): requests and tool results.
-- [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): input categories and charges.
-- [OpenAI evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices): designing your own fixed cases and comparisons.
-- [MLflow OpenAI tracing](https://mlflow.org/docs/latest/genai/tracing/integrations/listing/openai/): autologged fields.
-- [MLflow manual tracing](https://mlflow.org/docs/latest/genai/tracing/app-instrumentation/manual-tracing/): parent spans and tool instrumentation.
-- [MLflow usage tracking](https://mlflow.org/docs/latest/community/usage-tracking/): telemetry controls.
-- [Python `difflib`](https://docs.python.org/3/library/difflib.html#difflib.get_close_matches): close string matches.
+- [MLflow tracing](https://mlflow.org/docs/latest/genai/tracing/): what a trace and a span record
+- [MLflow: tracing the OpenAI Agents SDK](https://mlflow.org/docs/latest/genai/tracing/integrations/listing/openai-agent/):
+  `mlflow.openai.autolog()` for agents and tools
+- [MLflow: set up the server](https://mlflow.org/docs/latest/genai/getting-started/connect-environment/): the page on
+  your own machine
+- [MLflow: evaluating agents](https://mlflow.org/docs/latest/genai/eval-monitor/running-evaluation/agents/):
+  `mlflow.genai.evaluate` with an agent and trace-reading scorers
+- [MLflow: code-based scorers](https://mlflow.org/docs/latest/genai/eval-monitor/scorers/custom/): `@scorer`
+- [MLflow: custom judges with `make_judge`](https://mlflow.org/docs/latest/genai/eval-monitor/scorers/llm-judge/custom-judges/):
+  a judge's instructions, its placeholders and its verdict type
+- [OpenAI: evaluation best practices](https://developers.openai.com/api/docs/guides/evaluation-best-practices): test
+  sets, scorers and judges
+- [OpenAI: prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching): cached input and cache
+  writes (extra notebook)
 
-Next: [Lab 22: How to re-engineer a process with agents](../22_Process_Reengineering/README.md). Back to [the lab list](../README.md).
+Next: [Lab 21: How to call any model through one interface with LiteLLM](../21_LiteLLM/README.md). Back to
+[the lab list](../README.md).

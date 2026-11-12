@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 26, "rankSpacing": 44, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 20: what mlflow.genai.evaluate does with one row of the test set. The inputs go to the agent; the
+%% expectations go only to the scorers. The agent's run is recorded as a trace, and each scorer reads the reply, the
+%% trace and the expectations. The scores are saved as an evaluation run on the MLflow page.
+%% Ink: what the model does. Lime: what our code does. White: data.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab20_evaluation.mmd -o lab20_evaluation.png -b white -s 2
+flowchart LR
+    subgraph row["one row of the test set"]
+        inputs["inputs<br/>the rep's question"]
+        expect["expectations<br/>facts, must, must_not"]
+    end
+    inputs --> agent["the desk agent<br/>ask_desk(question)"]
+    agent --> reply["the reply"]
+    agent --> trace["the trace<br/>model calls and tool calls"]
+    reply --> facts["facts_in_reply<br/>are the facts in the reply?"]
+    expect --> facts
+    trace --> tools["right_tools<br/>did the right tools run?"]
+    expect --> tools
+    facts --> run["evaluation run<br/>on the MLflow page"]
+    tools --> run
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class agent model
+    class facts,tools code
