@@ -4,11 +4,14 @@ aiohttp==3.14.3
     # via
     #   kubernetes
     #   litellm
+    #   llama-index-core
     #   mlflow
 aiosignal==1.4.0
     # via aiohttp
 aiosqlite==0.22.1
-    # via langgraph-checkpoint-sqlite
+    # via
+    #   langgraph-checkpoint-sqlite
+    #   llama-index-core
 alembic==1.20.1
     # via mlflow
 annotated-doc==0.0.5
@@ -24,6 +27,7 @@ anyio==4.14.2
     #   httpx2
     #   jupyter-server
     #   langsmith
+    #   litellm
     #   mcp
     #   mlflow-skinny
     #   openai
@@ -35,6 +39,8 @@ anyio==4.14.2
     #   watchfiles
 appnope==0.1.4 ; sys_platform == 'darwin'
     # via ipykernel
+apscheduler==3.11.3
+    # via litellm
 argon2-cffi==25.1.0
     # via jupyter-server
 argon2-cffi-bindings==25.1.0
@@ -45,6 +51,8 @@ asttokens==3.0.2
     # via stack-data
 async-lru==2.3.0
     # via jupyterlab
+async-timeout==5.0.1 ; python_full_version < '3.11.3'
+    # via redis
 attrs==26.1.0
     # via
     #   aiohttp
@@ -52,8 +60,22 @@ attrs==26.1.0
     #   referencing
 audioop-lts==0.2.2 ; python_full_version >= '3.13'
     # via gradio
+azure-core==1.41.0
+    # via
+    #   azure-identity
+    #   azure-storage-blob
+azure-identity==1.27.0
+    # via litellm
+azure-storage-blob==12.31.1
+    # via litellm
 babel==2.18.0
     # via jupyterlab-server
+backoff==2.2.1
+    # via litellm
+backports-zstd==1.8.0 ; python_full_version < '3.14'
+    # via litellm
+banks==2.5.1
+    # via llama-index-core
 bcrypt==5.0.0
     # via chromadb
 beautifulsoup4==4.15.0
@@ -90,7 +112,10 @@ cffi==2.1.1
     # via
     #   argon2-cffi-bindings
     #   cryptography
+    #   pynacl
+    #   pyroscope-io
     #   pyzmq
+    #   soundfile
 charset-normalizer==3.5.1
     # via requests
 chromadb==1.5.9
@@ -98,18 +123,22 @@ chromadb==1.5.9
 click==8.4.2
     # via
     #   flask
+    #   granian
     #   huggingface-hub
     #   litellm
     #   mlflow-skinny
+    #   nltk
+    #   rq
     #   uvicorn
 cloudpickle==3.1.2
     # via
     #   joblib
     #   mlflow-skinny
-colorama==0.4.6 ; os_name == 'nt' or sys_platform == 'win32'
+colorama==0.4.6
     # via
     #   build
     #   click
+    #   griffecli
     #   ipython
     #   tqdm
     #   typer
@@ -117,10 +146,16 @@ comm==0.2.3
     # via ipykernel
 contourpy==1.3.3
     # via matplotlib
+croniter==7.0.0
+    # via rq
 cryptography==50.0.0
     # via
+    #   azure-identity
+    #   azure-storage-blob
     #   google-auth
+    #   litellm
     #   mlflow
+    #   msal
     #   pyjwt
 cycler==0.12.1
     # via matplotlib
@@ -128,22 +163,48 @@ databricks-sdk==0.158.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
+dataclasses-json==0.6.7
+    # via llama-index-core
 debugpy==1.8.21
     # via ipykernel
 defusedxml==0.7.1
-    # via nbconvert
+    # via
+    #   nbconvert
+    #   nltk
+deprecated==1.3.1 ; python_full_version < '3.12'
+    # via
+    #   banks
+    #   llama-index-core
+    #   llama-index-instrumentation
+deprecated==3.0.1 ; python_full_version >= '3.12'
+    # via
+    #   banks
+    #   llama-index-core
+    #   llama-index-instrumentation
+dirtyjson==1.0.8
+    # via llama-index-core
 distro==1.9.0
     # via langsmith
+dnspython==2.9.2
+    # via email-validator
 docker==7.2.0
     # via mlflow
 durationpy==0.10
     # via kubernetes
+email-validator==2.3.0
+    # via pydantic
 executing==2.2.1
     # via stack-data
+expression==5.8.0
+    # via litellm
 fastapi==0.162.0
     # via
+    #   fastapi-sso
     #   gradio
+    #   litellm
     #   mlflow-skinny
+fastapi-sso==0.23.0
+    # via litellm
 fastjsonschema==2.22.2
     # via nbformat
 fastuuid==0.14.0
@@ -152,6 +213,10 @@ filelock==3.32.3
     # via
     #   huggingface-hub
     #   litellm
+filetype==1.2.0
+    # via
+    #   banks
+    #   llama-index-core
 flask==3.1.3
     # via
     #   flask-cors
@@ -172,6 +237,7 @@ fsspec==2026.7.0
     # via
     #   gradio-client
     #   huggingface-hub
+    #   llama-index-core
 genai-prices==0.2.0
     # via pydantic-ai-slim
 gitdb==4.0.12
@@ -188,6 +254,8 @@ gradio-client==2.7.2
     # via
     #   gradio
     #   hf-gradio
+granian==2.8.7
+    # via litellm
 graphene==3.4.3
     # via mlflow
 graphql-core==3.2.13
@@ -198,8 +266,16 @@ graphql-relay==3.2.0
     # via graphene
 graphviz==0.21
     # via openai-agents
+greenlet==3.5.6
+    # via sqlalchemy
+griffe==2.2.0
+    # via banks
+griffecli==2.2.0
+    # via griffe
 griffelib==2.2.0
     # via
+    #   griffe
+    #   griffecli
     #   openai-agents
     #   pydantic-ai-slim
 groovy==0.1.2
@@ -208,8 +284,10 @@ grpcio==1.83.0
     # via
     #   chromadb
     #   opentelemetry-exporter-otlp-proto-grpc
-gunicorn==26.2.0 ; sys_platform != 'win32'
-    # via mlflow
+gunicorn==23.0.0
+    # via
+    #   litellm
+    #   mlflow
 h11==0.16.0
     # via
     #   httpcore
@@ -221,6 +299,8 @@ hf-gradio==0.4.1
     # via gradio
 hf-xet==1.6.0 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
     # via huggingface-hub
+hiredis==3.5.0
+    # via litellm
 hpack==4.2.0
     # via h2
 httpcore==1.0.9
@@ -232,6 +312,7 @@ httptools==0.8.0
 httpx==0.28.1
     # via
     #   chromadb
+    #   fastapi-sso
     #   gradio
     #   gradio-client
     #   huggingface-hub
@@ -239,12 +320,14 @@ httpx==0.28.1
     #   langchain-core
     #   langgraph-sdk
     #   litellm
+    #   llama-index-core
     #   pinecone
     #   safehttpx
 httpx2==2.16.0
     # via
     #   genai-prices
     #   langsmith
+    #   litellm
     #   mcp
     #   openai
     #   openai-agents
@@ -264,6 +347,7 @@ hyperframe==6.1.0
 idna==3.18
     # via
     #   anyio
+    #   email-validator
     #   httpx
     #   httpx2
     #   jsonschema
@@ -275,6 +359,8 @@ importlib-metadata==8.9.0
     #   mlflow-skinny
 importlib-resources==7.1.0
     # via chromadb
+inquirerpy==0.3.4
+    # via litellm
 ipykernel==7.4.0
     # via
     #   ai-agents-in-practice
@@ -283,6 +369,8 @@ ipython==9.16.1
     # via ipykernel
 ipython-pygments-lexers==1.1.1
     # via ipython
+isodate==0.7.2
+    # via azure-storage-blob
 isoduration==20.11.0
     # via jsonschema
 itsdangerous==2.2.0
@@ -291,6 +379,7 @@ jedi==0.20.0
     # via ipython
 jinja2==3.1.6
     # via
+    #   banks
     #   flask
     #   gradio
     #   jupyter-server
@@ -305,7 +394,9 @@ jmespath==1.1.0
     #   boto3
     #   botocore
 joblib==1.6.0
-    # via scikit-learn
+    # via
+    #   nltk
+    #   scikit-learn
 json5==0.15.0
     # via jupyterlab-server
 jsonpatch==1.33
@@ -353,7 +444,7 @@ jupyter-server==2.20.0
     #   notebook-shim
 jupyter-server-terminals==0.5.4
     # via jupyter-server
-jupyterlab==4.6.5
+jupyterlab==4.6.6
     # via ai-agents-in-practice
 jupyterlab-pygments==0.3.0
     # via nbconvert
@@ -363,9 +454,9 @@ kiwisolver==1.5.0
     # via matplotlib
 kubernetes==36.0.3
     # via chromadb
-langchain==1.4.7
+langchain==1.4.10
     # via ai-agents-in-practice
-langchain-core==1.7.3
+langchain-core==1.7.7
     # via
     #   ai-agents-in-practice
     #   langchain
@@ -374,13 +465,13 @@ langchain-core==1.7.3
     #   langgraph-checkpoint
     #   langgraph-prebuilt
     #   langgraph-sdk
-langchain-openai==1.7.3
+langchain-openai==1.7.4
     # via ai-agents-in-practice
 langchain-protocol==0.0.20
     # via
     #   langchain-core
     #   langgraph-sdk
-langgraph==1.2.19
+langgraph==1.2.20
     # via
     #   ai-agents-in-practice
     #   langchain
@@ -395,14 +486,31 @@ langgraph-prebuilt==1.1.0
     # via langgraph
 langgraph-sdk==0.4.10
     # via langgraph
-langsmith==0.14.16
+langsmith==0.14.17
     # via
     #   ai-agents-in-practice
     #   langchain-core
 lark==1.3.1
     # via rfc3987-syntax
-litellm==1.108.4
+litellm==1.109.0
     # via ai-agents-in-practice
+litellm-enterprise==0.1.82
+    # via litellm
+litellm-proxy-extras==0.4.113
+    # via litellm
+llama-index-core==0.14.25
+    # via
+    #   ai-agents-in-practice
+    #   llama-index-embeddings-openai
+    #   llama-index-llms-openai
+llama-index-embeddings-openai==0.7.0
+    # via ai-agents-in-practice
+llama-index-instrumentation==0.6.0
+    # via llama-index-workflows
+llama-index-llms-openai==0.8.4
+    # via ai-agents-in-practice
+llama-index-workflows==2.26.1
+    # via llama-index-core
 logfire-api==5.4.0
     # via pydantic-graph
 mako==1.4.3
@@ -417,6 +525,8 @@ markupsafe==3.0.3
     #   mako
     #   nbconvert
     #   werkzeug
+marshmallow==3.26.2
+    # via dataclasses-json
 matplotlib==3.11.2
     # via
     #   ai-agents-in-practice
@@ -428,6 +538,7 @@ matplotlib-inline==0.2.2
 mcp==2.3.0
     # via
     #   ai-agents-in-practice
+    #   litellm
     #   openai-agents
 mcp-types==2.3.0
     # via mcp
@@ -435,20 +546,28 @@ mdurl==0.1.2
     # via markdown-it-py
 mistune==3.3.4
     # via nbconvert
-mlflow==3.17.2
+mlflow==3.18.0
     # via ai-agents-in-practice
-mlflow-skinny==3.17.2
+mlflow-skinny==3.18.0
     # via mlflow
-mlflow-tracing==3.17.2
+mlflow-tracing==3.18.0
     # via mlflow
 mmh3==5.2.1
     # via chromadb
+msal==1.39.0
+    # via
+    #   azure-identity
+    #   msal-extensions
+msal-extensions==1.3.1
+    # via azure-identity
 msgspec==0.22.0
     # via pinecone
 multidict==6.7.1
     # via
     #   aiohttp
     #   yarl
+mypy-extensions==1.2.0
+    # via typing-inspect
 narwhals==2.28.0
     # via scikit-learn
 nbclient==0.11.0
@@ -460,8 +579,16 @@ nbformat==5.11.1
     #   jupyter-server
     #   nbclient
     #   nbconvert
+nest-asyncio==1.6.0
+    # via llama-index-core
 nest-asyncio2==1.7.2
     # via ipykernel
+networkx==3.6.1 ; python_full_version < '3.12'
+    # via llama-index-core
+networkx==3.7 ; python_full_version >= '3.12'
+    # via llama-index-core
+nltk==3.10.4
+    # via llama-index-core
 notebook-shim==0.2.4
     # via jupyterlab
 numpy==2.4.6 ; python_full_version < '3.12'
@@ -469,6 +596,7 @@ numpy==2.4.6 ; python_full_version < '3.12'
     #   chromadb
     #   contourpy
     #   gradio
+    #   llama-index-core
     #   matplotlib
     #   mlflow
     #   onnxruntime
@@ -476,11 +604,13 @@ numpy==2.4.6 ; python_full_version < '3.12'
     #   scikit-learn
     #   scipy
     #   skops
+    #   soundfile
 numpy==2.5.2 ; python_full_version >= '3.12'
     # via
     #   chromadb
     #   contourpy
     #   gradio
+    #   llama-index-core
     #   matplotlib
     #   mlflow
     #   onnxruntime
@@ -488,15 +618,20 @@ numpy==2.5.2 ; python_full_version >= '3.12'
     #   scikit-learn
     #   scipy
     #   skops
+    #   soundfile
 oauthlib==3.3.1
-    # via requests-oauthlib
+    # via
+    #   fastapi-sso
+    #   requests-oauthlib
 onnxruntime==1.29.0
     # via chromadb
-openai==3.42.0
+openai==3.49.0
     # via
     #   ai-agents-in-practice
     #   langchain-openai
     #   litellm
+    #   llama-index-embeddings-openai
+    #   llama-index-llms-openai
     #   openai-agents
     #   pydantic-ai-slim
 openai-agents==0.24.0
@@ -536,6 +671,7 @@ orjson==3.12.0
     #   gradio
     #   langgraph-sdk
     #   langsmith
+    #   litellm
     #   pinecone
 ormsgpack==1.12.2
     # via langgraph-checkpoint
@@ -548,6 +684,7 @@ packaging==26.3
     #   build
     #   gradio
     #   gradio-client
+    #   gunicorn
     #   huggingface-hub
     #   ipykernel
     #   jupyter-events
@@ -557,6 +694,7 @@ packaging==26.3
     #   langchain-core
     #   langsmith
     #   litellm
+    #   marshmallow
     #   matplotlib
     #   mlflow-skinny
     #   mlflow-tracing
@@ -573,20 +711,32 @@ parso==0.8.7
     # via jedi
 pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
     # via ipython
+pfzy==0.3.4
+    # via inquirerpy
 pillow==12.3.0
     # via
     #   gradio
+    #   llama-index-core
     #   matplotlib
-pinecone==10.2.0
+pinecone==10.3.0
     # via ai-agents-in-practice
 platformdirs==4.11.3
-    # via jupyter-core
+    # via
+    #   banks
+    #   jupyter-core
+    #   llama-index-core
+polars==1.44.2
+    # via litellm
+polars-runtime-32==1.44.2
+    # via polars
 prettytable==3.18.0
     # via skops
 prometheus-client==0.26.0
     # via jupyter-server
 prompt-toolkit==3.0.53
-    # via ipython
+    # via
+    #   inquirerpy
+    #   ipython
 propcache==0.5.2
     # via
     #   aiohttp
@@ -601,6 +751,10 @@ protobuf==7.35.1
     #   opentelemetry-proto
 psutil==7.2.2 ; sys_platform != 'cygwin' and sys_platform != 'emscripten'
     # via ipython
+psycopg==3.3.8
+    # via litellm-proxy-extras
+psycopg-binary==3.3.8
+    # via litellm-proxy-extras
 ptyprocess==0.7.0 ; os_name != 'nt' or (sys_platform != 'emscripten' and sys_platform != 'win32')
     # via
     #   pexpect
@@ -619,8 +773,10 @@ pycparser==3.0 ; implementation_name != 'PyPy'
     # via cffi
 pydantic==2.13.4
     # via
+    #   banks
     #   chromadb
     #   fastapi
+    #   fastapi-sso
     #   genai-prices
     #   gradio
     #   langchain
@@ -628,6 +784,9 @@ pydantic==2.13.4
     #   langgraph
     #   langsmith
     #   litellm
+    #   llama-index-core
+    #   llama-index-instrumentation
+    #   llama-index-workflows
     #   mcp
     #   mcp-types
     #   mlflow-skinny
@@ -637,11 +796,11 @@ pydantic==2.13.4
     #   pydantic-ai-slim
     #   pydantic-graph
     #   pydantic-settings
-pydantic-ai-slim==2.64.0
+pydantic-ai-slim==2.67.0
     # via ai-agents-in-practice
 pydantic-core==2.46.4
     # via pydantic
-pydantic-graph==2.64.0
+pydantic-graph==2.67.0
     # via pydantic-ai-slim
 pydantic-settings==2.15.0
     # via
@@ -657,18 +816,26 @@ pygments==2.21.0
     #   rich
 pyjwt==2.15.1
     # via
+    #   fastapi-sso
+    #   litellm
     #   mcp
+    #   msal
     #   openai-agents
+pynacl==1.6.2
+    # via litellm
 pyparsing==3.3.2
     # via matplotlib
 pypika==0.51.1
     # via chromadb
 pyproject-hooks==1.2.0
     # via build
+pyroscope-io==0.8.16 ; sys_platform != 'win32'
+    # via litellm
 python-dateutil==2.9.0.post0
     # via
     #   arrow
     #   botocore
+    #   croniter
     #   graphene
     #   jupyter-client
     #   kubernetes
@@ -686,7 +853,9 @@ python-json-logger==4.2.0
 python-multipart==0.0.32
     # via
     #   gradio
+    #   litellm
     #   mcp
+    #   mlflow-skinny
     #   openai-agents
 pytz==2026.6
     # via gradio
@@ -708,6 +877,7 @@ pyyaml==6.0.3
     #   kubernetes
     #   langchain-core
     #   litellm
+    #   llama-index-core
     #   mlflow-skinny
     #   uvicorn
 pyzmq==27.1.0
@@ -715,22 +885,29 @@ pyzmq==27.1.0
     #   ipykernel
     #   jupyter-client
     #   jupyter-server
+redis==8.1.0
+    # via rq
 referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
     #   jupyter-events
 regex==2026.7.19
-    # via tiktoken
+    # via
+    #   nltk
+    #   tiktoken
 requests==2.34.2
     # via
     #   ai-agents-in-practice
+    #   azure-core
     #   databricks-sdk
     #   docker
     #   jupyterlab-server
     #   kubernetes
     #   langsmith
+    #   llama-index-core
     #   mlflow-skinny
+    #   msal
     #   openai-agents
     #   requests-oauthlib
     #   requests-toolbelt
@@ -739,6 +916,8 @@ requests-oauthlib==2.0.0
     # via kubernetes
 requests-toolbelt==1.0.0
     # via langsmith
+restrictedpython==8.5
+    # via litellm
 rfc3339-validator==0.1.4
     # via
     #   jsonschema
@@ -749,14 +928,17 @@ rfc3986-validator==0.1.1
     #   jupyter-events
 rfc3987-syntax==1.1.0
     # via jsonschema
-rich==15.0.0
+rich==13.9.4
     # via
     #   chromadb
+    #   litellm
     #   typer
 rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
+rq==2.12.0
+    # via litellm
 s3transfer==0.19.3
     # via boto3
 safehttpx==0.1.7
@@ -779,6 +961,8 @@ semantic-version==2.10.0
     # via gradio
 send2trash==2.1.0
     # via jupyter-server
+setuptools==84.2.1
+    # via llama-index-core
 shellingham==1.5.4
     # via typer
 six==1.17.0
@@ -794,11 +978,14 @@ sniffio==1.3.1
     # via
     #   langsmith
     #   openai
+soundfile==0.14.0
+    # via litellm
 soupsieve==2.9.2
     # via beautifulsoup4
 sqlalchemy==2.1.6
     # via
     #   alembic
+    #   llama-index-core
     #   mlflow
 sqlite-vec==0.1.9
     # via langgraph-checkpoint-sqlite
@@ -812,6 +999,7 @@ starlette==1.6.0
     # via
     #   fastapi
     #   gradio
+    #   litellm
     #   mcp
     #   mlflow-skinny
     #   openai-agents
@@ -820,6 +1008,7 @@ tenacity==9.1.4
     # via
     #   chromadb
     #   langchain-core
+    #   llama-index-core
 terminado==0.18.1
     # via
     #   jupyter-server
@@ -830,15 +1019,20 @@ tiktoken==0.14.0
     # via
     #   langchain-openai
     #   litellm
+    #   llama-index-core
     #   pydantic-ai-slim
 tinycss2==1.5.1
     # via bleach
+tinytag==2.3.2
+    # via llama-index-core
 tokenizers==0.23.1
     # via
     #   chromadb
     #   litellm
 tomlkit==0.14.0
-    # via gradio
+    # via
+    #   gradio
+    #   litellm
 tornado==6.5.8
     # via
     #   ipykernel
@@ -850,6 +1044,8 @@ tqdm==4.70.0
     # via
     #   chromadb
     #   huggingface-hub
+    #   llama-index-core
+    #   nltk
 traitlets==5.16.1
     # via
     #   ipykernel
@@ -879,8 +1075,12 @@ typing-extensions==4.16.0
     #   aiosignal
     #   alembic
     #   anyio
+    #   azure-core
+    #   azure-identity
+    #   azure-storage-blob
     #   beautifulsoup4
     #   chromadb
+    #   expression
     #   fastapi
     #   gradio
     #   gradio-client
@@ -895,6 +1095,8 @@ typing-extensions==4.16.0
     #   langchain-protocol
     #   langsmith
     #   litellm
+    #   llama-index-core
+    #   llama-index-workflows
     #   mcp
     #   mcp-types
     #   mlflow-skinny
@@ -904,12 +1106,19 @@ typing-extensions==4.16.0
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
+    #   psycopg
     #   pydantic
     #   pydantic-core
     #   referencing
+    #   soundfile
     #   sqlalchemy
     #   starlette
+    #   typing-inspect
     #   typing-inspection
+typing-inspect==0.9.0
+    # via
+    #   dataclasses-json
+    #   llama-index-core
 typing-inspection==0.4.4
     # via
     #   fastapi
@@ -922,6 +1131,10 @@ tzdata==2026.3
     # via
     #   arrow
     #   pandas
+    #   psycopg
+    #   tzlocal
+tzlocal==5.4.5
+    # via apscheduler
 uri-template==1.3.0
     # via jsonschema
 urllib3==2.8.0
@@ -940,10 +1153,13 @@ uvicorn==0.52.3
     # via
     #   chromadb
     #   gradio
+    #   litellm
     #   mcp
     #   mlflow-skinny
-uvloop==0.22.1 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
-    # via uvicorn
+uvloop==0.22.1 ; sys_platform != 'win32'
+    # via
+    #   litellm
+    #   uvicorn
 waitress==3.0.2 ; sys_platform == 'win32'
     # via mlflow
 watchfiles==1.2.0
@@ -966,12 +1182,17 @@ websockets==15.0.1
     # via
     #   langgraph-sdk
     #   langsmith
+    #   litellm
     #   openai-agents
     #   uvicorn
 werkzeug==3.1.9
     # via
     #   flask
     #   flask-cors
+wrapt==2.5.2
+    # via
+    #   deprecated
+    #   llama-index-core
 xxhash==4.0.1
     # via
     #   langgraph
