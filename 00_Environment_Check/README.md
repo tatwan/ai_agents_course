@@ -5,8 +5,9 @@
 ## Goal
 
 Set up this repository once, on a class VM, in GitHub Codespaces or on your own machine, and check in one run that
-the core environment is ready. This README is the setup guide; the notebook, `00_environment_check.ipynb`, is the check at the
-end. When its last cell shows ✅ on every required line, you are ready for Lab 01.
+the core environment is ready. This README is the setup guide; the notebook, `00_environment_check.ipynb`, is the
+checklist at the end: one cell per check, each with what a pass looks like. When its last cell shows ✅ on every
+required line, you are ready for Lab 01.
 
 ## What you will learn
 
@@ -15,7 +16,8 @@ end. When its last cell shows ✅ on every required line, you are ready for Lab 
 - How to open a notebook in VS Code (or JupyterLab) on the repository's own environment, the `.venv` kernel.
 - Where the model settings live (`models.env`) and where your key lives (`.env`), and how to change the model in one
   line.
-- Which labs need their own environment, and how to create one.
+- Which labs need their own environment, and how to create one; which optional tools and keys exist, and which lab
+  uses each.
 - How to read the notebook's summary and fix a failed line from the troubleshooting tables.
 
 ## Choose a route
@@ -28,8 +30,8 @@ end. When its last cell shows ✅ on every required line, you are ready for Lab 
 | **D. Your own machine with `pip`** | your machine does not allow `uv`, but has Python 3.11 to 3.14 | Python, a terminal and an OpenAI key |
 
 Every route installs the same pinned package versions, from `uv.lock` or from `requirements.txt` (exported from the
-same lock). The saved outputs in every lab come from these versions on Python 3.13, so a run on your machine should
-match ours.
+same lock). The saved outputs in every lab come from these versions on Python 3.13, so your packages match the ones
+behind them; the model's replies can still differ in wording.
 
 ---
 
@@ -83,8 +85,8 @@ Then continue with [Add your key](#add-your-key-and-choose-the-model) and
 
 ## Route B: GitHub Codespaces
 
-A codespace is a VS Code running on a GitHub machine (Ubuntu underneath), in your browser or attached to your desktop
-VS Code.
+A codespace is VS Code running on a GitHub machine with Ubuntu. You open it in your browser or from your desktop VS
+Code.
 
 1. On the repository's GitHub page, click **Code**, open the **Codespaces** tab and click **Create codespace on main**.
    The repository is already cloned there, and the terminal opens in its folder.
@@ -137,7 +139,7 @@ or start JupyterLab from the repository folder:
 uv run jupyter lab
 ```
 
-Graphviz and Docker are optional; see [Optional tools](#optional-tools).
+Graphviz, Docker and Node.js are optional; see [Optional tools](#optional-tools).
 
 ---
 
@@ -180,12 +182,12 @@ folder with the environment active.
 
 ## Add your key and choose the model
 
-Two small files in the repository folder hold everything the labs need to know about the model:
+Two small files in the repository folder hold the model settings and the key that every lab reads:
 
 | File | Holds | Committed to Git? |
 |---|---|---|
-| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`), `REASONING_EFFORT`, the prices per million tokens and lab 17's price per hosted container session | yes: no secrets in it |
-| `.env` | your `OPENAI_API_KEY`, and the optional bonus keys | never: `.gitignore` keeps it out |
+| `models.env` | the model names (`MODEL_DEFAULT`, `MODEL_STRONG`, `EMBEDDING_MODEL`; `GEMINI_MODEL` for the optional Gemini cells; `MODEL_COMPARE`, lab 21's second OpenAI model), `REASONING_EFFORT`, the prices per million tokens and lab 17's price per hosted container session | yes: no secrets in it |
+| `.env` | your `OPENAI_API_KEY`, and the optional keys | never: `.gitignore` keeps it out |
 
 **Add your key.** Copy the example file, then open `.env` in any editor and paste your key after `OPENAI_API_KEY=`
 (no quotes, no spaces):
@@ -199,8 +201,9 @@ Never paste a key into a notebook cell, and never print `.env`.
 **Change the model in one line.** No notebook names a model in its code; every lab reads `MODEL_DEFAULT` from
 `models.env`. To use another model in every lab, change that line (and the prices under it). To try a model on your
 machine only, put a `MODEL_DEFAULT=...` line in your `.env`: a non-empty value there wins. A model without a reasoning
-setting needs `REASONING_EFFORT=` left empty. Another model words its replies differently, so in each lab check the
-facts a checkpoint names, not the wording.
+setting (such as `gpt-4o-mini`) also needs `REASONING_EFFORT=` empty in `models.env` itself: an empty value in `.env`
+does not replace a setting. Another model words its replies differently, so in each lab check the facts a checkpoint
+names, not the wording.
 
 ## Choose the kernel
 
@@ -217,79 +220,97 @@ Run the notebook from the top (VS Code: **Run All**), then read the last cell.
 
 ## Labs with their own environment
 
-Four labs use libraries that need other versions of packages the main environment pins, so each has its own
+Three labs use libraries that need other versions of packages the main environment pins, so each has its own
 `pyproject.toml`, `uv.lock` and `.venv` inside its folder. You create one only when you do that lab; the notebook
 reports each as set up or "optional, not set up".
 
 | Lab | Folder | Why it has its own environment |
 |---|---|---|
 | 08 | `08_Google_ADK` | Google ADK's OpenAI support needs `openai` 2.x; the main environment pins 3.x |
-| 14 | `14_LlamaIndex_RAG` | LlamaIndex needs `openai` 2.x; the main environment pins 3.x |
-| B4 | `bonus/B4_CrewAI_Crew` | CrewAI needs `openai` 2.x and `mcp` 1.x |
+| B4 | `bonus/B4_CrewAI_Crew` | CrewAI needs `openai` 2.x and `mcp` 1.x, and a Python from 3.11 to 3.13 |
 | B5 | `bonus/B5_Microsoft_Agent_Framework` | Agent Framework adds over a hundred packages, kept out of the main install |
 
-To create one, run `uv sync` inside that lab's folder, for example:
+To create one, run `uv sync --python 3.13` inside that lab's folder, for example:
 
 ```bash
-cd 14_LlamaIndex_RAG
+cd 08_Google_ADK
 uv sync --python 3.13
 cd ..
 ```
 
 Then open the lab's notebook in VS Code and choose **that folder's** `.venv` as the kernel (for example
-`14_LlamaIndex_RAG/.venv/bin/python`), not the one in the repository folder. Choosing the wrong one is easy to spot:
-Lab 00 run on lab 14's environment reports most packages `missing`.
-Where `uv` is blocked, lab 14's README creates the same environment with `pip` from its `requirements.txt`.
+`08_Google_ADK/.venv/bin/python`), not the one in the repository folder. Choosing the wrong one is easy to spot:
+Lab 00 run on lab 08's environment says `not the repository's .venv` and reports most packages `missing`.
+Where `uv` is blocked, each of the three labs' READMEs shows how to create the same environment with `pip` from that
+lab's own `requirements.txt`.
 
 ## Optional tools
 
 | Tool | Used by | Install |
 |---|---|---|
-| Graphviz (`dot`) | lab 07, to draw an agent's structure; only that drawing needs it | Ubuntu: `sudo apt install -y graphviz`; macOS: `brew install graphviz`; Windows and others: [graphviz.org/download](https://graphviz.org/download/) |
-| Docker | lab 17's container runner; lab 17 also runs without it | [Docker Desktop](https://docs.docker.com/get-started/get-docker/) (macOS, Windows), or Docker Engine on Linux |
+| Graphviz (`dot`) | lab 07, to draw an agent's structure; only the drawing cells need it | Ubuntu: `sudo apt install -y graphviz`; macOS: `brew install graphviz`; Windows and others: [graphviz.org/download](https://graphviz.org/download/) |
+| Docker | the optional last part of lab 17, which runs model-written code in a container on your machine; the rest of lab 17 runs on OpenAI's hosted code interpreter | [Docker Desktop](https://docs.docker.com/get-started/get-docker/) (macOS, Windows), or Docker Engine on Linux |
+| Node.js 22.19 or newer (`node`, `npx`) | lab 06, to open its MCP server in the MCP Inspector; without it, two cells print one line and skip | [nodejs.org/en/download](https://nodejs.org/en/download) for every system; macOS: `brew install node`. A Linux distribution's own package can be older than 22.19: check with `node --version` |
 
-After installing Graphviz, restart the notebook's kernel so it sees the new program.
+After installing Graphviz or Node.js, restart the notebook's kernel so it sees the new program.
 
 ## Optional keys
 
-Two bonus labs use services that need an account: Pinecone (B6) and LangSmith (B7). Their lines are in `.env.example`;
-remove the `#` and paste the key after the `=` in your `.env`. Every core lab runs without them, and the notebook only
-says whether each is set.
+Three keys are optional, and their lines are in `.env.example`: remove the `#` and paste the key after the `=` in
+your `.env`.
+
+| Key | Used by |
+|---|---|
+| `GEMINI_API_KEY` | the cells marked optional in labs 07, 08, 09 and 21, which run an agent or a call on a Google Gemini model |
+| `PINECONE_API_KEY` | bonus B6, which needs a Pinecone account |
+| `LANGSMITH_API_KEY` | bonus B7, which needs a LangSmith account |
+
+Every core lab runs without them, and the notebook only says whether each is set, never its value.
 
 ## What the notebook checks
 
-**Part A: Read the settings every lab starts from.** The config cell every lab opens with, explained line by line:
-it finds the repository folder by `models.env`, reads the settings, finds your key without printing it.
-**Part B: Check Python and the pinned packages.** Python against the range in `pyproject.toml`, and every pin against
-what the kernel has installed.
-**Part C: Check that the key reaches the model.** One short request on `MODEL_DEFAULT`; prints the reply, the model
-that answered, the tokens and the cost.
-**Part D: Check the shop's database and documents.** `data/chinook.db`, opened read-only, and the 36 files in
-`data/corpus/`.
-**Part E: Check the optional tools, environments and keys.** Graphviz, Docker, the four own environments and the two
-bonus keys, each reported as present or optional.
+**Part A: Read the settings every lab starts from.** The config cell every lab opens with: it finds the repository
+folder by `models.env`, reads the settings and finds your key without printing it. Then it prints every setting it
+read, with what each one is for.
+
+**Part B: Check the notebook's Python and the pinned packages.** Which Python runs the notebook (a pass is the
+repository's `.venv`), its version against the range in `pyproject.toml`, and every pin against what that Python has
+installed.
+
+**Part C: Check that the key reaches the model.** It sends one short request to `MODEL_DEFAULT` and prints the reply,
+the model that answered, the tokens and the cost.
+
+**Part D: Check the shop's database and documents.** `data/chinook.db`, opened read-only, the 36 files in
+`data/corpus/`, and the PDF in `data/documents/`.
+
+**Part E: Check the optional tools, environments and keys.** Graphviz, Docker, Node.js, the three own environments
+and the three optional keys, each reported as present or optional.
+
 **Check that you are ready.** One line per check.
+
+**What the config cell does.** A note under the checks that explains the config cell line by line.
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | `key found: yes`, with the model and reasoning effort from `models.env` |
-| Part B | a Python inside `>=3.11,<3.15`; `20 pinned packages, 0 different` |
-| Part C | a one-word reply (ours: `ready`), the model that answered, and its tokens (ours: 12 in, 4 out) |
-| Part D | `59 customers, 412 invoices`; `36 files, 20 policies, 16 tickets` |
+| Part A | `key found: yes`, with the model and reasoning effort from `models.env`; twelve settings, `MODEL_DEFAULT` first |
+| Part B | `kernel: .venv/bin/python \| the repository's .venv` (Windows: `.venv\Scripts\python.exe`); a Python inside `>=3.11,<3.15`; `23 pinned packages, 0 different` |
+| Part C | a short greeting (ours: `Hello, welcome to our class today!`), the model that answered, and its tokens (ours: 16 in, 11 out) |
+| Part D | `59 customers, 412 invoices`; `36 files, 20 policies, 16 tickets`; the governance guide `found` |
 | Part E | a line per tool, environment and key: present, or optional and not set up |
-| The last cell | ✅ on all five required lines |
+| The last cell | ✅ on all seven required lines |
 
 ## About the saved outputs
 
 The saved outputs come from `gpt-6-luna`, the model in `models.env`, on Python 3.13 with the pinned packages. Your run
-prints your own Python, Graphviz and Docker versions, and which optional pieces you set up.
+prints your own Python, Graphviz, Docker and Node.js versions, and which optional pieces you set up.
 
 ## Troubleshooting the setup
 
-The notebook ends with a table for failed checks. These are the problems that come before it, or while you choose the
-kernel; each message was triggered on purpose and copied.
+The notebook ends with its own table for failed checks. This one starts with the problems that come before the
+notebook runs (installing `uv` or the packages), then repeats the notebook's rows for the kernel, the config cell and
+the optional tools. Each message is shown as the error prints it, with `...` where a long part is cut.
 
 | Symptom | Cause | Fix |
 |---|---|---|
@@ -297,11 +318,12 @@ kernel; each message was triggered on purpose and copied.
 | `uv sync`: ``error: The requested interpreter resolved to Python 3.10.18, which is incompatible with the project's Python requirement: `>=3.11, <3.15` (from `project.requires-python`)`` | `--python` named a version outside the range | run `uv sync --python 3.13` |
 | `pip install`: `ERROR: Ignored the following versions that require a different python version: ...` then `No matching distribution found for contourpy==1.3.3` | the virtual environment runs a Python older than 3.11 | delete `.venv`, install Python 3.13, create the environment again (route D, step 3) |
 | Config cell: `ModuleNotFoundError: No module named 'dotenv'` | the notebook runs on a Python without the repository's packages | choose the repository's `.venv` as the kernel ([Choose the kernel](#choose-the-kernel)) |
-| Part B: most packages `missing`, `openai` at `2.54.0` | the kernel is another lab's own environment (here lab 14's) | choose the `.venv` in the repository folder |
+| Part B: `kernel: .../08_Google_ADK/.venv/bin/python \| not the repository's .venv`, then most packages `missing` and `openai` at `2.54.0` | the kernel is not the `.venv` in the repository folder: another lab's own environment (here lab 08's), a system Python, or a conda environment or venv under another name | choose the `.venv` in the repository folder |
 | Config cell: `StopIteration` | the notebook is not inside the repository folder (copied, downloaded alone or opened from elsewhere) | open it from the cloned or unzipped repository, where `models.env` sits |
 | Config cell: `AssertionError: Put OPENAI_API_KEY in .env at the repository folder (copy .env.example).` | no `.env` beside `models.env` (or it was saved as `.env.txt`), or its key line is empty | copy `.env.example` to `.env` and paste the key; on Windows, turn on file name extensions to see the real name |
 | Part E: `failed to connect to the docker API at unix:///...; check if the path is correct and if the daemon is running` | Docker is installed but not running, or `DOCKER_HOST` points to a socket that does not exist | start Docker Desktop (Linux: `sudo systemctl start docker`), or unset a stale `DOCKER_HOST` |
 | Part E: `dot: not found`; lab 07: `ExecutableNotFound: failed to execute PosixPath('dot'), make sure the Graphviz executables are on your systems' PATH` | Graphviz is not installed, or not on the `PATH` the kernel sees | install it ([Optional tools](#optional-tools)), then restart the kernel |
+| Part E: `node v20.11.0 \| older than 22.19, which the MCP Inspector needs` | the installed Node.js is too old for lab 06's MCP Inspector | install a current Node.js ([Optional tools](#optional-tools)), then restart the kernel |
 
 ## Resources
 
@@ -312,6 +334,7 @@ kernel; each message was triggered on purpose and copied.
 - [VS Code: Jupyter notebooks](https://code.visualstudio.com/docs/datascience/jupyter-notebooks): opening a notebook
   and choosing a kernel
 - [GitHub: creating a codespace](https://docs.github.com/en/codespaces/developing-in-a-codespace/creating-a-codespace-for-a-repository)
+- [Node.js: download](https://nodejs.org/en/download): the optional Node.js for lab 06's MCP Inspector
 - [OpenAI: models](https://developers.openai.com/api/docs/models) and
   [pricing](https://developers.openai.com/api/docs/pricing): the names and prices you can put in `models.env`
 
