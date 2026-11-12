@@ -4,7 +4,7 @@
 flowchart LR
     subgraph L1["level 1: in every call"]
         direction TB
-        s1[desk instructions] ~~~ s2[skill list<br/>name + description<br/>from each frontmatter] ~~~ s3[tool schemas]
+        s1["the desk's system prompt"] ~~~ s2[skill list<br/>name and description<br/>from each frontmatter] ~~~ s3[tool schemas]
     end
     m1[model<br/>reads the list,<br/>asks for a skill]
     subgraph L2["level 2: on request"]
