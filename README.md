@@ -39,12 +39,12 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | 07 | [How the OpenAI Agents SDK runs your loop](07_OpenAI_Agents_SDK/) |
 | 08 | [How to build and run an agent with Google ADK](08_Google_ADK/) |
-| 09 | [How to compose LangChain's building blocks](09_LangChain/) |
-| 10 | [How LangChain and LangGraph run the same agent](10_LangGraph/) |
+| 09 | [How to build an agent from LangChain's pieces](09_LangChain/) |
+| 10 | [How to draw, pause and resume an agent with LangGraph](10_LangGraph/) |
 | 11 | [How to choose an agent framework (a guide)](11_Choose_A_Framework/) |
 | 12 | [How to answer from documents with retrieval](12_Retrieval/) |
 | 13 | [How to give an agent a search tool](13_Agentic_RAG/) |
-| 14 | [How to build the same RAG agent with LlamaIndex](14_LlamaIndex_RAG/) |
+| 14 | [How to search your documents with LlamaIndex](14_LlamaIndex_RAG/) |
 
 **Part C: business agents**
 
@@ -61,7 +61,7 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 | 18 | [How to choose an agent design](18_Agent_Designs/) |
 | 19 | [How to defend an agent from untrusted text](19_Prompt_Injection/) |
 | 20 | [How to evaluate and trace an agent](20_Evals_And_Tracing/) |
-| 21 | How to call any model through one interface with LiteLLM (coming) |
+| 21 | [How to call any model through one interface with LiteLLM](21_LiteLLM/) |
 | 22 | [How to re-engineer a process with agents](22_Process_Reengineering/) |
 | 23 | [What agent platforms sell (a guide)](23_Agent_Platforms/) |
 
@@ -106,12 +106,16 @@ and ends with a notebook that checks everything in one run.
   it, `pip install -r requirements.txt`.
 
 Then copy `.env.example` to `.env` and paste your `OPENAI_API_KEY` into it. Model names and prices live in
-`models.env`: change `MODEL_DEFAULT` there to switch every lab, or set it in `.env` for your machine only. Open a
+`models.env`: change `MODEL_DEFAULT` there to switch every lab, or set it in `.env` for your machine only. A model
+without a reasoning setting (such as `gpt-4o-mini`) also needs `REASONING_EFFORT=` empty in `models.env` itself: an
+empty value in `.env` does not replace a setting. Open a
 notebook in VS Code and choose the repository's `.venv` as the kernel (or run `uv run jupyter lab`). Notebooks never
 install packages, and never print the key.
 
-Labs 08, 14, B4 and B5 have their own environment: run `uv sync` inside the lab folder and choose that folder's
-`.venv`. Graphviz (lab 07), Docker (lab 17) and the Pinecone and LangSmith keys (bonus B6 and B7) are optional.
+Labs 08, B4 and B5 have their own environment: run `uv sync --python 3.13` inside the lab folder and choose that folder's
+`.venv`. Graphviz (the drawings in labs 07 and 18), Docker (the optional last part of lab 17), Node.js 22.19 or newer (lab 06's MCP Inspector), a
+`GEMINI_API_KEY` (the optional cells of labs 07, 08, 09 and 21) and the Pinecone and LangSmith keys (bonus B6 and
+B7) are optional.
 
 ## Data
 
