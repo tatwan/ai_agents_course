@@ -1,15 +1,15 @@
 %%{init: {"theme": "base", "sequence": {"mirrorActors": false, "messageFontSize": 15, "actorFontSize": 15, "noteFontSize": 15, "wrap": false, "actorMargin": 170, "width": 240, "messageMargin": 42}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "actorBkg": "#0B1220", "actorTextColor": "#FFFFFF", "actorBorder": "#0B1220", "noteBkgColor": "#C9F24D", "noteBorderColor": "#0B1220", "noteTextColor": "#0B1220", "signalColor": "#0B1220", "signalTextColor": "#0B1220"}}}%%
-%% Lab 02: one tool-call round trip on Chat Completions, in five steps. The model only asks; our code runs find_customer.
+%% Lab 02: one tool-call round trip on Chat Completions, in five steps. The model only asks; our code runs the function.
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab02_tool_call_round_trip.mmd -o lab02_tool_call_round_trip.png -b white -s 2
 sequenceDiagram
-    participant Fn as find_customer<br>(Python)
+    participant Fn as Our function<br>(Python)
     participant Code as Our code
     participant API as Model<br>(Chat Completions)
 
-    Code->>API: 1. messages + tools<br>(the JSON schema)
+    Code->>API: 1. messages + tools<br>(the tool schema)
     API-->>Code: 2. tool_calls: id, name,<br>arguments (a JSON string)
     Note over Code,API: our code decides whether to run it
-    Code->>Fn: 3. find_customer(name="Helena Holý")
-    Fn-->>Code: a Python list with customer_id 6
-    Code->>API: 4. messages + the assistant reply<br>+ a tool message with the same id
+    Code->>Fn: 3. run the function<br>with the arguments
+    Fn-->>Code: the result (a Python value)
+    Code->>API: 4. messages + the model's request<br>+ a tool message with the same id
     API-->>Code: 5. the answer, finish_reason "stop"
