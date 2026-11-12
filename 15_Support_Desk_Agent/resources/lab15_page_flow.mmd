@@ -1,30 +1,22 @@
-%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
-%% Lab 15: one message from a visitor's browser to the support desk agent and back. The visitor's session picks the
-%% conversation; the agent's tools read the shop database through a read-only connection. Our code lime, the model ink.
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 15, notebook 2: one message from a rep's browser to the support desk agent and back. The rep's session id
+%% picks the conversation; the agent's tools read the shop database through a read-only connection.
+%% Our code lime, the model ink.
 %% Export: npx -y @mermaid-js/mermaid-cli -i lab15_page_flow.mmd -o lab15_page_flow.png -b white -s 2
-flowchart LR
-    visitors["visitor A, visitor B<br/>each in their own browser tab"]
-    subgraph PAGE["the Gradio page: respond(message, history, request)"]
-        direction TB
-        key["session id =<br/>request.session_hash<br/>(Part D)"]
-        steps["tool steps shown folded,<br/>the reply after the run<br/>(Part E)"]
-    end
-    subgraph AGENT["the Agents SDK"]
-        direction TB
-        session[("SQLiteSession<br/>one conversation<br/>per session id")]
-        runner["Runner<br/>the agent loop"]
-        tools["named lookups (Part A)<br/>find_customer, get_invoices,<br/>get_support_rep, get_last_invoice"]
-    end
+flowchart TB
+    reps["rep A and rep B, each in their own browser tab"]
+    respond["the Gradio page calls respond(message, history, request)<br/>session id = request.session_hash (Part E)"]
+    runner["the Agents SDK's Runner: the agent loop"]
+    session[("SQLiteSession<br/>one conversation<br/>per session id (Part C)")]
     model["model<br/>OpenAI API"]
+    tools["three lookups (Part A)<br/>find_customer, get_invoices,<br/>get_support_rep"]
     db[("chinook.db<br/>read-only connection<br/>(Part B)")]
-    visitors -->|one message| key
-    key --> runner
-    session <-->|load before,<br/>save after| runner
-    runner <-->|tool calls| model
+    reps -->|"one message; the reply comes back to that rep"| respond
+    respond -->|"the message and the session"| runner
+    session <-->|"read before, save after"| runner
+    runner <-->|"tool calls"| model
     runner --> tools --> db
-    runner --> steps
-    steps -->|"updates, in order"| visitors
     classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
     classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
     class model model
-    class key,steps,tools code
+    class respond,tools code

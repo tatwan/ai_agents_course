@@ -1,0 +1,31 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Lab 15, notebook 1: the café page with two visitors. Gradio keeps a history per visitor; our code keeps the
+%% conversation the model reads. At the top one list for the whole page (Part C), below it one list per
+%% session id (Part E). Our code lime, the model ink.
+%% Export: npx -y @mermaid-js/mermaid-cli -i lab15_one_list_or_per_visitor.mmd -o lab15_one_list_or_per_visitor.png -b white -s 2
+flowchart LR
+    a["visitor A<br/>A flat white with<br/>oat milk, please."]
+    b["visitor B<br/>What did I order?"]
+    page["the Gradio page<br/>calls take_order once<br/>per message"]
+    subgraph SHARED["Part C: one list for the page"]
+        direction TB
+        one["messages<br/>system, A's order, reply,<br/>B's question"]
+    end
+    subgraph OWN["Part E: one list per visitor"]
+        direction TB
+        la["conversations[A's session_hash]<br/>system, A's order, reply"]
+        lb["conversations[B's session_hash]<br/>system, B's question"]
+    end
+    model["model<br/>reads the list it is sent"]
+    a --> page
+    b --> page
+    page --> one
+    page --> la
+    page --> lb
+    one --> model
+    la --> model
+    lb --> model
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class one,la,lb code

@@ -1,91 +1,111 @@
 # Lab 15: How to build a customer-support agent over a database
 
-**CPU | API key: `OPENAI_API_KEY` | Practises: grounding an agent in business data (a database behind a chat page that several people use at once)**
+**CPU | API key: `OPENAI_API_KEY` | Practises: grounding an agent in business data, a database behind a chat page that several people use at once**
 
 ## Goal
 
-Put the Chinook desk agent behind a chat page that several support reps use at the same time, with tools that can
-only read the shop's database. Two measurements decide how it is built. In Part A, named lookups and a free SQL tool
-answer the same four questions, and the free tool misses a customer whose name is typed without its accent. In Part D
-comes the moment the lab is about: with one conversation for the whole page, a second visitor who asks *"Which customer
-were we talking about?"* is told about the first visitor's customer. With the visitor's browser session as the
-conversation key, they are asked for a name instead.
+Put an agent behind a chat page that several people use at the same time, and keep each person's conversation their
+own. The lab has two notebooks.
+
+**Notebook 1** is a café. A bot behind a chat page takes an order from one visitor: *"A flat white with oat milk,
+please."* A second visitor, in another browser tab, asks *"What did I order?"* and is told about the first visitor's
+coffee, because our code keeps one list of messages for the whole page. Keyed by the visitor's session, the second
+visitor is told there is no order yet.
+
+**Notebook 2** takes the same page to the Chinook support desk. The agent looks customers up in the shop's database
+through a connection that refuses every write, and keeps each conversation in a session file. Rep A asks about
+Helena Holý; rep B, who has said nothing yet, asks *"Which customer were we talking about?"* and is told *"We were
+talking about Helena Holý."* One line, the session id, gives each rep their own conversation. Then the same page runs
+as a program from a terminal.
 
 ## What you will learn
 
-- How to choose between named lookup tools and a free SQL tool, from what each gets right and wrong on the same
-  questions.
-- How to open a database read-only and prove that a write fails, whatever the model asks for.
-- How to put a Python function behind a Gradio `ChatInterface` and test the page from code as two visitors with
+- How to put a Python function behind a Gradio `ChatInterface`, and test the page from code as two visitors with
   `gradio_client`.
-- How to give each visitor their own conversation with the Agents SDK's `SQLiteSession`, keyed by the browser session.
-- How to stream the agent's tool steps to the page as folded messages, and read what the visitor saw, update by update.
-- How to run the same page from the terminal with `app.py`.
-
-## Coming from
-
-Labs 02 and 03 wrote the three Chinook lookups and the agent loop by hand; lab 07 runs that loop in the OpenAI Agents
-SDK (`function_tool`, `Agent`, `Runner`, sessions). This lab defines the lookups and the agent it needs, explains each
-SDK object where it first appears, and runs on its own.
+- Why one list in the code behind a page is shared by every visitor, and how `request.session_hash` gives each
+  visitor their own conversation.
+- How to build a desk agent from lookups that read a database through a read-only connection, and make a lookup say
+  in words when it finds nothing.
+- How to prove that the connection refuses a write, whatever a model sends.
+- How the Agents SDK's `SQLiteSession` keeps a conversation in a file, and how to key it per visitor behind a page.
+- How to run the page as its own program from a terminal with `app.py`.
 
 ## What you will do
 
-**Part A: Choose named tools or free SQL.** Four named lookups (`find_customer` with close names, `get_invoices`,
-`get_support_rep`, `get_last_invoice`) and one `run_sql` tool, each given to an agent, on four questions: Helena, Helena
-typed without her accent, the top billing country, and a request to delete an invoice. Count, read the failing
-replies, choose.
-**Part B: Keep the database read-only.** Send the `DELETE` the model never sent, through `run_sql` and on the
-connection, and read SQLite's refusal; then the same statement on a writable copy.
-**Part C: Put a function behind a chat page.** An echo function behind `gr.ChatInterface`, two visitors from
-`gradio_client`, the `history` the page sends, and the session id each visitor gets from `gr.Request`.
-**Part D: Give every visitor their own conversation.** What `SQLiteSession` stores and where; the desk agent behind
-the page with one session for everyone, then with `request.session_hash` as the session id, two visitors each time,
-and the sessions file read after each.
-**Part E: Show the visitor what the agent did.** `Runner.run_streamed` and its run item events; each tool step as a
-folded `ChatMessage`, the reply after the run; every update a visitor received, with its time.
-**Part F: Run the page from the terminal.** `app.py` read, its functions checked against the notebook's, then started
-as its own process, visited once and stopped.
-**Challenge.** A named tool for the country question, and a `start over` command that clears one visitor's
-conversation.
+### Notebook 1: meet chat pages on a café order (`15a_meet_chat_pages.ipynb`)
 
-![One message from a visitor's browser through the Gradio page, keyed by the visitor's session, to the Agents SDK's Runner, its SQLiteSession and its named lookups on the read-only database; tool steps go back to the page folded](resources/lab15_page_flow.png)
+**Part A: Put a function behind a chat page.** An `echo` function, called by hand, then behind `gr.ChatInterface`
+and opened in the browser.
+**Part B: Visit the page from code as two visitors.** The page's API description ("Use via API" and `view_api()`),
+two `gradio_client` visitors, and the `history` the page passes.
+**Part C: Let a model take the order, with one list for the whole page.** The café bot on Chat Completions; visitor
+A orders, visitor B asks what they ordered.
+**Part D: Tell visitors apart with `gr.Request`.** `gr.Request` and `request.session_hash`, compared with each client's own id.
+**Part E: Keep one conversation per visitor.** A dictionary keyed by the session id; two new visitors on a fresh page.
+**Challenge.** A `start over` message, and a table number for every visitor.
+
+### Notebook 2: a support desk agent behind a chat page (`15b_chat_pages_at_the_desk.ipynb`)
+
+**Part A: Build the desk agent from read-only lookups.** The database opened read-only, what a query returns when
+nothing matches, three lookups that say so in words, and the agent run once.
+**Part B: Prove that the database refuses a write.** A `DELETE` on the agent's connection, and the same statement on
+a writable copy.
+**Part C: Keep a conversation in a session file.** `SQLiteSession`, what one run stores, and the file's rows per
+session.
+**Part D: Put the desk agent behind a page with one session for everyone.** Two reps on a page whose session id is a
+constant.
+**Part E: Give every rep their own session.** `request.session_hash` as the session id; rep A and rep B again, as two
+new visitors.
+**Part F: Run the desk page from a terminal.** `app.py` read, then started from a terminal and visited in two tabs.
+**Challenge.** A named tool for a question the lookups do not cover, and a conversation keyed by the rep's name.
+**Going further.** Named lookups against one free SQL tool, one run each; the agent's tool steps shown while it works;
+a check that the lookups, `respond` and `INSTRUCTIONS` in `app.py` are the text the notebook tested.
+
+![The support desk page: a rep's message goes to respond, which names the session after the rep's open page; the Agents SDK's runner reads that SQLiteSession, calls the model and the three lookups on the read-only database, and the reply goes back to the same rep](resources/lab15_page_flow.png)
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | named tools: Helena 3 of 3, without the accent 10 of 10, the country question declined (0 of 3), no write; free SQL: the country 3 of 3, without the accent 6 of 10 (the misses reply *"I couldn't find a customer named Helena Holy"*), no write attempted in 3 of 3 |
-| Part B | `['SQLite error: attempt to write a readonly database']`; `OperationalError \| attempt to write a readonly database` and invoice 404 still there; on the writable copy 412 invoices, then 411 |
-| Part C | the echo page counts 0, then 2 earlier messages for visitor A, and 0 for visitor B; visitor A keeps one session id, visitor B has another |
-| Part D | without a session the follow-up asks for a name, with one it names Helena Holý (12 items stored); one session for the page: rep B told about Helena in 3 of 3 rounds, one `page` session in the file; one per visitor: 0 of 3, a session per visitor |
-| Part E | seven updates for one message: each tool step pending, then done with its result inside; the reply only in the last update (ours at 8.4 s) |
-| Part F | five ✅ (the notebook's functions are `app.py`'s); the page on port 7861 answers with three folded steps and the reply; exit code 0; the key not in its output |
-| Challenge | `top_billing_countries` called once per run and the USA with 523.06 in 3 of 3; the delete still declined; after `start over` visitor A is asked for a name, A's conversation drops from 8 items to 4, and visitor B's keeps its 8 |
+| Notebook 1, Part A | `echo` by hand counts 0 messages before; the page at `http://127.0.0.1:7860/` (the next free port if 7860 is busy) |
+| Notebook 1, Part B | `view_api()` lists one endpoint, `/echo`, with one parameter, `message`; visitor A counts 0 then 2 messages before, visitor B 0 |
+| Notebook 1, Part C | visitor B, who never ordered, is told about a flat white with oat milk; the list holds five messages, both visitors' turns |
+| Notebook 1, Part D | one id for both of A's messages, another for B's, each equal to its client's `session_hash` |
+| Notebook 1, Part E | B is told there is no order yet, A is told the flat white with oat milk; two conversations, 5 messages for A and 3 for B |
+| Notebook 2, Part A | customer 6, Helena Holý; 7 invoices, $49.62, Steve Johnson; `No customer has customer_id 75.`; the agent calls `find_customer`, then `get_invoices` and `get_support_rep` |
+| Notebook 2, Part B | `OperationalError \| attempt to write a readonly database` and invoice 404 still there; on the writable copy 412 invoices, then 411 |
+| Notebook 2, Part C | 8 items stored for one turn (the question, three tool calls, three results, the reply); one `session_id`, `notebook` |
+| Notebook 2, Part D | rep B, who asked nothing before, is told *"We were talking about Helena Holý."*; one `page` session with 12 items |
+| Notebook 2, Part E | rep B is asked which customer they mean; one session per rep, named by their session ids |
+| Notebook 2, Part F | in the terminal, the setup line and `Support desk page at http://127.0.0.1:7861 (Ctrl+C to stop)`; two tabs with their own conversations |
+| Challenges | notebook 1: after `start over` A has no order and B keeps the cappuccino; A at table 1, B at table 2. Notebook 2: `top_billing_countries` called once, the USA and $523.06; a second client named Ana is told Helena Holý, Omar is asked for a name |
+| Going further | the named lookups decline the country question, free SQL answers the USA and $523.06; each tool step pending, then done, the reply last; five ✅ and the program's exit code 0 |
 
 **About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the model `models.env` names.
-Parts B and C, and the plumbing in Parts D to F (which session a message lands in, what each update holds), are the
-same on every run. The model's replies, its tool calls and the timings vary from run to run and from model to model:
-the free SQL miss on the unaccented name in particular comes and goes, so expect a different count there. Check the
-facts (customer 6, 7 invoices, $49.62, Steve Johnson) and which session a reply came from, not the words.
+The pages, the clients, the session ids and the sessions file behave the same on every run; the model's wording,
+its tool calls and the timings vary, so check who was told what and the facts, not the words. Visitor B was told the
+first visitor's coffee in 10 of 10 runs with one list, rep B was told about Helena Holý in 16 of 16 with one session
+for the page, and neither happened with a session per visitor.
+Given `(0, None)` as the tool result for customer 75, the agent answered *"Customer 75 has 0 invoices"* in 8 of 8
+runs, which is why the lookups say in words when a customer does not exist.
 
 ## Before you start
 
 - **Lab 00 first.** It checks the environment and that your key reaches the model.
 - **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
-  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open `15_support_desk_agent.ipynb` in VS Code or
-  JupyterLab (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first.
-- **Pages and ports:** the notebook starts its pages on `http://127.0.0.1:7860`, one at a time, and closes each; Part F
-  starts `app.py` on port 7861 and stops it. Open an address in your browser while its page is running to try it by
-  hand.
-- **On a remote VM or in Codespaces:** `127.0.0.1` is the remote machine, not yours. VS Code forwards ports 7860 and
-  7861 for you (see its **Ports** panel; add the port there if it is missing): open the forwarded address instead of
-  `127.0.0.1`.
-- **Files it writes:** `15_Support_Desk_Agent/outputs/` (git ignores it): the sessions file, a writable copy of the
-  database for Part B, and `app.py`'s own sessions file. `data/chinook.db` is only ever opened read-only.
-- **Cost:** about 60 short agent runs, most of them in Part A's comparison: around one US cent at the prices in
-  `models.env`. Parts B and C call no model.
-- The notebook ends with a troubleshooting table: a port still in use, the SDK's HTTP client used from two event
-  loops, `AppError` from the client, the read-only error, and `app.py` without a key.
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook in VS Code or JupyterLab
+  (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its own.
+- **Pages and ports:** the notebooks start their pages on `http://127.0.0.1:7860` (the next free port if that one is
+  busy), one at a time, and close each; `app.py` uses port 7861. Open an address in your browser while its page is
+  running to try it by hand.
+- **On a remote VM or in Codespaces:** `127.0.0.1` is the remote machine, not yours. VS Code forwards the ports for
+  you (see its **Ports** panel; add the port there if it is missing): open the forwarded address instead.
+- **Data:** notebook 2 reads `data/chinook.db`, the Chinook sample music shop, and only ever opens it read-only.
+- **Files it writes:** `15_Support_Desk_Agent/outputs/` (git ignores it): notebook 2's sessions file, a writable copy
+  of the database for Part B, and `app.py`'s own sessions file.
+- **Traces:** notebook 2's agent runs are recorded on the Traces page of the OpenAI account that owns the key, as
+  every Agents SDK run is; `app.py` switches that off.
+- **Cost:** about 30 short model calls for the two notebooks, well under one US cent at the prices in `models.env`.
 
 ## Run the page from the terminal
 
@@ -101,27 +121,27 @@ Then open `http://127.0.0.1:7861` in your browser, in two tabs to see two conver
 
 | Path | What it is |
 |---|---|
-| `15_support_desk_agent.ipynb` | the guided notebook, with saved outputs |
-| `app.py` | the support desk page as a program: the same lookups, agent and `respond` as the notebook |
-| `resources/lab15_page_flow.mmd` and `.png` | the page flow diagram: its mermaid source and the exported image |
-| `solved/15_support_desk_agent_solution.ipynb` | the challenge solved, run with its outputs |
+| `15a_meet_chat_pages.ipynb` | notebook 1, the café, with saved outputs |
+| `15b_chat_pages_at_the_desk.ipynb` | notebook 2, the Chinook support desk, with saved outputs |
+| `app.py` | the support desk page as a program: the same lookups, agent and `respond` as notebook 2 |
+| `resources/lab15_one_list_or_per_visitor.mmd` and `.png` | notebook 1's picture: one list for the page against one list per visitor |
+| `resources/lab15_page_flow.mmd` and `.png` | notebook 2's picture of the desk page |
+| `solved/15a_meet_chat_pages_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/15b_chat_pages_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
 
 ## Resources
 
-- [OpenAI Agents SDK: sessions](https://openai.github.io/openai-agents-python/sessions/): `SQLiteSession`, how a
-  session is loaded and saved, and the other session stores
+- [Gradio: `ChatInterface`](https://www.gradio.app/docs/gradio/chatinterface): the function's arguments,
+  `additional_inputs` and streaming with `yield`
+- [Gradio: `Request`](https://www.gradio.app/docs/gradio/request): `session_hash`, and `username` once a page has
+  sign-in
+- [Gradio: the API page](https://www.gradio.app/guides/view-api-page): what the "Use via API" link shows
+- [Gradio: the Python client](https://www.gradio.app/guides/getting-started-with-the-python-client): `Client`,
+  `view_api`, `predict` and `submit`
+- [OpenAI Agents SDK: sessions](https://openai.github.io/openai-agents-python/sessions/): `SQLiteSession` and the
+  other session classes
 - [OpenAI Agents SDK: tools](https://openai.github.io/openai-agents-python/tools/): `function_tool` and the schema it
   writes from a function
-- [OpenAI Agents SDK: streaming](https://openai.github.io/openai-agents-python/streaming/): `run_streamed` and the run
-  item events
-- [Gradio: `ChatInterface`](https://www.gradio.app/docs/gradio/chatinterface): the function's arguments, `history` and
-  streaming with `yield`
-- [Gradio: `Chatbot` and `ChatMessage`](https://www.gradio.app/docs/gradio/chatbot): `metadata` titles and status for
-  folded messages
-- [Gradio: agents and tool usage](https://www.gradio.app/guides/agents-and-tool-usage): showing an agent's steps in a
-  chat
-- [Gradio: the Python client](https://www.gradio.app/guides/getting-started-with-the-python-client): `Client`,
-  `predict` and `submit`
 - [SQLite: URI filenames](https://www.sqlite.org/uri.html): `mode=ro` and the other query parameters
 
 Next: [Lab 16: How a coding agent edits files and runs tests](../16_Coding_Agent/README.md). Back to [the lab list](../README.md).
