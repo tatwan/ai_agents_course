@@ -154,4 +154,4 @@ table). ADK had two costs here. It needs an environment of its own, because its 
 - [Models](https://adk.dev/agents/models/): Gemini models by name, and other vendors' models
 - [Open-Meteo](https://open-meteo.com/en/docs): the weather service `get_weather` calls
 
-Next: [Lab 09: How to compose LangChain's building blocks](../09_LangChain/README.md). Back to [the lab list](../README.md).
+Next: [Lab 09: How to build an agent from LangChain's pieces](../09_LangChain/README.md). Back to [the lab list](../README.md).
