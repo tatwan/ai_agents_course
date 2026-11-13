@@ -78,10 +78,10 @@ Each of the four notebooks runs on its own.
 
 | After | You should see |
 |---|---|
-| Notebook 1, Part A | a reply that says it does not have the feeding instructions; about 48 input tokens |
-| Notebook 1, Part B | half a cup at 7 in the morning and at 6 in the evening; the wifi password `apricot-2019`; about 1,010 input tokens on each call |
-| Notebook 1, Part C | first reply with no text and one request, `open_note` with `{"name":"cat"}`; about 370 input tokens, then about 540 with the note; the loop opening only `wifi` for the wifi question |
-| Notebook 1, Part D | notes opened that the question does not need (ours: all nine, three calls, 1,551 input tokens on the last), and the same answer |
+| Notebook 1, Part A | a reply that says it does not have the feeding instructions; about 47 input tokens |
+| Notebook 1, Part B | half a cup at 7 in the morning and at 6 in the evening; the wifi password `mochi-2019`; about 995 input tokens on each call |
+| Notebook 1, Part C | first reply with no text and one request, `open_note` with `{"name":"cat"}`; about 370 input tokens, then about 535 with the note; the loop opening only `wifi` for the wifi question |
+| Notebook 1, Part D | notes opened that the question does not need (ours: all nine, three calls, 1,536 input tokens on the last), and the same answer |
 | Notebook 1, Part E | the frontmatter as a dictionary with `name` `cat`; a list of three skills; `load_skill` with `cat` and no `read_skill_file` for the feeding question |
 | Notebook 2, Part A | three skill folders and one reference file; three lines in the list; `No such file in this skill.` for a path that leaves the folder |
 | Notebook 2, Part B | call 1: `load_skill` with `refund-requests`; call 2: `read_skill_file` with `references/duplicate-charges.md`; call 3: refund the later invoice in full, both numbers on the request (ours: 499, 750 and 1,003 input tokens) |

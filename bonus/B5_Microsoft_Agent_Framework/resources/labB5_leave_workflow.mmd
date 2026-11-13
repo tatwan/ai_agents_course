@@ -1,0 +1,15 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B5, notebook 1: the leave request as a workflow. Fixed edges join three steps; the middle step waits for a person.
+%% Ink: a model writes text. Lime: our code, and the edges, decide what happens. White: data and people.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB5_leave_workflow.mmd -o labB5_leave_workflow.png -b white -s 2
+flowchart LR
+    req[leave request<br/>Sara, 3 days] --> draft[draft_note<br/>an agent writes the note]
+    draft -->|edge| ask[ask_manager<br/>asks, then waits]
+    ask -.->|the question| cp[(checkpoint file)]
+    mgr([the manager]) -.->|yes or no| ask
+    ask -->|edge, only after a yes| book[book_days<br/>writes the booking]
+    book --> cal[bookings]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class draft model
+    class ask,book code

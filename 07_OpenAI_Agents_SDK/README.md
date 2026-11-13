@@ -7,7 +7,7 @@
 Meet the OpenAI Agents SDK on an everyday question, then put it to work at the Chinook support desk. The lab has
 two notebooks.
 
-**Notebook 1** is a playground. We ask a model about today's weather in Amman, watch it fail, write the tool loop
+**Notebook 1** is a playground. We ask a model about today's weather in Paris, watch it fail, write the tool loop
 by hand once, and then let the SDK run the same loop with three names: `function_tool`, `Agent` and `Runner.run`.
 From there one agent chains several tools, a triage agent hands a question to a specialist, and hosted tools search
 the web and a PDF.
@@ -70,12 +70,12 @@ destination.
 
 | After | You should see |
 |---|---|
-| Notebook 1, Part A | without a tool the model says it cannot check live weather; `get_weather("Amman")` prints `TOOL CALLED` and returns today's values for Amman, Jordan |
-| Notebook 1, Part B | a `function_call` for `get_weather` with `{"city":"Amman"}` and nothing run yet; after the result is sent back, a reply with Amman's weather; three `TOOL CALLED` lines for the three-city question |
+| Notebook 1, Part A | without a tool the model says it cannot check live weather; `get_weather("Paris")` prints `TOOL CALLED` and returns today's values for Paris, France |
+| Notebook 1, Part B | a `function_call` for `get_weather` with `{"city":"Paris"}` and nothing run yet; after the result is sent back, a reply with Paris's weather; three `TOOL CALLED` lines for the three-city question |
 | Notebook 1, Part C | a `FunctionTool` with a schema like Part B's (strict, `city` a string); one `TOOL CALLED` line and an answer; 2 model calls; `new_items` with a tool call, its output and a message; `MaxTurnsExceeded` at `max_turns=1` |
-| Notebook 1, Part D | three `TOOL CALLED` lines, `get_weather(Dubai)` first, and `suggest_activity` called with the weather that came back |
+| Notebook 1, Part D | three `TOOL CALLED` lines, `get_weather(Miami)` first, and `suggest_activity` called with the weather that came back |
 | Notebook 1, Part E | the Tokyo question answered by `Weather Specialist`, the Barcelona question by `Adventure Specialist`; the handoff listed before the specialist's tool calls |
-| Notebook 1, Part F | a web answer with a source and no `TOOL CALLED` line (`web_search_call`; ours used 10,189 input tokens); the guide's four recommended references through a `file_search_call`; a `file_search_call` and one or more `web_search_call` items from the agent with both tools; the store and the file deleted |
+| Notebook 1, Part F | a web answer with a source and no `TOOL CALLED` line (`web_search_call`; ours used 12,996 input tokens); the guide's four recommended references through a `file_search_call`; a `file_search_call` and one or more `web_search_call` items from the agent with both tools; the store and the file deleted |
 | Notebook 1, Part G | with a Gemini key, `TOOL CALLED` once and an answer from the Gemini model; without one, a message that the part is skipped |
 | Notebook 2, Part A | Helena 6, 7 invoices, $49.62, Steve Johnson; Puja 59, 6 invoices, $36.64, Jane Peacock; three model calls (`find_customer`, then `get_invoices` and `get_support_rep` together, then the message); input tokens growing per request (ours: 206, 264 and 375) |
 | Notebook 2, Part B | without a session the follow-up asks who "she" is; with `SQLiteSession` it answers $49.62; 10 items stored, found again under the same id, none under another |

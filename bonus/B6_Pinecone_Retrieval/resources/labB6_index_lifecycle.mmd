@@ -1,0 +1,29 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B6, notebook 1: the life of a Pinecone index. Our code creates the index, writes the cards with their vectors,
+%% searches with the question's vector and deletes the index at the end. The embedding model makes every vector.
+%% The index lives in the Pinecone account, not in the notebook. Ink: model calls. Lime: the calls our code makes. White: data and the service.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB6_index_lifecycle.mmd -o labB6_index_lifecycle.png -b white -s 2
+flowchart LR
+    cards[six recipe cards] --> embedC[embed each card<br/>1,536 numbers each]
+    question[the question] --> embedQ[embed the question]
+    subgraph ours [our notebook]
+        create[1 create the index]
+        upsert[2 upsert<br/>id, vector, text, kind]
+        search[3 search<br/>nearest cards, with or without a filter]
+        delete[4 delete the index]
+    end
+    subgraph service [Pinecone, in your account]
+        index[("the index<br/>namespace: cards")]
+    end
+    embedC ~~~ create
+    embedC --> upsert
+    embedQ --> search
+    embedQ ~~~ delete
+    create --> index
+    upsert --> index
+    search <--> index
+    delete --> index
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class embedC,embedQ model
+    class create,upsert,search,delete code

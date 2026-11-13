@@ -5,7 +5,7 @@
 ## Goal
 
 Send one list of messages to a model, read the reply as an object, and work out what the call cost. The notebook
-starts in a playground: a recipe for mansaf, a football fan called Sami and a joke about knafeh. Two things happen
+starts in a playground: a recipe for pancakes, a football fan called Sam and a joke about guacamole. Two things happen
 there that every program built on a model has to handle. A reply is cut off in the middle of a sentence and the
 call raises no error. And a second call includes nothing from the first one, until our code sends the history
 itself. Then the same call goes to work at a support desk, where a customer was charged twice, and we price the
@@ -27,13 +27,13 @@ One notebook, `01_model_call.ipynb`. Parts A to D are the playground; Parts E an
 Part A's call on a second API.
 
 **Part A: Send a message list and read the reply as an object.** A two-message list that asks a home cook for a
-mansaf recipe, one call, the whole `ChatCompletion` printed and read field by field, and where to make the same
+pancake recipe, one call, the whole `ChatCompletion` printed and read field by field, and where to make the same
 call with no code (the Chat Playground).
 **Part B: Notice a reply that was cut off without an error.** The same call with a ceiling of 20 tokens, and the
 check on `finish_reason` that tells a finished reply from a cut one.
 **Part C: See tokens as the pieces of a streamed reply.** A one-line joke streamed with a bar between the pieces,
 and the usage on the stream's last chunk.
-**Part D: Keep a conversation by sending the history.** Sami tells the model his team. A new call with
+**Part D: Keep a conversation by sending the history.** Sam tells the model his team. A new call with
 only the question cannot name it; the same question sent with the history can.
 **Part E: Answer a customer across two turns at a support desk.** A customer charged twice for order 46, then a
 request for a note to the billing team, which the second call can write only from the first turn.
@@ -52,15 +52,15 @@ cache writes, and history kept on OpenAI's side with the Responses API.
 
 | After | You should see |
 |---|---|
-| Part A | a three-step recipe; a `ChatCompletion` with `finish_reason` `stop`; 39 prompt tokens and around 100 completion tokens (ours: 118) |
+| Part A | a three-step recipe; a `ChatCompletion` with `finish_reason` `stop`; 38 prompt tokens and around 90 completion tokens (ours: 86) |
 | Part B | with a ceiling of 20 tokens: `length`, 20 completion tokens and a text that stops inside step 1; one pass line and one fail line from the check |
-| Part C | the joke in pieces with a bar between them, `knafeh` in more than one piece (ours: four); a last chunk with `choices` `[]` and the usage (ours: 24 completion tokens for 21 pieces) |
-| Part D | the call with only the question cannot name the team (12 prompt tokens); with the history it answers Al-Faisaly (ours: 66 prompt tokens) |
-| Part E | a first reply that mentions order 46 (43 prompt tokens); a note for the billing team that names order 46, from a prompt more than twice as long (ours: 106) |
-| Part F | prices 0.1 and 0.5; the conversation's input tokens are the two prompts added together (ours: 149, with 67 output tokens); one conversation costs a small fraction of a cent (ours: $0.0000484) and 100,000 of them $4.84 |
-| Part G | a three-step recipe from `output_text`; `status` `completed`; 39 input tokens, as many as Part A's prompt tokens |
+| Part C | the joke in pieces with a bar between them, `guacamole` in more than one piece (ours: two); a last chunk with `choices` `[]` and the usage (ours: 20 completion tokens for 17 pieces) |
+| Part D | the call with only the question cannot name the team (12 prompt tokens); with the history it answers Arsenal (ours: 47 prompt tokens) |
+| Part E | a first reply that mentions order 46 (43 prompt tokens); a note for the billing team that names order 46, from a prompt more than twice as long (ours: 107) |
+| Part F | prices 0.1 and 0.5; the conversation's input tokens are the two prompts added together (ours: 150, with 70 output tokens); one conversation costs a small fraction of a cent (ours: $0.0000500) and 100,000 of them $5.00 |
+| Part G | a three-step recipe from `output_text`; `status` `completed`; 38 input tokens, as many as Part A's prompt tokens |
 | Challenge | task 1: a streamed note that names order 46, with the same prompt tokens as Part E's second call; task 2: Part E's system message does not fit 190 tokens (ours: 224), a system message that asks for less does (ours: 182), and a ceiling of 15 tokens fails on `finish_reason` |
-| Going further | at effort `low`, an empty reply with 20 reasoning tokens; two 400s that name `max_tokens` and `temperature`; 1,418 prompt tokens with 1,415 written to the cache on the first call and 1,415 read from it on the second; a follow-up with `previous_response_id` billed about as many input tokens as Part D's history (ours: 60 against 66); both stored responses deleted |
+| Going further | at effort `low`, an empty reply with 20 reasoning tokens; two 400s that name `max_tokens` and `temperature`; 1,418 prompt tokens with 1,415 written to the cache on the first call and 1,415 read from it on the second; a follow-up with `previous_response_id` billed about as many input tokens as Part D's history (ours: 46 against 47); both stored responses deleted |
 
 **About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, the model and setting in
 `models.env`. The model writes a new reply on every run, so the wording and the completion tokens will differ

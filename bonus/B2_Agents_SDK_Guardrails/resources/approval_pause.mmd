@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "sequence": {"actorMargin": 130, "width": 170}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "actorBkg": "#0B1220", "actorTextColor": "#FFFFFF", "actorBorder": "#0B1220", "noteBkgColor": "#C9F24D", "noteTextColor": "#0B1220", "noteBorderColor": "#0B1220"}}}%%
+%% Bonus B2: a tool with needs_approval=True. The first Runner.run stops with the proposed call;
+%% the tool runs only inside the second Runner.run, which takes the saved state.
+%% Lime notes: the steps our code or a person takes between the two runs.
+%% Export: npx -y @mermaid-js/mermaid-cli -i approval_pause.mmd -o approval_pause.png -b white -s 2
+sequenceDiagram
+    participant C as Our code
+    participant R as Runner
+    participant M as Model
+    participant T as Tool
+    C->>R: Runner.run(agent, request)
+    R->>M: request
+    M-->>R: tool call (name, arguments)
+    R-->>C: the pending call
+    Note over C,R: the tool has not run yet<br/>a person reads the call<br/>state.approve(item)<br/>or state.reject(item)
+    C->>R: Runner.run(agent, state)
+    R->>T: approved: run the tool
+    T-->>R: the tool's result
+    R->>M: result, or rejection message
+    M-->>R: reply
+    R-->>C: result.final_output

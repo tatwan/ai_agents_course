@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Isolated environment for B4_CrewAI_Crew"
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "crewai==1.15.34",
+    "crewai==1.15.40",
     "openai==2.54.0",
     "mcp==1.30.0",
     "ipykernel==7.4.0",

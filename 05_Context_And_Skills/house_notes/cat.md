@@ -1,4 +1,4 @@
-# Mishmish, the cat
+# Mochi, the cat
 
 - **Food:** half a cup of dry food at 7 in the morning and half a cup at 6 in the evening. The bag is in the
   cupboard under the sink, with the measuring cup inside it.

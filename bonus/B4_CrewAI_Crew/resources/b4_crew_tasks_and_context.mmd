@@ -1,0 +1,27 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B4: one run of a two-task crew. The first task's agent has a tool; its output is given to the second task
+%% as context; a guardrail function checks the second task's output and sends a refused one back with the reason.
+%% Ink: what a model does. Lime: what our code does. White: text passed along.
+%% Export: npx -y @mermaid-js/mermaid-cli -i b4_crew_tasks_and_context.mmd -o b4_crew_tasks_and_context.png -b white -s 2
+flowchart LR
+    k[our code<br/>crew.akickoff] --> a1
+    subgraph T1["Task 1: an agent with a tool"]
+        direction TB
+        a1[model<br/>asks for the tool,<br/>then writes its result up]
+        t1[our tool function]
+        a1 -->|tool call| t1
+        t1 -->|tool result| a1
+    end
+    a1 --> c[task 1's output<br/>passed on as context]
+    c --> a2
+    subgraph T2["Task 2: an agent with no tools"]
+        direction TB
+        a2[model<br/>writes from the context]
+    end
+    a2 --> g{our guardrail<br/>function}
+    g -->|refused: the reason goes back| a2
+    g -->|accepted| out[CrewOutput]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class a1,a2 model
+    class k,t1,g code

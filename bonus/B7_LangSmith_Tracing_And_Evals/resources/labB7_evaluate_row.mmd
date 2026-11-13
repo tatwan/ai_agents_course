@@ -1,0 +1,23 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 26, "rankSpacing": 44, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B7: what LangSmith's evaluate does with one example of a dataset. The inputs go to our target function,
+%% which asks the agent. The reference outputs go only to the evaluator. The agent's run is stored as a trace, and
+%% the evaluator's score is attached to it. All the rows together are one experiment in LangSmith.
+%% Ink: what the model does. Lime: what our code does. White: data.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB7_evaluate_row.mmd -o labB7_evaluate_row.png -b white -s 2
+flowchart LR
+    subgraph example["one example of the dataset"]
+        inputs["inputs<br/>the question"]
+        reference["reference outputs<br/>what a right answer holds"]
+    end
+    inputs --> target["the target function<br/>asks the agent"]
+    target --> agent["the agent<br/>model calls and tool calls"]
+    agent --> outputs["outputs<br/>the answer"]
+    agent --> trace["the trace<br/>every run, stored in LangSmith"]
+    outputs --> evaluator["the evaluator<br/>is the answer right?"]
+    reference --> evaluator
+    evaluator --> score["a score on this row<br/>of the experiment"]
+    trace --> score
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class agent model
+    class target,evaluator code

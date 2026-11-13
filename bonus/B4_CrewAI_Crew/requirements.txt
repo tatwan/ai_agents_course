@@ -74,11 +74,11 @@ colorama==0.4.6 ; os_name == 'nt' or sys_platform == 'win32'
     #   typer
 comm==0.2.3
     # via ipykernel
-crewai==1.15.34
+crewai==1.15.40
     # via ai-agents-lab-b4
-crewai-cli==1.15.34
+crewai-cli==1.15.40
     # via crewai
-crewai-core==1.15.34
+crewai-core==1.15.40
     # via
     #   crewai
     #   crewai-cli

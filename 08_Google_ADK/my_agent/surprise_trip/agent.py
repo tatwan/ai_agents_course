@@ -10,7 +10,7 @@ from google.adk.workflow import START, Workflow
 ROOT = next(p for p in Path(__file__).resolve().parents if (p / "models.env").exists())
 MODEL = dotenv_values(ROOT / "models.env")["MODEL_DEFAULT"]
 
-CITIES = ["Amman", "Cape Town", "Kyoto", "Marrakesh", "Mexico City", "Reykjavik"]
+CITIES = ["Cape Town", "Kyoto", "Lisbon", "Marrakesh", "Mexico City", "Reykjavik"]
 
 
 def pick_city() -> str:

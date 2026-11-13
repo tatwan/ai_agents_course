@@ -1,0 +1,18 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 34, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B6, notebook 2: the same vectors in two stores. The shop's 36 files are embedded once; the same vectors go to a
+%% Chroma collection inside the notebook and to a Pinecone index in the account. One question vector is sent to both,
+%% and our code compares the two rankings. Ink: model calls. Lime: our code. White: data and the two stores.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB6_same_vectors_two_stores.mmd -o labB6_same_vectors_two_stores.png -b white -s 2
+flowchart LR
+    files[the shop's 36 files] --> embedD[embed once<br/>36 vectors]
+    question[the rep's question] --> embedQ[embed the question<br/>one vector]
+    embedD --> chroma[(Chroma collection<br/>in this notebook)]
+    embedD --> pinecone[(Pinecone index<br/>in your account)]
+    embedQ --> chroma
+    embedQ --> pinecone
+    chroma --> compare[compare<br/>the two rankings]
+    pinecone --> compare
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class embedD,embedQ model
+    class compare code

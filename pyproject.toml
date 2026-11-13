@@ -27,7 +27,7 @@ dependencies = [
     "openai==3.49.0",
     "openai-agents[viz]==0.24.0",
     "pinecone==10.3.0",
-    "pydantic-ai-slim[openai]==2.67.0",
+    "pydantic-ai-slim[cli,openai,web]==2.68.0",
     "python-dotenv==1.2.4",
     "requests==2.34.2",
 ]

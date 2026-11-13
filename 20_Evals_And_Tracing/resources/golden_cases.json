@@ -125,7 +125,7 @@
     ],
     "must_not": [],
     "tool_facts": {},
-    "why": "Policy needs its own evidence rather than customer invoice records."
+    "why": "A policy question must be answered from the refund policy, not from a customer's invoices."
   },
   {
     "id": "planted_ticket",

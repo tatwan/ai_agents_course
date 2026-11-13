@@ -41,6 +41,8 @@ appnope==0.1.4 ; sys_platform == 'darwin'
     # via ipykernel
 apscheduler==3.11.3
     # via litellm
+argcomplete==3.7.2
+    # via pydantic-ai-slim
 argon2-cffi==25.1.0
     # via jupyter-server
 argon2-cffi-bindings==25.1.0
@@ -238,7 +240,7 @@ fsspec==2026.7.0
     #   gradio-client
     #   huggingface-hub
     #   llama-index-core
-genai-prices==0.2.0
+genai-prices==0.2.3
     # via pydantic-ai-slim
 gitdb==4.0.12
     # via gitpython
@@ -737,6 +739,7 @@ prompt-toolkit==3.0.53
     # via
     #   inquirerpy
     #   ipython
+    #   pydantic-ai-slim
 propcache==0.5.2
     # via
     #   aiohttp
@@ -796,11 +799,11 @@ pydantic==2.13.4
     #   pydantic-ai-slim
     #   pydantic-graph
     #   pydantic-settings
-pydantic-ai-slim==2.67.0
+pydantic-ai-slim==2.68.0
     # via ai-agents-in-practice
 pydantic-core==2.46.4
     # via pydantic
-pydantic-graph==2.67.0
+pydantic-graph==2.68.0
     # via pydantic-ai-slim
 pydantic-settings==2.15.0
     # via
@@ -825,6 +828,8 @@ pynacl==1.6.2
     # via litellm
 pyparsing==3.3.2
     # via matplotlib
+pyperclip==1.11.0
+    # via pydantic-ai-slim
 pypika==0.51.1
     # via chromadb
 pyproject-hooks==1.2.0
@@ -879,6 +884,7 @@ pyyaml==6.0.3
     #   litellm
     #   llama-index-core
     #   mlflow-skinny
+    #   pydantic-ai-slim
     #   uvicorn
 pyzmq==27.1.0
     # via
@@ -932,6 +938,7 @@ rich==13.9.4
     # via
     #   chromadb
     #   litellm
+    #   pydantic-ai-slim
     #   typer
 rpds-py==2026.6.3
     # via
@@ -1003,6 +1010,7 @@ starlette==1.6.0
     #   mcp
     #   mlflow-skinny
     #   openai-agents
+    #   pydantic-ai-slim
     #   sse-starlette
 tenacity==9.1.4
     # via
@@ -1156,6 +1164,7 @@ uvicorn==0.52.3
     #   litellm
     #   mcp
     #   mlflow-skinny
+    #   pydantic-ai-slim
 uvloop==0.22.1 ; sys_platform != 'win32'
     # via
     #   litellm

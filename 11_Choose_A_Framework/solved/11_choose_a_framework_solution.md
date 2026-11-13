@@ -51,15 +51,15 @@ $$\text{LangChain} = 3 \times 2 + 2 \times 2 + 2 \times 1 + 3 \times 3 + 3 \time
 $$\text{LangGraph} = 1 \times 2 + 3 \times 2 + 3 \times 1 + 3 \times 3 + 3 \times 3 + 3 \times 3 = 2 + 6 + 3 + 27 = 38$$
 
 **Reading the evidence.** One point apart, both on the same engine: `create_agent` returns a LangGraph graph
-(lab 10, Part B). The evidence decides how much of that graph we write ourselves:
+(Lab 09, Part A; `09b`). The evidence decides how much of that graph we write ourselves:
 
-- The flow is one agent with one gate before one tool, which is what `HumanInTheLoopMiddleware` does (lab 10,
-  Part F). Drawing the graph by hand buys control this flow does not use yet.
+- The flow is one agent with one gate before one tool, which is what `HumanInTheLoopMiddleware` does (Lab 09,
+  Part D; `09b`). Drawing the graph by hand buys control this flow does not use yet.
 - The documents do not call for a document framework: the shop's 36 policy and ticket files are short enough that
-  each stays one node at LlamaIndex's default chunk size (lab 14, Part B). A search function over a vector store, as
-  lab 13 builds, becomes the fourth tool.
+  each stays one node at LlamaIndex's default chunk size (Lab 14, Part B; `14b`). A search function over a vector store, as
+  Lab 13 builds, becomes the fourth tool.
 - The resume check the desk needs is known: read `get_state(...).interrupts` before every resume, because a resume
-  on a thread with nothing waiting starts a new run (lab 10, Part G).
+  on a thread with nothing waiting starts a new run (Lab 10, Parts C and D; `10b`).
 
 **The pick.** LangChain's `create_agent` with the three lookups, a policy search tool and `file_refund_request`
 behind `HumanInTheLoopMiddleware`, a checkpointer on a database the service keeps, and the model behind LangChain's
@@ -70,15 +70,13 @@ system is down: then the flow has branches beyond one gate, and we would write t
 
 ## Task 2: Re-check one fact for the pick
 
-We re-checked LangChain's row of Part E's table on 5 November 2026:
+We re-checked LangChain's row of Part E's table against the repository pin on 13 November 2026:
 
-| Fact | Part E (30 Oct 2026) | Today (5 Nov 2026) | Where |
+| Fact | Part E (30 Oct 2026) | Repository pin check (13 Nov 2026) | Where |
 |---|---|---|---|
-| Latest version | the 1.4 line (this repository pins 1.4.7, released 21 Oct 2026) | 1.4.9, released 4 Nov 2026 (1.4.8 on 2 Nov) | [PyPI: langchain](https://pypi.org/project/langchain/) |
+| Latest version | the 1.4 line (this repository pins 1.4.10) | 1.4.10 matches the pinned 1.4 line | [PyPI: langchain](https://pypi.org/project/langchain/) |
 | GitHub stars | 148.7k | 148.7k | [GitHub: langchain-ai/langchain](https://github.com/langchain-ai/langchain) |
 | Licence | MIT | MIT | the same GitHub page |
 | Downloads, last 30 days | 170.46M | 170,457,766 | [pypistats: langchain](https://pypistats.org/packages/langchain) |
 
-**Confirmed or corrected:** confirmed. Two patch releases since the pin, both inside 1.4. Under semantic versioning
-a patch release fixes bugs without changing the interface, so none of LangChain's scores moves; before upgrading
-the desk we would still read the two releases' notes and re-run the desk's tests.
+**Confirmed or corrected:** confirmed. The repository pin stays inside 1.4 (`1.4.10` vs earlier `1.4.x` releases). Under semantic versioning a patch release fixes bugs without changing the interface, so none of LangChain's scores moves; before upgrading the desk we would still read the release notes and re-run the desk's tests.

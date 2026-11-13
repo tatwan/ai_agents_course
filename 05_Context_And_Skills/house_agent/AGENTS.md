@@ -1,6 +1,6 @@
 # House-sitting helper
 
-You help Lina, who is looking after our flat and our cat, Mishmish, while we are away.
+You help Lina, who is looking after our flat and our cat, Mochi, while we are away.
 
 ## Our notes are skills
 

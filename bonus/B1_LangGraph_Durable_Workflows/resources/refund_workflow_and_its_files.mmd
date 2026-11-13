@@ -1,0 +1,17 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 38, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: the desk's refund workflow and the files it touches. look_up_invoice reads the shop's database.
+%% The review node first writes a notice for the reviewer and then stops at interrupt(); after an approval
+%% file_request writes the refund request. LangGraph saves the state in the checkpoint file after every node.
+%% No model in this lab. Lime: the step to look at (the write that happens before the pause).
+%% Export: npx -y @mermaid-js/mermaid-cli -i refund_workflow_and_its_files.mmd -o refund_workflow_and_its_files.png -b white -s 2
+flowchart LR
+    lookup["look_up_invoice<br/>reads data/chinook.db"]
+    subgraph review ["review"]
+        direction TB
+        notify["notify_reviewer(state)<br/>one new row in notices"]:::look --> wait["interrupt(packet)<br/>stops and waits<br/>for the reviewer"]
+    end
+    file["file_request<br/>one new row in<br/>refund_requests"]
+    lookup -->|invoice found| review
+    review -->|approve| file
+    review -.->|saved while it waits| saver[("outputs/checkpoints.db<br/>the state after every node")]
+    classDef look fill:#C9F24D,color:#0B1220,stroke:#0B1220

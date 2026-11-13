@@ -39,9 +39,11 @@ With `path` pointing to the bundled database, the notebooks use:
 db = sqlite3.connect(f"file:{path}?mode=ro", uri=True, check_same_thread=False)
 ```
 
-`mode=ro` prevents changes to this database. `check_same_thread=False` lets a framework invoke a synchronous
-lookup in a worker thread; it does not itself make a connection read-only or make concurrent writes safe.
-Labs that demonstrate writes create a separate database in their own ignored output folder.
+`mode=ro` prevents changes to this database. `check_same_thread=False` lets a single-threaded script or framework
+run pass one connection across calls; it does not itself make a connection read-only or make concurrent lookups
+safe. When an agent framework runs tool calls at the same time in worker threads, each lookup opens and closes its
+own read-only connection with `with closing(sqlite3.connect(DB_URI, uri=True)) as conn:`. Labs that demonstrate
+writes create a separate database in their own ignored output folder.
 
 ## `documents/`
 

@@ -71,10 +71,10 @@ nodes, and an agent's events as they happen.
 |---|---|
 | Notebook 1, Part A | LlamaIndex's own default models (an older chat model and an older embedding model) before `Settings` is set, the `models.env` models after; with no notes, general advice about calling an internet provider |
 | Notebook 1, Part B | a `Document` printed with a made-up id and its text; seven notes; six default metadata fields, `file_path` among them; with `keep_name`, only `file_name` |
-| Notebook 1, Part C | 7 nodes; default top k 2: `move_in.md` (0.303) and `landlord.md` (0.283), not `haddad.md` |
+| Notebook 1, Part C | 7 nodes; default top k 2: `move_in.md` (0.303) and `landlord.md` (0.302), not `haddad.md` |
 | Notebook 1, Part D | an answer that names Sam Haddad and says no time is given, from `move_in.md` and `landlord.md`; four prompt templates |
 | Notebook 1, Part E | a schema with one `input` argument; the query-engine tool's sentence saying no time is given, beside the text of `move_in.md` and `landlord.md` |
-| Notebook 1, Part F | the query-engine-tool agent reads only sentences and says it has no hours (in our saved runs of the notebook and its solution); the retriever-tool agent searches for Sam Haddad on its second search and answers Sunday to Thursday, 18:00 to 20:00 |
+| Notebook 1, Part F | the query-engine-tool agent reads sentences and finds Sam Haddad's hours (in our saved runs); the retriever-tool agent searches for Sam Haddad on its second search and answers Monday to Friday, 18:00 to 20:00 |
 | Notebook 2, Part A | 36 documents (20 policies, 16 tickets), 36 nodes; ticket 06's line *Damaged-media policy: replace once at no charge* |
 | Notebook 2, Part B | an answer that offers a refund and gives 5 to 10 business days; the check failing fact 1 and passing fact 2; sources ticket 06 (0.6122) and `policy_refunds.md` (0.4842); the damaged-media policy not in the prompt |
 | Notebook 2, Part C | the query-engine tool's sentence about ticket 06 without the words *Damaged-media policy*; the retriever tool's text with that line |

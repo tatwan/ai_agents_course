@@ -36,3 +36,6 @@ presentation/
 instructor/
 progress/
 **/instructor.md
+
+vendor_specific_agent_frameworks/
+

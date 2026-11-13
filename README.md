@@ -71,21 +71,28 @@ Start with Lab 00: it sets up the environment and checks that everything later l
 |---|---|
 | B1 | [How to make a LangGraph workflow survive a restart](bonus/B1_LangGraph_Durable_Workflows/) |
 | B2 | [How to put guardrails and approvals on an Agents SDK agent](bonus/B2_Agents_SDK_Guardrails/) |
-| B3 | [How to build a typed desk agent with Pydantic AI](bonus/B3_PydanticAI_Typed_Agent/) |
-| B4 | [How to build the desk as a CrewAI crew](bonus/B4_CrewAI_Crew/) |
-| B5 | [How to build the desk agent with Microsoft Agent Framework](bonus/B5_Microsoft_Agent_Framework/) |
+| B3 | [How to build a typed agent with Pydantic AI](bonus/B3_PydanticAI_Typed_Agent/) |
+| B4 | [How to build a crew with CrewAI](bonus/B4_CrewAI_Crew/) |
+| B5 | [How to build an agent and a workflow with Microsoft Agent Framework](bonus/B5_Microsoft_Agent_Framework/) |
 | B6 | [How to move retrieval to Pinecone](bonus/B6_Pinecone_Retrieval/) (requires a Pinecone account) |
-| B7 | [How to trace and evaluate the same agent with LangSmith](bonus/B7_LangSmith_Tracing_And_Evals/) (requires a LangSmith account) |
+| B7 | [How to trace and evaluate an agent with LangSmith](bonus/B7_LangSmith_Tracing_And_Evals/) (requires a LangSmith account) |
 
 ## What a lab folder holds
 
+Most labs have two guided notebooks (an **a** playground notebook that meets the idea on an everyday problem, and a **b** notebook that puts it to work at the Chinook support desk) and their solved challenge notebooks in `solved/`:
+
 ```text
 NN_Topic/
-  README.md            the goal, what you will learn, the parts and the checkpoints
-  NN_topic.ipynb       the guided notebook (a GUIDE.md for the two guides)
-  resources/           diagrams and any data the lab adds
-  solved/              the challenge, solved, with its saved outputs
+  README.md                   the goal, what you will learn, the parts and the checkpoints
+  NNa_meet_topic.ipynb        the playground notebook
+  NNb_topic_at_the_desk.ipynb the support desk notebook
+  resources/                  diagrams and any data the lab adds
+  solved/
+    NNa_meet_topic_solution.ipynb
+    NNb_topic_at_the_desk_solution.ipynb
 ```
+
+Single-notebook labs (`00`, `01`, `04`, `16`, `22`) hold one `NN_topic.ipynb` notebook and `solved/NN_topic_solution.ipynb`. Labs 11 and 23 are reading guides (`GUIDE.md` and `solved/NN_solution.md`).
 
 Every notebook is saved with the outputs of a real run, so you can read a lab before you run it. The README of each
 lab names the model behind its saved outputs.

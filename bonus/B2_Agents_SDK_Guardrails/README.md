@@ -1,110 +1,143 @@
 # Bonus B2: How to put guardrails and approvals on an Agents SDK agent
 
-**CPU | API key: `OPENAI_API_KEY` | Practises: controlling the agent loop, reviewing proposed writes and checking execution evidence**
+**CPU | API key: `OPENAI_API_KEY` | Practises: stopping a run before the model, before a tool and before the reply; reading what a run did from its own record**
 
 ## Goal
 
-We add automatic checks and a human approval pause to the Chinook support desk. A test card number stops the run with
-zero model calls; a hand-made reply exposes what an output guardrail rejects; a refund tool waits until we approve
-or reject its proposed call. All refund requests are invented and go to a local toy queue. No tool sends money.
+An agent with a tool that writes can do something nobody decided on. The OpenAI Agents SDK gives us three places to
+stop a run: an **input guardrail** reads the message before the model is called, a tool with **`needs_approval`**
+waits for a person before it runs, and an **output guardrail** reads the reply before it comes back. The lab has two
+notebooks.
+
+**Notebook 1** is a playground: a helper that posts to a family group chat. It posts a card number with nothing in
+its way. An input guardrail stops the next card number before any model call, and the run's own spans show it. In the
+default guardrail mode the same message still reaches the chat, though the model may shorten the number. A post then waits until a person approves it, a
+rejected post never reaches the chat, and an output guardrail keeps Sami's surprise party a secret. After every
+step we print the chat, because the chat, not the reply, shows what was posted.
+
+**Notebook 2** puts the same three checks on the Chinook support desk, where the agent can file refund requests.
+Asked only for a note to a customer, the agent with no checks files a refund request nobody asked for. With approval
+the request waits, and is written only when the approved run is resumed. After a rejection the reply still says the
+request has been filed, so an output guardrail compares the reply with the refund queue. Last, a paused run is saved
+to a file and resumed from it.
 
 ## What you will learn
 
-- How to stop card-like input before the agent starts a model call.
-- How to check a typed final reply, and why a valid schema does not make the reply true.
-- How to put `needs_approval=True` on a write tool and inspect its pending arguments.
-- How to save a paused `RunState`, restore it, and resume with an approval or a rejection.
-- How to read the queue after each decision, and what approval leaves to the tool.
-- When each control is worth adding to the lab 07 agent, and when LangGraph's pause (lab 10) fits better.
-
-## Where this lab starts
-
-An agent chooses tools; our code executes them. Lab 07 introduces the SDK loop, but this notebook defines every
-lookup, agent and check again so it runs on its own. Here we control when that loop may start, when a proposed tool
-may execute and when a final reply may leave the application.
+- How to stop a message with an input guardrail, and show from the run's spans that the model was never called.
+- What the default guardrail mode lets through, and why an agent that writes needs `run_in_parallel=False`.
+- How to make a tool wait with `needs_approval=True`, read the pending call, and approve or reject it through a
+  `RunState`, and when the tool runs.
+- Why the reply after a rejection is not evidence of what happened, and what to read instead.
+- How to hold back a reply with an output guardrail that reads a record our code keeps.
+- How to save a paused run to a file and resume it later.
 
 ## What you will do
 
-**Part A: Run the desk before adding controls.** Inspect Helena's customer facts, the tool schema, the agent and a
-real lookup run. Add a small lifecycle observer to count model starts and tokens.
+### Notebook 1: meet guardrails and approvals in a family chat (`b2a_meet_guardrails_and_approvals.ipynb`)
 
-**Part B: Stop card-like input before the model.** Try a small digit pattern on a test card and an ordinary invoice
-request, then use `input_guardrail(run_in_parallel=False)` and read the exception beside the unchanged call count.
+**Part A: Build a helper that posts to the family chat with nothing in its way.** One tool, `post_to_chat`, a Python
+list for the chat, the run's `new_items`, and a card number posted.
+**Part B: Stop a message with an input guardrail before the model is called.** The check as a plain function, then
+as a blocking guardrail; `StepLog` prints the run's spans.
+**Part C: See what the default guardrail mode lets through.** A slow check in the default mode, the model call and
+the post that happen while it runs, and where the same spans appear on the Traces page.
+**Part D: Make a post wait for a person with `needs_approval`.** The interruption, the `ToolApprovalItem`, `approve()`
+and the second run.
+**Part E: Reject a post and read what the model is told.** A post about Sami's surprise party, rejected; the
+sentence the model reads in place of the tool's result.
+**Part F: Hold back a reply with an output guardrail.** A question about Friday that names the surprise party, held
+back; a question about dinner that passes.
+**Challenge.** A delete tool that waits for approval, and a guardrail against shouting.
 
-**Part C: Check a typed final reply.** Construct a reply by hand, validate its schema and test the output guardrail
-directly. See a contradictory text pass a field check, then exercise the attached guardrail on an actual agent reply.
+### Notebook 2: guardrails and approvals at the Chinook desk (`b2b_guardrails_and_approvals_at_the_desk.ipynb`)
 
-**Part D: Pause a refund tool before it writes.** Read invoice 46, inspect a toy queue row and validate the amount in
-the write function. Wrap it with `needs_approval=True`, then inspect the pending call while the queue remains empty.
+**Part A: Build a desk agent that files refund requests with nothing in its way.** Two lookups, each with its own
+read-only connection; a refund queue; a note request that files a request.
+**Part B: Stop a pasted card number before the model is called.** A wider card pattern and the run's steps.
+**Part C: Hold a refund request until a person approves it.** The pending call beside the invoice, `approve()`, and
+the row written in the resumed run.
+**Part D: Reject a request nobody asked for, and read the reply against the queue.** A rejection with a reason, and
+a reply that confirms a request the queue does not hold.
+**Part E: Hold back a reply that confirms a request the queue does not hold.** The check as a plain function, then as
+an output guardrail, and the note it must let through.
+**Part F: Save a paused run to a file and resume it later.** `to_json`, `RunState.from_json`, approve, resume.
+**Challenge.** Approval that depends on the amount, and a rule inside the tool that approval cannot skip.
 
-**Part E: Save the pause and resume an approved call.** Serialize `RunState`, restore it from a trusted local file,
-inspect the same pending call, approve it and resume. Read the resulting request row.
-
-**Part F: Resume a rejection and keep the write checks.** Start a new request, save and restore its pause, reject it
-and resume without another write. Test an oversized amount against the function and read the model cost.
-
-**Challenge.** Check two new input formats and reject a serialized request for invoice 175. The solved notebook is a
-complete independent run, including its own setup and all six parts.
-
-![Input guardrail before model work, approval before a queue write, and output guardrail after generation](resources/labB2_controls.png)
+![A run of the Agents SDK from the user's message to the reply, with three checks in lime: the input guardrail before the model, the approval before the tool runs, and the output guardrail before the reply comes back.](resources/control_points.png)
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | customer 6, 7 invoices, $49.62 and Steve Johnson; all three lookup tools called; 3 model calls in the saved learner run |
-| Part B | test card matches, ordinary invoice request does not; `run_in_parallel=False`; `InputGuardrailTripwireTriggered`; zero new model calls |
-| Part C | hand-made `payment_sent=True` trips; contradictory text with `False` passes; the live reply is checked after 3 model calls |
-| Part D | invoice 46 belongs to customer 6 and totals $8.91; one pending `file_refund_request`, no queue rows |
-| Part E | one pending call restored; approval alone leaves zero rows; resume creates one row with `status='requested'` |
-| Part F | rejection adds zero rows and leaves no interruption; $999 is refused by the tool; main path 12 model calls, 4462 input tokens, 426 output tokens, about $0.000659 |
-| Challenge | hyphenated test card blocked, ordinary invoice IDs allowed, zero model calls for direct checks; rejecting invoice 175 adds no row |
+| Notebook 1, Part A | a message about dinner at 7 in the chat; `new_items` with a tool call, its output and a message; then a second message with the card number |
+| Notebook 1, Part B | `True` and `False` from the plain check; `InputGuardrailTripwireTriggered` with `{'card_number': True}` and an empty chat; for the card message, the two guardrail lines and no model call |
+| Notebook 1, Part C | `run_in_parallel: True`; the run stopped by `slow_card_check`, with a model call and the tool between the guardrail's start and end, and a message about the card in the chat |
+| Notebook 1, Part D | `final_output` `None`, one interruption, an empty chat; still empty after `approve()`; the message about the car after the second run |
+| Notebook 1, Part E | the chat unchanged after the rejection; the model told `Tool execution was not approved.` |
+| Notebook 1, Part F | the reply names the surprise party without the guardrail; with it, `OutputGuardrailTripwireTriggered` with `{'mentions_surprise': True}`; the dinner question passes |
+| Notebook 2, Part A | customer 6 for Helena Holý, `no match` without the accent, \$8.91 for invoice 46, \$1.98 for invoice 175; after the note request, a queue row for invoice 46 |
+| Notebook 2, Part B | the pasted email stopped, `steps` holding only the guardrail; the same question without the number answered (Helena Holý, \$8.91) |
+| Notebook 2, Part C | no reply, one interruption, 0 rows; 0 rows after `approve()`; 1 row for invoice 175 after the second run |
+| Notebook 2, Part D | the pending call for invoice 46 rejected; the queue still holds only invoice 175; read whether your reply says the request has been filed |
+| Notebook 2, Part E | `[46]`, `[]`, `[]` from the plain check; the note for invoice 46 held back with `{'not_in_queue': [46]}`; the note for invoice 175 let through |
+| Notebook 2, Part F | the call for invoice 393 saved to `paused_refund.json`, read back and approved; the queue holds invoices 175 and 393 |
+| Challenges | notebook 1: two messages after rejecting the delete, one after approving it; the shouted message stopped, the lowercase one posted. Notebook 2: invoice 272 filed with no interruption, invoice 404 waiting; two refusals and one new row from `safe_refund_request` |
 
-**About the saved outputs.** They come from `gpt-6-luna` at reasoning effort `none`, configured in `models.env`.
-Replies, tool choices, token counts and timings can vary. Check the pending arguments and queue rows as well as the
-wording. The card-pattern and hand-made-output checks are deterministic. The field-based output guardrail checks
-only `payment_sent`; it does not verify all claims in the answer text.
+**About the saved outputs.** They come from `gpt-6-luna`, the model `models.env` names, at reasoning effort `none`.
+The model writes the posts, the tool arguments and the replies on every run, so the words will differ on yours;
+check the chat, the queue and the steps. Some steps were checked over more runs than the saved one:
 
-## When to use it
-
-Lab 07 builds the desk as an Agents SDK `Agent`; this lab adds three controls to it, each at a different point. An
-input guardrail with `run_in_parallel=False` finishes before any model work (the test card: 0 model calls). An output
-guardrail checks a typed field before the reply leaves, after the tokens are spent (3 model calls in our live check).
-`needs_approval=True` with a saved `RunState` holds a write for a person (the queue stayed empty until we resumed the
-approved state). If your desk runs on LangGraph, lab 10's `HumanInTheLoopMiddleware` and checkpointer give the same
-pause; this version suits a desk built on lab 07, where we store the paused state ourselves.
+- Notebook 1, Part C: the model call and the post happened while the slow check ran in all 3 runs we made. The post
+  did not always carry the whole card number: the model shortened it or left it out in two of them.
+- Notebook 1, Part E: after a rejection with the default message, the reply said the post could not be made in 10
+  of 10 runs, and the chat never held the rejected post.
+- Notebook 1, Part F: asked about Friday, the reply named the surprise party in 10 of 10 runs.
+- Notebook 2, Part A: asked only for the note, the agent with no checks filed a request for invoice 46 in 10 of 10
+  runs.
+- Notebook 2, Part D: after the rejection with the rep's reason, the reply said the request had been filed in 10 of
+  10 runs; the queue never held it.
+- Notebook 2, Part E: the guardrail held back the note for invoice 46 in 5 of 5 runs and let the note for invoice
+  175 through in 5 of 5. In all 5 runs for invoice 175 the model asked to file that request again, and the rejection
+  stopped it.
 
 ## Before you start
 
-- Complete [Lab 00](../../00_Environment_Check/README.md), then run `uv sync --python 3.13` from the repository
-  folder (or `pip install -r requirements.txt`).
-- Copy `.env.example` to `.env` at the repository folder and set `OPENAI_API_KEY`.
-- Open [b2_agents_sdk_guardrails.ipynb](b2_agents_sdk_guardrails.ipynb) in VS Code or start `uv run jupyter lab`.
-  Select the repository `.venv` kernel and run from the top.
-- The lab reads the public Chinook sample database in `data/chinook.db` through a read-only connection. It downloads
-  no data and needs no tracing account or server.
-- It writes `outputs/refund_requests.json` and paused-state JSON files under this lab folder. Git ignores `outputs/`.
-  Running from the top resets this lab's toy queue. A snapshot may contain model history and tool arguments; use
-  trusted storage and do not accept an edited snapshot from a client.
-- The main path makes about a dozen small model calls and costs much less than one cent at the configured prices.
-  Approval runs are resumed using state; do not replay a completed snapshot, which could duplicate this toy write.
+- **Lab 00 first.** It checks the environment and that your key reaches the model.
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), put
+  `OPENAI_API_KEY` in `.env` (copied from `.env.example`), then open a notebook in VS Code or JupyterLab
+  (`uv run jupyter lab`) with the `.venv` kernel. Run the setup cell first. Each notebook runs on its own.
+- **Traces:** the SDK sends a trace of every run (messages, tool results, replies) to the Traces page of the OpenAI
+  account that owns the key. Notebook 1, Part C says how to switch that off; the cells that print a run's steps then
+  print nothing.
+- **Card numbers:** the lab uses 4242 4242 4242 4242, a published test number that belongs to nobody. ⚠️ Never paste a
+  real card number into a notebook.
+- **Files it writes:** notebook 2, Part F saves a paused run to `outputs/paused_refund.json` in this folder (the
+  solution to `solved/outputs/`), which git ignores. The file holds the conversation and the pending call.
+- **Data:** `data/chinook.db`, the Chinook sample music shop, opened read-only. The refund queue is a Python list;
+  no tool sends money.
+- **Cost:** a few dozen small model calls per notebook, well under one US cent at the prices in `models.env`.
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `b2_agents_sdk_guardrails.ipynb` | guided learner notebook with saved outputs |
-| `resources/labB2_controls.mmd` and `.png` | diagram source and exported image |
-| `solved/b2_agents_sdk_guardrails_solution.ipynb` | full standalone notebook with worked challenges and saved outputs |
+| `b2a_meet_guardrails_and_approvals.ipynb` | notebook 1, the playground, with saved outputs |
+| `b2b_guardrails_and_approvals_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `resources/control_points.mmd` and `.png` | the three checks in a run, source and picture |
+| `resources/approval_pause.mmd` and `.png` | the run that pauses for approval and the run that resumes, source and picture |
+| `solved/b2a_meet_guardrails_and_approvals_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/b2b_guardrails_and_approvals_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
 
 ## Resources
 
-- [Guardrails and human review](https://developers.openai.com/api/docs/guides/agents/guardrails-approvals): input,
-  output and tool boundaries, approvals and delayed review.
-- [Results and state](https://developers.openai.com/api/docs/guides/agents/results): interrupted results and state.
-- [Running agents](https://developers.openai.com/api/docs/guides/agents/running-agents): the loop and resumptions.
-- [Integrations and observability](https://developers.openai.com/api/docs/guides/agents/integrations-observability):
-  tracing controls and SDK integrations.
-- [Pydantic models](https://docs.pydantic.dev/latest/concepts/models/): typed objects and validation.
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/): the documentation's home
+- [Guardrails](https://openai.github.io/openai-agents-python/guardrails/): input, output and tool guardrails, and the
+  two execution modes
+- [Human-in-the-loop](https://openai.github.io/openai-agents-python/human_in_the_loop/): `needs_approval`,
+  interruptions, `RunState`, rejection messages, saving a paused run
+- [Tracing](https://openai.github.io/openai-agents-python/tracing/): traces, spans, trace processors, switching
+  tracing off
+- [Results](https://openai.github.io/openai-agents-python/results/): `final_output`, `new_items`, `interruptions`,
+  the guardrail results
 
 Back to [the bonus lab list](../README.md) or [the full lab list](../../README.md).

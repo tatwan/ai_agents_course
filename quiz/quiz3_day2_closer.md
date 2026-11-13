@@ -11,7 +11,7 @@
 - [ ] Tool results are free, but the history is not
 ::time=30
 
-## Q2: `count_invoices` and `support_rep` each take one second. Why run them with `async` and `gather`?
+## Q2: `get_invoices` and `get_support_rep` each take one second. Why run them with `async` and `gather`?
 - [ ] To use fewer tokens on the two calls
 - [ ] To make the model pick the tools faster
 - [x] To wait on both at once: 1 s, not 2

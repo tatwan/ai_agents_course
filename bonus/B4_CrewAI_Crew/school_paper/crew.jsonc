@@ -1,0 +1,33 @@
+{
+  // The crew's name, shown in the log
+  "name": "school_paper",
+
+  // Each name here has a file in agents/
+  "agents": ["reporter", "headline_writer"],
+
+  // The tasks run in this order
+  "tasks": [
+    {
+      "name": "report_task",
+      "description": "Report the latest match of the {team}: the opponent, the score and who scored.",
+      "expected_output": "Two or three plain sentences.",
+      "agent": "reporter"
+    },
+    {
+      "name": "headline_task",
+      "description": "Write the headline for the school paper's story about the latest match of the {team}.",
+      "expected_output": "One headline, on one line.",
+      "agent": "headline_writer",
+      // The headline writer is given the report
+      "context": ["report_task"]
+    }
+  ],
+
+  "process": "sequential",
+  "verbose": true,
+
+  // Used when no other team is passed in
+  "inputs": {
+    "team": "Northside Falcons"
+  }
+}

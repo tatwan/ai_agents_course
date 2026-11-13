@@ -44,7 +44,7 @@
 # Section: Round 2: The loop and what it sees
 > Day 1, Parts 5 and 6.
 
-## Q6: The model has asked for `count_invoices` six times in a row. What stops the loop?
+## Q6: The model has asked for `get_invoices` six times in a row. What stops the loop?
 - [ ] The model notices the repeat and stops
 - [ ] The tool refuses a seventh call
 - [x] The turn cap, with a stop reason that says so
@@ -68,7 +68,7 @@
 # Section: Round 3: MCP and the SDK
 > Day 1, Parts 7 and 8.
 
-## Q9: Your `count_invoices` tool must work from VS Code and from your Python agent. How many MCP servers do you write?
+## Q9: Your `get_invoices` tool must work from VS Code and from your Python agent. How many MCP servers do you write?
 - [ ] Two: one for each host
 - [ ] Two: a local one and a remote one
 - [x] One: each host runs its own MCP client

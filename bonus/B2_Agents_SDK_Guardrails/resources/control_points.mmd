@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B2: one agent run and the three places where our code can stop it.
+%% Ink: what the model does. Lime: a check our code makes. White: everything else.
+%% Export: npx -y @mermaid-js/mermaid-cli -i control_points.mmd -o control_points.png -b white -s 2
+flowchart TB
+    msg[The user's message] --> ig{{"1. Input guardrail<br/>reads the message"}}
+    ig -->|trips| stop1[Run stops<br/>no model call]
+    ig -->|passes| m1[Model asks for a tool]
+    m1 --> ap{{"2. Approval<br/>a person reads the call"}}
+    ap -->|rejects| rej[Tool does not run<br/>the model is told]
+    ap -->|approves| tool[Our function runs]
+    rej --> m2[Model writes the reply]
+    tool --> m2
+    m2 --> og{{"3. Output guardrail<br/>reads the reply"}}
+    og -->|trips| stop3[Reply is held back]
+    og -->|passes| out[Reply returned]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class m1,m2 model
+    class ig,ap,og code

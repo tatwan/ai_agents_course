@@ -1,9 +1,9 @@
 ---
 name: cat
-description: How to look after Mishmish the cat, with her food, treats, water, doors and litter tray. Use when feeding the cat, when the sitter asks what she may eat or do, or when she seems ill.
+description: How to look after Mochi the cat, with her food, treats, water, doors and litter tray. Use when feeding the cat, when the sitter asks what she may eat or do, or when she seems ill.
 ---
 
-# Mishmish, the cat
+# Mochi, the cat
 
 - **Food:** half a cup of dry food at 7 in the morning and half a cup at 6 in the evening. The bag is in the
   cupboard under the sink, with the measuring cup inside it.

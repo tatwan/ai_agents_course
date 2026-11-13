@@ -1,0 +1,19 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 44, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B3: one run of a typed Pydantic AI agent with an output validator.
+%% Ink: what the model writes. Lime: what our code does (it passes deps in, runs the tools and checks the answer).
+%% White: what goes in and what comes out.
+%% Export: npx -y @mermaid-js/mermaid-cli -i b3_typed_run.mmd -o b3_typed_run.png -b white -s 2
+flowchart LR
+    q[Question] --> model
+    deps[deps<br/>passed by our code] -.-> tool
+    deps -.-> val
+    model[Model writes a tool call<br/>or the answer's fields] -->|asks for a tool| tool[Tool<br/>our function, reads ctx.deps]
+    tool -->|result| model
+    model -->|answer as final_result| shape[Pydantic checks<br/>the fields and types]
+    shape --> val{Output validator<br/>our rule, reads ctx.deps}
+    val -->|ModelRetry: the reason| model
+    val -->|passes| out[result.output<br/>a Python object]
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class model model
+    class deps,tool,shape,val code

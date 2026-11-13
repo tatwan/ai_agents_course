@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 40}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% Bonus B5, notebook 2: the desk agent asks for a refund, the workflow waits for a reviewer, a new Python process answers.
+%% Ink: a model chooses the step. Lime: our code, and the edges, decide what happens. White: data, files and people.
+%% Export: npx -y @mermaid-js/mermaid-cli -i labB5_refund_desk.mmd -o labB5_refund_desk.png -b white -s 2
+flowchart TB
+    subgraph P1["The notebook's process"]
+        direction LR
+        rep([rep's message]) --> agent[desk agent<br/>chooses its tools]
+        agent -->|request_refund| check[check_invoice<br/>reads the invoice]
+        check --> review[review<br/>asks, then waits]
+    end
+    cp[(checkpoint file<br/>holds the question)]
+    subgraph P2["A new Python process, given the checkpoint id"]
+        direction LR
+        person([reviewer<br/>approve or reject]) --> review2[review<br/>built again from the file]
+        review2 -->|approve| file[file_refund<br/>one row per invoice]
+        file --> table[(refunds table)]
+    end
+    P1 -.->|saved when the workflow waits| cp
+    cp -.->|read| P2
+    classDef model fill:#0B1220,color:#FFFFFF,stroke:#0B1220
+    classDef code fill:#C9F24D,color:#0B1220,stroke:#0B1220
+    class agent model
+    class check,review,review2,file code

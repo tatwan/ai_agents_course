@@ -12,6 +12,7 @@ import difflib
 import os
 import sqlite3
 import warnings
+from contextlib import closing
 from pathlib import Path
 
 from dotenv import dotenv_values
@@ -41,8 +42,9 @@ set_tracing_disabled(True)
 
 # The shop database, read-only; the conversations in a file git ignores
 DB_PATH = ROOT / "data" / "chinook.db"
-conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True, check_same_thread=False)
-ALL_NAMES = [row[0] for row in conn.execute("SELECT FirstName || ' ' || LastName FROM customers")]
+DB_URI = f"file:{DB_PATH}?mode=ro"
+with closing(sqlite3.connect(DB_URI, uri=True)) as conn:
+    ALL_NAMES = [row[0] for row in conn.execute("SELECT FirstName || ' ' || LastName FROM customers")]
 SESSIONS_DB = LAB / "outputs" / "app_sessions.db"
 SESSIONS_DB.parent.mkdir(exist_ok=True)
 PORT = 7861
@@ -51,9 +53,10 @@ PORT = 7861
 def find_customer(name: str) -> dict:
     """Find a Chinook customer by first and last name. Returns the matching customers with their customer_id;
     when none matches exactly, up to three close names to try."""
-    rows = conn.execute(
-        "SELECT CustomerId, FirstName || ' ' || LastName, Country FROM customers "
-        "WHERE FirstName || ' ' || LastName = ?", (name,)).fetchall()
+    with closing(sqlite3.connect(DB_URI, uri=True)) as conn:
+        rows = conn.execute(
+            "SELECT CustomerId, FirstName || ' ' || LastName, Country FROM customers "
+            "WHERE FirstName || ' ' || LastName = ?", (name,)).fetchall()
     if rows:
         return {"matches": [{"customer_id": r[0], "name": r[1], "country": r[2]} for r in rows]}
     return {"matches": [], "close_names": difflib.get_close_matches(name, ALL_NAMES, n=3, cutoff=0.8)}
@@ -61,18 +64,20 @@ def find_customer(name: str) -> dict:
 
 def get_invoices(customer_id: int) -> dict | str:
     """Count a customer's invoices and add up their totals in US dollars."""
-    if conn.execute("SELECT 1 FROM customers WHERE CustomerId = ?", (customer_id,)).fetchone() is None:
-        return f"No customer has customer_id {customer_id}."
-    count, total = conn.execute(
-        "SELECT COUNT(*), ROUND(SUM(Total), 2) FROM invoices WHERE CustomerId = ?", (customer_id,)).fetchone()
+    with closing(sqlite3.connect(DB_URI, uri=True)) as conn:
+        if conn.execute("SELECT 1 FROM customers WHERE CustomerId = ?", (customer_id,)).fetchone() is None:
+            return f"No customer has customer_id {customer_id}."
+        count, total = conn.execute(
+            "SELECT COUNT(*), ROUND(SUM(Total), 2) FROM invoices WHERE CustomerId = ?", (customer_id,)).fetchone()
     return {"customer_id": customer_id, "invoice_count": count, "total": total}
 
 
 def get_support_rep(customer_id: int) -> dict | str:
     """Name the support rep assigned to a customer."""
-    row = conn.execute(
-        "SELECT e.FirstName || ' ' || e.LastName FROM customers c "
-        "LEFT JOIN employees e ON e.EmployeeId = c.SupportRepId WHERE c.CustomerId = ?", (customer_id,)).fetchone()
+    with closing(sqlite3.connect(DB_URI, uri=True)) as conn:
+        row = conn.execute(
+            "SELECT e.FirstName || ' ' || e.LastName FROM customers c "
+            "LEFT JOIN employees e ON e.EmployeeId = c.SupportRepId WHERE c.CustomerId = ?", (customer_id,)).fetchone()
     if row is None:
         return f"No customer has customer_id {customer_id}."
     return {"customer_id": customer_id, "support_rep": row[0]}

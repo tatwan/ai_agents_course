@@ -1,98 +1,148 @@
 # Bonus B1: How to make a LangGraph workflow survive a restart
 
-**CPU | No API key or account | Practises: workflow state, concurrent updates, durable human review and history**
+**CPU | No API key or account | Internet for two drawings | One kernel restart in each notebook | Practises: keeping a job that waits for a person across a restart, and making its steps safe to run twice**
 
 ## Goal
 
-We keep a refund review waiting on disk, restart Python, then approve that same saved request. The moment is a
-counter: the review node is entered once before the pause and again after the restart, so any code placed before
-`interrupt()` runs twice. Workflow checkpointing does not make an external payment safe to repeat. Every refund here is a simulated record; no money
-is sent and the shared Chinook data stays unchanged.
+Keep a job that waits for a person in a file, switch Python off, and carry on from the file. The lab has two
+notebooks, and neither calls a model.
+
+**Notebook 1** is a playground. A school-trip permission slip goes home on Friday and the parent answers on
+Monday. We write the job as a small LangGraph graph, pause it, and open the checkpoint file it is kept in as an
+ordinary SQLite file. Then we restart the kernel, find the slip still waiting and send the answer. The job
+finishes, and one line of it has run twice. We read why from the file, and change the graph.
+
+**Notebook 2** takes the same idea to the Chinook support desk. A refund request is looked up in the shop's
+database and waits for a reviewer through a real restart. After the approval the request is filed once, and
+the desk's own tables show that the review node was entered twice. We make the write that sits before the pause
+safe to repeat.
 
 ## What you will learn
 
-- How to build a `StateGraph` from state, nodes and edges, without a model.
-- How to merge updates from parallel checks with a reducer, and what the error looks like without one.
-- How to read a checkpoint's business values, scheduled nodes and waiting interrupt.
-- How to resume the same SQLite-backed thread in a new Python process.
-- How to fork an earlier checkpoint without changing the original saved result.
-- When a durable workflow is worth it, compared with the agents of labs 07 and 10.
+- How to write a job that waits for a person as a LangGraph graph: a state, nodes, edges and `interrupt`.
+- How to keep a paused run in a file with `SqliteSaver`, and read that file with plain `sqlite3`.
+- How to build the graph again in a new Python process, read what is waiting, and resume it.
+- Why the code before `interrupt` runs again on a resume, and how to tell from the tables a workflow writes to.
+- Three ways to keep a write from happening twice: move it to a node of its own, move it below the
+  `interrupt`, or make it safe to repeat.
 
 ## What you will do
 
-| Part | What it teaches |
-|---|---|
-| Part A: Represent a refund as state and node updates | One small `StateGraph`; a partial update preserves the case ID |
-| Part B: Merge updates from parallel checks | A visible concurrent-update error, then the same two checks with `operator.add` |
-| Part C: Join refund checks before choosing a route | A fan-out, a fan-in barrier, conditional routing and a completed low-risk case |
-| Part D: Resume a waiting approval after a kernel restart | SQLite, a review packet, lost Python state, a guarded resume and a counter that repeats |
-| Part E: Fork history to correct an earlier amount | A pre-check checkpoint, `update_state`, rerun checks and the original checkpoint read again |
-| Challenge: Reject a request with several review signals | A new thread, three signals, a waiting review and a saved rejection |
+### Notebook 1: meet the checkpoint file on a permission slip (`b1a_meet_durable_workflows.ipynb`)
 
-![Refund workflow: normalize, parallel policy and amount checks, a barrier before routing, auto approval or human review, finalization; SQLite holds a waiting review that a new process resumes](resources/labB1_refund_workflow.png)
+**Part A: Write a job that waits for a person as a graph.** A slip as a dictionary, two nodes (one of them stops
+at `interrupt`), the wiring, and the graph drawn.
+**Part B: Pause the run and keep it in a file.** `SqliteSaver`, a thread id, a run that stops at the question
+for the parent.
+**Part C: Read the checkpoint file as an ordinary SQLite file.** Its two tables, the checkpoints of the thread,
+and the child's name in the saved bytes.
+**Part D: Restart the kernel and resume from the file.** The graph built again in a new process, the waiting
+slip read from the file, the answer sent, and the line that ran a second time.
+**Part E: Keep work that must happen once in a node of its own.** The node split in two, a second slip, and the
+thread's checkpoints read in order.
+**Challenge.** Show that the restart is not the cause of the second slip, and answer a slip with no.
 
-The review rules are deliberately simplified examples for physical returns: review an amount of at least $500,
-an opened item, or a request beyond 30 days. They are not the complete Chinook policy. For example, the
-[returns policy](../../data/corpus/policy_returns.md) treats defective opened media separately. The exercise teaches
-execution and recovery, not whether a real customer should receive a refund.
+### Notebook 2: a refund that waits at the Chinook desk (`b1b_durable_workflows_at_the_desk.ipynb`)
+
+**Part A: Read the refund workflow one node at a time.** The workflow in `refund_workflow.py`: its state, the
+invoice lookup called by hand, the review node, the filing node, the routes, and the graph drawn.
+**Part B: Start a refund and leave it waiting in a file.** Puja Srivastava's request stops at `review`, with one
+notice sent and nothing filed.
+**Part C: Restart the kernel and approve the waiting refund.** The workflow built again from the file, the
+request read from the checkpoint file, the approval, and the desk's tables afterwards.
+**Part D: Make the write before the pause safe to repeat.** A review node that asks the notices table first, and
+a second request that is announced once.
+**Challenge.** Give the notice a node of its own, and reject a request.
+
+![The permission slip's run on two days. On Friday the node ask_parent starts at its first line, prints SLIP SENT HOME and stops at interrupt. The checkpoint file keeps the state, the next node and the question. On Monday a new process reads the file and runs ask_parent again from its first line, so SLIP SENT HOME is printed a second time; interrupt then returns the answer and book_seat runs.](resources/what_a_resume_runs.png)
+
+The lime boxes are the line before `interrupt`, which runs on both days. The white boxes are the other steps of
+the run and the checkpoint file.
 
 ## Checkpoints
 
 | After | You should see |
 |---|---|
-| Part A | Input amount `45.126` unchanged; graph result `45.13` with the same `case_id` |
-| Part B | `InvalidUpdateError` without the reducer; both `opened_item` and `high_amount` after adding it |
-| Part C | `45.13`, no signals, `approved`, both check labels in the audit and `next == ()` |
-| Part D | A waiting $1,250 request with `high_amount`; old kernel variable absent and new process true; the same request restored and approved; review entries `1 → 2` |
-| Part E | A new `update` checkpoint schedules both checks; the $80 fork auto-approves with no signals; the original $1,250 approved checkpoint is still readable; a bare thread lookup selects the newer $80 branch |
-| Challenge | Three review signals, waiting `('human_review',)`, final `rejected`, audit ending `final:rejected`, two review-node entries |
+| Notebook 1, Part A | `book_seat` called by hand prints `SEAT BOOKED for Maya` and returns `{}`; the nodes `ask_parent` and `book_seat`, drawn in one line |
+| Notebook 1, Part B | one `SLIP SENT HOME with Maya` line, the question *May Maya go to the science museum?*, `next node: ('ask_parent',)` |
+| Notebook 1, Part C | the tables `checkpoints` and `writes`; two checkpoints for `slip-maya` (steps -1 and 0); four rows in `writes`, with `b'\xa4Maya'` under `child` and the question inside the bytes of `__interrupt__` |
+| Notebook 1, Part D | after the restart the slip is still waiting at `ask_parent`; the resume prints `SLIP SENT HOME with Maya` a second time, then `SEAT BOOKED for Maya`, and returns `allowed: True` |
+| Notebook 1, Part E | `SLIP SENT HOME with Leo` once; the resume prints only `SEAT BOOKED for Leo`; five checkpoints, and step 1 has `next: ('wait_for_parent',)` |
+| Notebook 2, Part A | invoice 284 belongs to Puja Srivastava, total 8.91; invoice 9999 gives *not filed: no match for invoice 9999*; the nodes `look_up_invoice`, `review` and `file_request` |
+| Notebook 2, Part B | `LOOKED UP invoice 284` and `NOTICE SENT to the reviewer for R-1001`; `next node: ('review',)`; one notice, no refund request; three checkpoints (steps -1, 0 and 1) |
+| Notebook 2, Part C | after the restart `R-1001` is still waiting at `review`; the approval prints `NOTICE SENT` and `REFUND REQUEST FILED` and no `LOOKED UP` line; two notices for `R-1001`, one refund request (invoice 284, 8.91) |
+| Notebook 2, Part D | Helena Holý's request `R-1002` (invoice 393, 1.98): the approval prints `NOTICE ALREADY SENT for R-1002 (not sent again)`; `notices` holds `R-1001` twice and `R-1002` once; two refund requests |
+| Challenges | notebook 1: `SLIP SENT HOME with Sam` twice with no restart; `NO SEAT for Noor` and `allowed: False` after one slip. Notebook 2: one notice for `R-1003` and its request filed; `R-1004` ends *not filed: the reviewer said:* with your reason and no row in `refund_requests` |
 
-**About the saved outputs.** No model ran. These are real outputs from local Python and LangGraph runs, including
-a second Python kernel for the resume. The order of parallel check events can vary; compare the signal and audit
-membership, not their arrival order. Process IDs and checkpoint IDs are intentionally not printed. Model cost is
-$0.00; that does not price production storage or infrastructure.
+**About the saved outputs.** No model ran: every line comes from our own Python and from LangGraph, and a run on
+your machine prints the same. Two things differ from run to run and are not
+shown as checkpoints: the size in bytes of a saved state, and the id inside the bytes of `__interrupt__`. The
+outputs after each restart come from a second kernel, which is why the cell numbers start again at 1 there.
 
 ## When to use it
 
-The core path builds the desk as an agent that decides its own next step (lab 07 with the Agents SDK, lab 10 with
-LangChain and LangGraph). This lab is a workflow whose route we wrote down, with no model. Reach for a `StateGraph`
-with a database checkpointer when the steps are known, some must wait for a person, and the waiting must survive a
-restart: in our run the $1,250 request waited in SQLite through a kernel restart, resumed with one approval, and
-kept 7 checkpoints we could branch from. The price is the replay we counted (review node entries `1 → 2`), so a
-payment belongs after the approval. A fixed pipeline that never waits can stay plain Python; a question a model
-answers with tools is less code in lab 07's `Agent` or lab 10's `create_agent`.
+A checkpointer in a file or a database suits a job whose steps we know and that has to wait: for a reviewer, a
+customer, another system. The wait can then outlast the program. In this lab a slip waited through a kernel
+restart, and a refund request was approved from a new Python process that had not started it.
+
+It has a cost that is easy to miss, because nothing fails. A resume runs the waiting node again from its first
+line, so whatever sits before the `interrupt` happens twice: the reviewer got two notices for one request. Every
+node that waits needs its earlier lines moved to a node of their own, moved below the `interrupt`, or made safe
+to repeat. A job that never waits needs no checkpointer at all, and can stay plain Python.
 
 ## Before you start
 
-From the repository folder, run `uv sync --python 3.13` (or install `requirements.txt` in your own environment).
-Open [b1_langgraph_durable_workflows.ipynb](b1_langgraph_durable_workflows.ipynb) in VS Code or JupyterLab
-(`uv run jupyter lab`) and select that environment's kernel. No previous lab needs to have run. You need basic
-Python dictionaries, functions and lists; the notebook explains the type annotations and graph API where used.
-
-**Part D requires a kernel restart.** Run through its restart instruction, choose Restart Kernel, then continue
-from the next cell. Do not rerun Setup or the pause cell after restarting. Run All across that boundary will
-intentionally stop at the restart assertion. The full solved notebook follows the same restart sequence.
-
-All runtime files are in the gitignored `outputs/`: the SQLite checkpoint database, a local review-entry counter
-and the restart check. The notebook resets its own demonstration counter and `refund-main` thread on a full rerun.
-The challenge uses `refund-challenge`. Neither workflow writes to `data/` or calls a model. Use SQLite here for a
-local exercise; a multiworker service needs an appropriate database checkpointer and application controls.
+- **Run it locally:** in the repository folder, `uv sync` (or `pip install -r requirements.txt`), then open a
+  notebook from this folder in VS Code or JupyterLab (`uv run jupyter lab`) with the `.venv` kernel. No key is
+  needed. Each notebook runs on its own.
+- **One kernel restart in each notebook.** Run the cells one at a time, in order. Notebook 1 asks for the
+  restart in Part D and notebook 2 in Part C; then carry on from the next cell. **Run All** stops at the restart
+  with the message `Restart the kernel first, then run this cell.` The two solution notebooks need no restart.
+- **Internet for the drawings:** `draw_mermaid_png()` sends a graph's description (node names and arrows, none
+  of our data) to [mermaid.ink](https://mermaid.ink) and gets a picture back. Without internet only that one
+  cell in each notebook fails; the Troubleshooting table in each notebook shows how to print the same graph as
+  text.
+- **Files it writes:** each notebook keeps its checkpoint file in `outputs/` in this folder (`trip.db` for
+  notebook 1; `checkpoints.db` and the desk's tables in `desk.db` for notebook 2). The solutions write to
+  `solved/outputs/`. Git ignores both folders, and Part B of each notebook deletes its own files before it starts
+  a run.
+- **Data:** notebook 2 reads `data/chinook.db`, the Chinook sample music shop, opened read-only.
+- **Cost:** none. No model is called.
+- **Where the ideas start:** [Lab 10](../../10_LangGraph/README.md) builds a graph, `interrupt` and a
+  checkpointer from the beginning. This lab restates what it uses in a sentence each.
 
 ## Folder contents
 
 | Path | What it is |
 |---|---|
-| `b1_langgraph_durable_workflows.ipynb` | Guided notebook with saved outputs and an exercise cell |
-| `refund_workflow.py` | The same demonstrated graph and node definitions, importable in a new kernel |
-| `resources/labB1_refund_workflow.mmd` and `.png` | Diagram source and exported image |
-| [solved/b1_langgraph_durable_workflows_solution.ipynb](solved/b1_langgraph_durable_workflows_solution.ipynb) | Standalone full notebook with the challenge solved and saved outputs |
+| `b1a_meet_durable_workflows.ipynb` | notebook 1, the playground, with saved outputs |
+| `b1b_durable_workflows_at_the_desk.ipynb` | notebook 2, the Chinook desk, with saved outputs |
+| `refund_workflow.py` | the desk's refund workflow, which notebook 2 imports before and after its restart |
+| `resources/what_a_resume_runs.png` and `.mmd` | the picture of a run on two days, and its source |
+| `resources/refund_workflow_and_its_files.png` and `.mmd` | the picture of the refund workflow and the files it touches, and its source |
+| `solved/b1a_meet_durable_workflows_solution.ipynb` | notebook 1's challenge solved, run with its outputs |
+| `solved/b1b_durable_workflows_at_the_desk_solution.ipynb` | notebook 2's challenge solved, run with its outputs |
+
+## Going further
+
+- **Go back in a thread.** `get_state_history(config)` returns every checkpoint of a thread, and `update_state`
+  starts a new branch from an earlier one.
+- **How soon a checkpoint is written.** `invoke(..., durability="sync")` writes every checkpoint before the next
+  step starts; the default writes while the next step runs.
+- **Another database.** `PostgresSaver`, in the package `langgraph-checkpoint-postgres`, keeps checkpoints in a
+  database server for a program that runs on several machines.
 
 ## Resources
 
-- [LangGraph Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api): state, reducers, nodes, edges and super-steps.
-- [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers): snapshots, thread IDs, history, durability modes and integrations.
-- [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): review payloads, resume values and node restart behavior.
-- [Time travel](https://docs.langchain.com/oss/python/langgraph/use-time-travel): replay and branch from earlier checkpoints.
-- [Chinook refunds](../../data/corpus/policy_refunds.md): the shop's actual refund rules.
+- [Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): `interrupt`, `Command(resume=...)`,
+  and the rule that work before an interrupt must be safe to repeat
+- [Checkpointers](https://docs.langchain.com/oss/python/langgraph/checkpointers): `SqliteSaver`, `PostgresSaver`,
+  threads, `get_state`, `get_state_history`, durability modes and encryption
+- [Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api): state, nodes, edges and conditional
+  edges
+- [Time travel](https://docs.langchain.com/oss/python/langgraph/use-time-travel): going back to an earlier
+  checkpoint and branching from it
+- [Python `sqlite3`](https://docs.python.org/3/library/sqlite3.html): the module both notebooks open their files
+  with
 
 Back to [the bonus lab list](../README.md).

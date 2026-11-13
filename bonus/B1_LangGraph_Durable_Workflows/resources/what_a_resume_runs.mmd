@@ -1,0 +1,23 @@
+%%{init: {"theme": "base", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 38, "wrappingWidth": 420}, "themeVariables": {"fontFamily": "IBM Plex Mono, monospace", "fontSize": "15px", "primaryColor": "#FFFFFF", "primaryBorderColor": "#0B1220", "primaryTextColor": "#0B1220", "lineColor": "#6B7383", "clusterBkg": "#F4F5F7", "clusterBorder": "#6B7383"}}}%%
+%% What it shows: the permission slip's run on two days. On Friday the node ask_parent runs from its first line,
+%% prints SLIP SENT HOME and stops at interrupt(); LangGraph saves the state, the next node and the question in the
+%% checkpoint file. On Monday a new process reads the file and runs ask_parent again from its first line, so the
+%% print runs a second time; this time interrupt() returns the parent's answer and the run goes on to book_seat.
+%% No model in this lab. Lime: the step to look at (the code before interrupt, which runs on both days).
+%% Export: npx -y @mermaid-js/mermaid-cli -i what_a_resume_runs.mmd -o what_a_resume_runs.png -b white -s 2
+flowchart TB
+    subgraph friday ["Friday: the run starts"]
+        direction LR
+        f1["ask_parent starts<br/>at its first line"] --> f2["print SLIP SENT HOME"]:::look
+        f2 --> f3["interrupt(question)<br/>the run stops here"]
+    end
+    file[("the checkpoint file keeps:<br/>the state, the next node (ask_parent), the question")]
+    subgraph monday ["Monday: a new process resumes the run"]
+        direction LR
+        m1["ask_parent starts again<br/>at its first line"] --> m2["print SLIP SENT HOME<br/>a second time"]:::look
+        m2 --> m3["interrupt(question)<br/>returns the answer: yes"]
+        m3 --> m4["book_seat runs"]
+    end
+    friday -->|saved| file
+    file -->|read| monday
+    classDef look fill:#C9F24D,color:#0B1220,stroke:#0B1220
